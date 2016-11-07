@@ -4,3 +4,4 @@
 .gist-cache
 .pygments-cache
 public/blog
+public/post
