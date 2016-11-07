@@ -1,0 +1,833 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="PerlCasual #5に参加してきました 今回お声がけして頂いたyusukebe氏に感謝を。 OSS Community初心者が Perl Communityから 学んだ1年 from kenjis skywalker 追記: 03/30 12:00 社内シーパン王サーの@mix3氏から、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/43/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/30/perlcasual5/">PerlCasual #5に参加してLTしてきた #perlcasual</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-30T01:57:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://atnd.org/events/37158">PerlCasual #5</a>に参加してきました</p>
+
+<p>今回お声がけして頂いたyusukebe氏に感謝を。</p>
+
+<iframe src="//www.slideshare.net/slideshow/embed_code/17854785" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/KenjiNaito/oss-community-perl-community-1" title="OSS Community初心者が Perl Communityから 学んだ1年" target="_blank">OSS Community初心者が Perl Communityから 学んだ1年</a> </strong> from <strong><a href="//www.slideshare.net/KenjiNaito" target="_blank">kenjis skywalker</a></strong> </div></p>
+
+<h4>追記: 03/30 12:00</h4>
+
+<p>社内シーパン王サーの@mix3氏から、抜けてるぜ？ってご指摘を頂いて<br/>
+ﾔﾍﾞｯってなったのでここに追記いたします。</p>
+
+<ul>
+<li><a href="https://metacpan.org/author/HIMACHOCO">https://metacpan.org/author/HIMACHOCO</a></li>
+</ul>
+
+
+<p>シーパン王サー何人いるんだって思いますよね。すごい</p>
+
+<h2>LTで話したかったこと</h2>
+
+<p>実は今回の死霊、5分のLTで話す内容ではなかったんですけど(15分くらい必要だった)<br/>
+ちょうど転職してから1年経って、いい区切りだなと思って<br/>
+自分の実体験を話したかったのでむりくり説明省いて話しました。</p>
+
+<p>伝わならないと思うからブログで書くんだ。ってyusukebe氏に話したら<br/>
+そういう技！？って言われて、プププ。ってなってました。</p>
+
+<p>fujiwaraさんから、透かし芸はもう飽きられるねって言われて<br/>
+私もそろそろだと思っています。という話をしました。</p>
+
+<p>言いたいことはスライド中にある銀河さんの資料に書いてあるのですが</p>
+
+<ul>
+<li>勉強会お客さん時期</li>
+<li>勉強会発表者時期</li>
+</ul>
+
+
+<p>この2つは大きく違うなというのが体験で得たものでした。<br/>
+本来であれば、面白い技術とか、刺さる話とかして<br/>
+色んな人と知り合っていくのが正しくて、<br/>
+もちろん、コミュニティに入っていきなり知り合いが増えるわけもなく<br/>
+そういうコミュニティに精通している会社に入って、<br/>
+知り合いをつくるショートカットとかもできるんですが<br/>
+実力が伴っていないので、ギラギラした人からするとアイツなんでいるの？<br/>
+みたいな感じになります。</p>
+
+<p>わたしの場合、fujiwaraさんと一緒に働いてることや、<br/>
+ひさいち君、335氏、マコピーやtypester氏、songmu氏など<br/>
+Perl Communityに深い関わりあいのある人がいるから<br/>
+結果的に知り合いの知り合いみたいな感じで広がって行っていますが<br/>
+それはセコいやり方で、本来であれば<br/>
+ちゃんと自分の実力で知り合い増やしていくのが良いなって思っています。</p>
+
+<p>そもそも知り合いとか多くすることが目的じゃなくて<br/>
+案外こういうこと載ってないよなってことを書いたり話したりして<br/>
+誰かの役に立って、結果的に年収800万とか得られるようになれば良いんです。</p>
+
+<p>去年の2月のkamakura.pmで時間が余ったからLT誰かやりませんか？ってなって<br/>
+来月からお世話になります！とかぶっこんでも誰も覚えてないし<br/>
+自分が勇気を出したわりには見てる人そんなに覚えてることもないけど<br/>
+何かをアウトプットして、それが誰かの役にたって、知り合いが増えて<br/>
+仕事とかコミュニティとかに繋がってるのが楽しくなったら<br/>
+それはみんなハッピーなことなんじゃないかってことですよね。</p>
+
+<p>取り敢えず発表したいけど勇気がないとか<br/>
+知り合いほしいけど形成されたコミュニティに入りづらいとかいう人は<br/>
+少人数の地方PMとか、Perl Beginners、Perl入学式に参加してみると良いと思います！</p>
+
+<p>今日もPerl入学式に参加して、楽しそうだと思って来てみたとかいう人がいて<br/>
+いやー、Perl書いてるのおじさんだけじゃないのかー！ってなった。</p>
+
+<h2>Talk全般</h2>
+
+<p><a href="http://d.hatena.ne.jp/sugyan/20130330/1364575739">#perlcasual で再びライブコーディングさせていただいた</a><br/>
+人がコーディングしてるところあまり見る機会なかったので楽しかった。<br/>
+すぎゃーんさんすげーってなった。<br/>
+ペアプロとかやるとこういうの楽しそうだなって思った。</p>
+
+<p>@ruikさんと@koba04さんの話、<br/>
+カジュアルにウェブサービスつくっていけばいずれ手に馴染むみたいな話で<br/>
+つくりてー！って思った！</p>
+
+<p>LT、bayashiさんとYappoさんがPerlの話してて、<br/>
+他のみんな、取り敢えずアウトプットしていこうみたいな話だったと思う。</p>
+
+<blockquote class="twitter-tweet"><p>優しく教えてるのにけんじおじさんにデマ撒かれてほんとこまる…</p>&mdash; fujiwara (@fujiwara) <a href="https://twitter.com/fujiwara/status/317608085457883137">March 29, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>弊社の飲み会、やさしいおじさんがたくさんいるので、<br/>
+気軽に声かけてください。普通に割り勘ですけどね！飲みに行きましょう〜</p>
+
+<p>ありがとうございました。次発表する時は技術的な話したい〜</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/26/chefspec/">Chefspecを利用したcookbookの動作テスト</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-26T16:34:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>chefspec 1.0.0.rc1</p></blockquote>
+
+<p>Chefのcookbookのテストどうしたらいいんだろうって悩んでいたのですが<br/>
+chefspecが良さそうだったので試してみました。</p>
+
+<p>テストしたいことは</p>
+
+<ul>
+<li>cookbookのrecipeに書いてあることが期待通り実行されるか</li>
+<li>ホスト名やプラットフォーム別のrecipeが期待通り実行されるか</li>
+</ul>
+
+
+<p>この2点です。</p>
+
+<p>下記のようなcookbookがあるとして</p>
+
+<p><code>cookbook/yum/recipe/default.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>template "/etc/yum.conf" do
+</span><span class='line'>  source "yum.conf.erb"
+</span><span class='line'>  owner  "root"
+</span><span class='line'>  mode   0644
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>file "/etc/yum/exclude.conf" do
+</span><span class='line'>  owner "root"
+</span><span class='line'>  mode  0644
+</span><span class='line'>  only_if { node[:platform_version].to_i == 5}
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>file "/etc/yum/installonlypkgs.conf" do
+</span><span class='line'>  owner "root"
+</span><span class='line'>  mode  0644
+</span><span class='line'>  only_if { node[:platform_version].to_i &gt;= 6 }
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cookbook/yum/recipe/default.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[main]
+</span><span class='line'>cachedir=/var/cache/yum/$basearch/$releasever
+</span><span class='line'>keepcache=0
+</span><span class='line'>debuglevel=2
+</span><span class='line'>logfile=/var/log/yum.log
+</span><span class='line'>exactarch=1
+</span><span class='line'>obsoletes=1
+</span><span class='line'>gpgcheck=1
+</span><span class='line'>plugins=1
+</span><span class='line'>installonly_limit=3
+</span><span class='line'>
+</span><span class='line'>#  This is the default, if you make this bigger yum won't see if the metadata
+</span><span class='line'># is newer on the remote and so you'll "gain" the bandwidth of not having to
+</span><span class='line'># download the new metadata and "pay" for it by yum not having correct
+</span><span class='line'># information.
+</span><span class='line'>#  It is esp. important, to have correct metadata, for distributions like
+</span><span class='line'># Fedora which don't keep old packages around. If you don't like this checking
+</span><span class='line'># interupting your command line usage, it's much better to have something
+</span><span class='line'># manually check the metadata once an hour (yum-updatesd will do this).
+</span><span class='line'># metadata_expire=90m
+</span><span class='line'>
+</span><span class='line'># PUT YOUR REPOS HERE OR IN separate files named file.repo
+</span><span class='line'># in /etc/yum.repos.d
+</span><span class='line'>&lt;% if node[:platform_version].to_i == 5 %&gt;
+</span><span class='line'>include=/etc/yum/exclude.conf
+</span><span class='line'>&lt;% elsif node[:platform_version].to_i &gt;= 6 %&gt;
+</span><span class='line'>include=/etc/yum/installonlypkgs.conf
+</span><span class='line'>&lt;% end %&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>platform_versionが <strong>5</strong> のときは</h4>
+
+<ul>
+<li><em>/etc/yum/exclude.conf</em>をつくる</li>
+<li><em>/etc/yum.conf</em>に<em>&ldquo;include=/etc/yum/exclude.conf&rdquo;</em>の設定を追加</li>
+</ul>
+
+
+<h4>platform_versionが <strong>6</strong> のときは</h4>
+
+<ul>
+<li><em>/etc/yum/installonlypkgs.conf</em>をつくる</li>
+<li><em>/etc/yum.conf</em>に<em>&ldquo;include=/etc/yum/installonlypkgs.conf&rdquo;</em>の設定を追加</li>
+</ul>
+
+
+<p>という動作をテストします。</p>
+
+<h2>Specファイルの書き方</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install chefspec -v1.0.0.rc1</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>v1.0.0じゃないとChef v11では動かなかった <a href="https://github.com/acrmp/chefspec/issues/109">https://github.com/acrmp/chefspec/issues/109</a></p></blockquote>
+
+<p>使い方は<a href="https://github.com/acrmp/chefspec/blob/master/README.md">README</a>を読めば大体わかります。<br/>
+Specファイルは <code>cookbook/*/spec/default_spec.rb</code> というファイルとして置きます。</p>
+
+<p><code>cookbook/yum/spec/default_spec.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'chefspec'
+</span><span class='line'>
+</span><span class='line'># mock versions: https://github.com/customink/fauxhai/tree/master/lib/fauxhai/platforms/
+</span><span class='line'># 5.8 or 6.2
+</span><span class='line'>
+</span><span class='line'>describe 'yum::defaults platform version 5' do
+</span><span class='line'>  chef_run = ChefSpec::ChefRunner.new(platform:'centos', version:'5.8')
+</span><span class='line'>  chef_run.converge 'yum::default'
+</span><span class='line'>  it 'platform_version 5 yum include' do
+</span><span class='line'>    expect(chef_run).to create_file_with_content '/etc/yum.conf' , 'include=/etc/yum/exclude.conf'
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>describe 'yum::defaults platform version 6' do
+</span><span class='line'>  chef_run = ChefSpec::ChefRunner.new(platform:'centos', version:'6.2')
+</span><span class='line'>  chef_run.converge 'yum::default'
+</span><span class='line'>  it 'platform_version 6 yum include' do
+</span><span class='line'>    expect(chef_run).to create_file_with_content '/etc/yum.conf' , 'include=/etc/yum/installonlypkgs.conf'
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>chefspecはモックデータとしてfauxhaiのplatformsから、テストデータを引っ張ってきます。<br/>
+なので、CentOS系であれば</p>
+
+<ul>
+<li><a href="https://github.com/customink/fauxhai/tree/master/lib/fauxhai/platforms/centos">https://github.com/customink/fauxhai/tree/master/lib/fauxhai/platforms/centos</a></li>
+</ul>
+
+
+<p>この中から近いバージョンを選ぶ感じになるかと思います。</p>
+
+<p>このデータを利用することで<br/>
+プラットフォーム毎のテストを行うことができてだいぶ捗る印象があります。</p>
+
+<p>また、<em>create_file_with_content</em>で作成されるファイルと、その中にかかれてほしい文字列<br/>
+をテストすることができてなかなか良い感じっぽいです。</p>
+
+<h2>Rakeでテスト回す</h2>
+
+<p><code>Rakefile</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>task :default =&gt; [:chefspec]
+</span><span class='line'>begin
+</span><span class='line'>  require 'rspec/core/rake_task'
+</span><span class='line'>    RSpec::Core::RakeTask.new(:chefspec) do |spec|
+</span><span class='line'>      spec.pattern = 'cookbooks/*/spec/default_spec.rb'
+</span><span class='line'>      spec.rspec_opts = ['-cfs']
+</span><span class='line'>  end
+</span><span class='line'>rescue LoadError =&gt; e
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Rakefileを上記な感じで記述して</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake
+</span><span class='line'>/Users/kenjiskywalker/.rbenv/versions/1.9.3-p392/bin/ruby -S rspec cookbooks/ntp/spec/default_spec.rb cookbooks/yum/spec/default_spec.rb -cfs
+</span><span class='line'>Compiling Cookbooks...
+</span><span class='line'>Compiling Cookbooks...
+</span><span class='line'>
+</span><span class='line'>ntp::defaults
+</span><span class='line'>Compiling Cookbooks...
+</span><span class='line'>  should ntp package install
+</span><span class='line'>Compiling Cookbooks...
+</span><span class='line'>  should ntp.conf setting
+</span><span class='line'>
+</span><span class='line'>yum::defaults platform version 5
+</span><span class='line'>  platform_version 5 yum include
+</span><span class='line'>
+</span><span class='line'>yum::defaults platform version 6
+</span><span class='line'>  platform_version 6 yum include
+</span><span class='line'>
+</span><span class='line'>Finished in 0.15855 seconds</span></code></pre></td></tr></table></div></figure>
+
+
+<p>みたいな感じで一発でテストを通すことができて便利っぽいです。<br/>
+以上、簡単なchefspec情報でした。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/23/ume/">梅</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-23T12:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>2013年の梅。</p>
+
+<h2>1</h2>
+
+<p><img src="http://farm9.staticflickr.com/8231/8580864765_2e0ca7bdba_c.jpg" alt="http://farm9.staticflickr.com/8231/8580864765_2e0ca7bdba_c.jpg" /></p>
+
+<h2>2</h2>
+
+<p><img src="http://farm9.staticflickr.com/8249/8580864607_bc21257d4a_c.jpg" alt="http://farm9.staticflickr.com/8249/8580864607_bc21257d4a_c.jpg" /></p>
+
+<h2>3</h2>
+
+<p><img src="http://farm9.staticflickr.com/8379/8580863993_48ac112547_c.jpg" alt="http://farm9.staticflickr.com/8379/8580863993_48ac112547_c.jpg" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/21/cloudwatch-fluentd-zabbix/">fluentdでCloudWatchのELBのメトリクスをZABBIXに渡す</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-21T17:05:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ELBのCloudWatchにあるメトリクスをZABBIXで取得するためにfluentdを利用しました。<br/>
+これでELBのアラートの設定もZABBIXで行えるので、通知の一元化が行えます。<br/>
+もちろんZABBIXでグラフにすることもできます。</p>
+
+<p><a href="https://rubygems.org/gems/fluent-plugin-zabbix">fluent-plugin-zabbix</a><br/>
+<a href="http://rubygems.org/gems/fluent-plugin-cloudwatch">fluent-plugin-cloudwatch</a></p>
+
+<p>この2つのfluentdプラグインを使います。</p>
+
+<h4>td-agent.conf</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;source&gt;
+</span><span class='line'>  type cloudwatch
+</span><span class='line'>  tag  cloudwatch
+</span><span class='line'>  aws_key_id  YOUR_AWS_KEY_ID
+</span><span class='line'>  aws_sec_key YOUR_AWS_SECRET/KE
+</span><span class='line'>  cw_endpoint monitoring.ap-northeast-1.amazonaws.com
+</span><span class='line'>
+</span><span class='line'>  namespace AWS/ELB
+</span><span class='line'>  metric_name HealthyHostCount,HTTPCode_Backend_2XX,HTTPCode_Backend_3XX,HTTPCode_Backend_4XX,HTTPCode_Backend_5XX,HTTPCode_ELB_4XX,Latency,RequestCount,UnHealthyHostCount
+</span><span class='line'>  dimensions_name LoadBalancerName
+</span><span class='line'>  dimensions_value YOUR_ELB_NAME
+</span><span class='line'>&lt;/source&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match cloudwatch&gt;
+</span><span class='line'>  type copy
+</span><span class='line'> &lt;store&gt;
+</span><span class='line'>  type             zabbix
+</span><span class='line'>  zabbix_server    ZABBIX SERVER IP
+</span><span class='line'>  host             [ZABBIXに設定するホスト名。なんでもいい(hoge-elb)]
+</span><span class='line'>  name_keys        HealthyHostCount, HTTPCode_Backend_2XX, HTTPCode_Backend_3XX, HTTPCode_Backend_4XX, HTTPCode_Backend_5XX, HTTPCode_ELB_4XX, Latency, RequestCount, UnHealthyHostCount
+</span><span class='line'>  add_key_prefix   cloudwatch
+</span><span class='line'> &lt;/store&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>ZABBIXの設定</h4>
+
+<p>ホスト名は<br/>
+<code>[ZABBIXに設定するホスト名。なんでもいい(hoge-elb)]</code>
+で指定したものを。</p>
+
+<p><img src="https://dl.dropbox.com/u/5390179/zabbix-cloudwatch.png" alt="https://dl.dropbox.com/u/5390179/zabbix-cloudwatch.png" /></p>
+
+<p>こんな感じでアイテムを設定します。</p>
+
+<ul>
+<li>キー：cloudwatch.HealthyHostCount</li>
+<li>データ型：整数とか浮動小数点型とか</li>
+<li>タイプ：ZABBIX Trapper</li>
+</ul>
+
+
+<p><img src="https://dl.dropbox.com/u/5390179/zabbix-cloud-triger.png" alt="https://dl.dropbox.com/u/5390179/zabbix-cloud-triger.png" /></p>
+
+<p>トリガーはこんな感じで<strong>UnHealthyHost</strong>が0よりも大きければwarningを<br/>
+みたいな監視が行えるようになります。</p>
+
+<p><strong>Latency</strong>や<strong>RequestCount</strong>なんかもグラフにできるので<br/>
+良い感じっぽいです。</p>
+
+<blockquote><p>画像小さいのウケますね</p></blockquote>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/03/21/znc-to-lingr/">ZNCでlingr-ircに接続する設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-21T00:25:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://blog.64p.org/entry/2013/03/13/195515">ゆるふわなかんじで perl の話題をするためのチャットルームをつくってみた - tokuhirom&rsquo;s blog.</a></p>
+
+<p>インターネットそんなに古くからやってないのでlingrとかあんまり知らなかったけど<br/>
+面白そうだから入ってみた。ブラウザでログインとかしたくなかったので</p>
+
+<p><a href="https://github.com/psychs/lingr-irc">psychs/lingr-irc</a></p>
+
+<p>使って</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ nohup ruby lig.rb &</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とかユルフワな感じでふぉわーどするようにしてる。<br/>
+長く動かすようだとdaemontools化した方が良い。<br/>
+今ならtokuhiromさんがつくったPerlバージョンの</p>
+
+<p><a href="https://github.com/tokuhirom/lingr-ircd">tokuhirom/lingr-ircd</a></p>
+
+<p>こっち使ってもいいかもしれない。</p>
+
+<blockquote><p>あとずっとハマってたのが、アカウントつくってIRCでつなげねー！<br/>
+ってなってたけど、1回ルームに入ってからじゃないとダメだった。</p></blockquote>
+
+<p>どうせならZNCで繋ぎたかったのでこんな感じでつないでる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>    &lt;Network lingr&gt;
+</span><span class='line'>            FloodBurst = 4
+</span><span class='line'>            FloodRate = 1.00
+</span><span class='line'>            IRCConnectEnabled = true
+</span><span class='line'>            Ident = [lingr account name]
+</span><span class='line'>            RealName = hotoke
+</span><span class='line'>            Server = 127.0.0.1 26667 [lingr password]
+</span><span class='line'>
+</span><span class='line'>            &lt;Chan #perl_jp&gt;
+</span><span class='line'>                    Buffer = 10
+</span><span class='line'>            &lt;/Chan&gt;
+</span><span class='line'>    &lt;/Network&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Ident</strong> にlingrのユーザ名入れて<br/>
+<strong>Server</strong> で指定するパスワードにlingr userのパスワード設定するだけだった。<br/>
+webadmin使えばNetworkの設定追加する時も再起動なしでいけるしすごい良い。</p>
+
+<p>ずっとwebadmin見れないなーって思ってたら<br/>
+@handlename先輩が「Chromeでは見れないよ」って<br/>
+アドバイスくれて、さすがオレたちのhandle先輩！ってなってた。</p>
+
+<p>ChromeだとブラウザでIRCポートとか接続しに行くと良くないアクセスみたいな判断して<br/>
+遮断しちゃうみたい。Firefoxだと開けた。この辺細かい情報は調べてない。</p>
+
+<p>調べてないって書いたらひろせおじさんがエントリー書いてくれた</p>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/hirose31/20130327/1364362758">ChromeでへんてこなポートにHTTPで繋ぎたい / (ひ)メモ</a></li>
+</ul>
+
+
+<p>hirose31++</p>
+
+<p>祝日なのにインターネットに関わってて体調悪くなってる。<br/>
+休肝日みたいな感じで休インターネット日みたいなの必要っぽい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

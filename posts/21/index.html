@@ -1,0 +1,747 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="bashの奥は深い。 ext-list.sh 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+#!/bin/bash dir=`pwd`
+list=`find ${dir} -type f -perm 755` # not = !
+# list=`find ${dir &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/21/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/27/get-extension-list/">対象のディレクトリの拡張子一覧を取得する方法と便利コマンド少々</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-27T03:00:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>bashの奥は深い。</p>
+
+<ul>
+<li>ext-list.sh</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/bash
+</span><span class='line'>
+</span><span class='line'>dir=`pwd`
+</span><span class='line'>list=`find ${dir} -type f -perm 755`
+</span><span class='line'>
+</span><span class='line'># not = !
+</span><span class='line'># list=`find ${dir} -type f ! -perm 755`
+</span><span class='line'>
+</span><span class='line'>for file in $list
+</span><span class='line'>do
+</span><span class='line'>    filename=`basename $file`
+</span><span class='line'>    ext=${filename##*.}
+</span><span class='line'>    ext_list=("${ext_list[@]}" ${ext})
+</span><span class='line'>done
+</span><span class='line'>
+</span><span class='line'>echo ${ext_list[@]} | tr ' ' '\n' | sort | uniq -c | sort -n</span></code></pre></td></tr></table></div></figure>
+
+
+<p>などというスクリプトを作成しておいて<br/>
+確認したいディレクトリでそのスクリプトを叩けば取得できます。</p>
+
+<p><strong>/usr/local/Cellar</strong>で実行したら</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% sh /tmp/ext-list.sh | tail -n10
+</span><span class='line'>   5 1
+</span><span class='line'>   5 6
+</span><span class='line'>   6 0
+</span><span class='line'>   7 py
+</span><span class='line'>  10 test
+</span><span class='line'>  11 sh
+</span><span class='line'>  16 pl
+</span><span class='line'>  27 result
+</span><span class='line'>  62 so
+</span><span class='line'> 116 la
+</span><span class='line'>['-']% </span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じの結果になりました。</p>
+
+<h3>便利コマンド</h3>
+
+<ul>
+<li>basename</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% basename /usr/local/bin/zsh
+</span><span class='line'>zsh
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>dirname</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% dirname /usr/local/bin/zsh
+</span><span class='line'>/usr/local/bin
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>シャープ</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% hoge=/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil.so
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% echo ${hoge##*.}
+</span><span class='line'>so
+</span><span class='line'>['-']% echo ${hoge#*.}
+</span><span class='line'>0.2/lib/zsh/zutil.so
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>パーセント</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% hoge=/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil.so
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% echo ${hoge%%.*}
+</span><span class='line'>/usr/local/Cellar/zsh/5
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% echo ${hoge%.*}
+</span><span class='line'>/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/26/immutableinfra-1/">Immutable Infrastructure Conference #1 に参加してきた #immutableinfra</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-26T00:54:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>とてもおもしろかったです。ありがとうございました！</p>
+
+<p>以下個人メモ</p>
+
+<h3>Chef</h3>
+
+<ul>
+<li>手順書の代わりにコードにする</li>
+<li>Communityモノは必要以上に汎用性を持たせて複雑化していたり<br/>
+include_recipeなど必要以上に密結合していたりするので基本的に利用しない</li>
+<li>複雑なコード、複雑な処理にならないようにする</li>
+<li>ShellScriptやSalt、Ansibleなどで問題が解決できるなら何でもいい</li>
+</ul>
+
+
+<h3>Golden Image</h3>
+
+<ul>
+<li>同じ環境のサーバが簡単にできる</li>
+<li>Golden Imageを常にゼロからつくれることが前提</li>
+<li>Golden Imageに変更があればドキュメントを更新する？</li>
+</ul>
+
+
+<h3>サービスを最新の状態にする</h3>
+
+<ul>
+<li>pull？</li>
+<li>rsync？</li>
+<li>ミドルウェアの変更は手動？</li>
+</ul>
+
+
+<h3>機能毎のサーバの理想型</h3>
+
+<ul>
+<li>インスタンスが勿体無いという理由で複数の機能を持たせている</li>
+<li>機能毎にインスタンスが分かれていれば疎結合で柔軟性を持たせることができる</li>
+<li>インスタンスに障害が発生した時に影響を最小限にしつつ、<br/>
+容易に同じインスタンスが作成できる</li>
+</ul>
+
+
+<h3>2014年にも存在している問題</h3>
+
+<ul>
+<li>秘伝のタレ化したサーバ</li>
+<li>更新されることのないサーバ構築手順書</li>
+<li>何が動いているかわからないサーバ</li>
+<li>担当者しかわからない構成</li>
+<li>入り組んだシンボリックリンク</li>
+<li>謎のパーミッション</li>
+<li>誰も知らないプロセス</li>
+</ul>
+
+
+<h3>Immutable Infrastructureで解決できるか</h3>
+
+<ul>
+<li>サーバは最小限の機能だけを持たせる</li>
+<li>機能が最小限なので何が動いているか理解しやすい</li>
+<li>サーバは最小限の機能だけを持つので<br/>
+サーバに問題があった場合、少ない工数で新しいサーバを起動できる</li>
+</ul>
+
+
+<h3>課題</h3>
+
+<ul>
+<li>サーバの状態のバージョニング管理(Docker以外で)</li>
+<li>メトリクスデータの管理方法(Host毎ではなくRole毎に管理する方法の確立)<br/>
+(@mirakuiさんとちょっと話したんですが、上手く動けばまたちゃんと書きます)</li>
+<li>機能毎のサーバとは言うものの、サーバが増えれば管理コストが増えたり<br/>
+費用が増えたりするので、そういうところに投資できる<br/>
+一部の余裕のある企業だけが導入できる話であって基本的な企業では不可能なのでは</li>
+</ul>
+
+
+<p>Immutable Infrastructure、海外だと<a href="http://techblog.netflix.com/2012/06/asgard-web-based-cloud-management-and.html">Netflix社</a>が圧倒的な感じでやっていて<br/>
+他にも<a href="http://www.slideshare.net/AmazonWebServices/arc205-28615575">こんな話</a>などちょくちょく見つかるけど、<br/>
+まだまだ色々試されている段階だと思う。</p>
+
+<p>個人的には、便利にする為の機械を扱う為に、1byteでも間違えると<br/>
+サービスが落ちたりデータが損失したりするのは原始的だと思う。<br/>
+本当なら影響の度合いによって、作業する前に祈りとか踊りとかする必要がある。<br/>
+そうすることで作業自体の重要性を理解して、集中することができる。</p>
+
+<p>しかし、現実はそんなことをしていたらサービスはどんどん腐っていく。</p>
+
+<p>例えば靴のことを考えると、<br/>
+靴を24時間365日履いて歩き続けたらどこかで問題が出ると思う。</p>
+
+<ul>
+<li>靴紐が解ける</li>
+<li>靴底に穴が開く</li>
+</ul>
+
+
+<p>その時に歩くのを止めるという選択肢がない場合</p>
+
+<ul>
+<li>別の靴を履く</li>
+<li>靴紐がほどけた時にすぐに結べるようにしておく</li>
+<li>靴底が簡単に外せて新品のものに簡単に交換できるとか</li>
+</ul>
+
+
+<p>そういうことを考える。</p>
+
+<p>技術によって、選択肢が増えた2014年の現在<br/>
+どのようにサービスを発展させて、運用を楽にするか考える良いタイミングだと思う。</p>
+
+<p>良いタイミングだけど、歴史を紐解くと<br/>
+革新的な出来事は常に一人の天才が行ってきたことで<br/>
+群衆はそれに感動する場合が多い。</p>
+
+<p>天才にはなれないけどああだこうだやるのはできるので、<br/>
+ああだこうだしていきたい。</p>
+
+<p>歴史を紐解くの紐と靴のくだりの紐は結果的に踏んだ感じになっただけです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/18/instance-store-backed-ami/">Instance Store-BackedのAMIをつくる</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-18T23:04:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-instance-store.html">Creating an Instance Store-Backed Linux AMI</a></p>
+
+<p>基本的にドキュメントに従って作業をすれば作成できます。<br/>
+気を付けなければいけない点が何点かあったのでシェアさせて頂きます。</p>
+
+<blockquote><p>ec2-api-tools 1.6.12.0<br/>
+ec2-bundle-vol 1.4.0.9 20071010<br/>
+ec2-upload-bundle 1.4.0.9 20071010</p></blockquote>
+
+<ul>
+<li>AMIをつくる元のインスタンスにて</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ec2-user ~]$ mkdir /tmp/cert
+</span><span class='line'>[ec2-user ~]$ cd /tmp/cert</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>手元からファイルを送る</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ scp -i my-private-key.pem /path/to/pk-HKZYKTAIG2ECMXYIBH3HXV4ZBEXAMPLE.pem \
+</span><span class='line'>ec2-user@ec2-203-0-113-25.compute-1.amazonaws.com:/tmp/cert/</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>image元となるデータを作成</li>
+</ul>
+
+
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/CLTRG-ami-bundle-vol.html">ami-bundle-vol</a>に書いてある通り<code>--no-filter</code>を付けないと<br/>
+所々ファイルが消えます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[root ec2-user]# $EC2_AMITOOL_HOME/bin/ec2-bundle-vol  --no-filter \
+</span><span class='line'>-k /tmp/cert/pk-HKZYKTAIG2ECMXYIBH3HXV4ZBEXAMPLE.pem \
+</span><span class='line'>-c /tmp/cert/cert-HKZYKTAIG2ECMXYIBH3HXV4ZBEXAMPLE.pem \
+</span><span class='line'>-u your_aws_account_id -r x86_64 -e /tmp/cert</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>S3にAMIの元となるデータをアップロードします</li>
+</ul>
+
+
+<p>AMIを作成するregionと合わせないとエラーになります。<br/>
+<code>--region</code>ではなく<code>--location</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ec2-user ~]$ ec2-upload-bundle -b my-s3-bucket/bundle_folder/bundle_name \
+</span><span class='line'>-m /tmp/image.manifest.xml -a your_access_key_id -s your_secret_access_key \
+</span><span class='line'>--location us-west-2</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>AMIにregisterします</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[ec2-user ~]$ ec2-register my-s3-bucket/bundle_folder/bundle_name/image.manifest.xml \
+</span><span class='line'>-n AMI_name -O your_access_key_id -W your_secret_access_key \
+</span><span class='line'>--region us-west-2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/16/ant-and-grasshopper/">アリとキリギリス</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-16T16:33:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>たくさんのすごい話と、すごいことをしているすごい人たちと話す機会があって<br/>
+アリとキリギリスについて考えることがあったので書いてみる。</p>
+
+<p>きっかけは色々あった。常に高い、正しいモチベーションを<br/>
+持ち合わせていたわけではない。</p>
+
+<p>今でもそうだ、何事に対してもその中で頂点を取ろうとか<br/>
+有名になりたいとか、そういう強い志を持ち合わせているわけではない。</p>
+
+<p>選択の連続が、奇跡的に、高いモチベーションを持ち合わす人たちと<br/>
+出会うことができた現在に繋がっている。<br/>
+もちろん、ある地点では自分の限界を越えてやろうと挑戦したこともあった。</p>
+
+<p>選択の連続が世界を生んだが、自分の手で何かを切り開いてきたことではない。<br/>
+一歩を踏み出すチャンスはあった、しかし現実はそう簡単に選択できることはない。<br/>
+覚悟を産むのは自信だ。自信を産むのは何だ？自信を産むものは行動だ。</p>
+
+<p>先人たちは常に自分に挑戦し続けた人だ。アリはキリギリスを意識したことはない。<br/>
+アリは常に最善を選択し、目標を持ち、その目標にチャレンジし続けてきた結果だ。</p>
+
+<p>キリギリスの結末は飢えて死ぬことだ。当然の結果だ。<br/>
+何もせずに何かを得ることはそう簡単なことではない。</p>
+
+<p>私はキリギリスだ。私を特定できるものは何もない。</p>
+
+<p>先人たちは常に未来を見せてくれる。先人たちは常にチャレンジした結果を<br/>
+我々に教えてくれる。世界は常に開かれていると教えてくれる。</p>
+
+<p>生まれた時から閉ざされた世界に生まれた人もいる。<br/>
+環境が閉ざされた世界だ。</p>
+
+<iframe width="420" height="315" src="//www.youtube.com/embed/DV1hQSt2hSE" frameborder="0" allowfullscreen></iframe>
+
+
+<p>人間は環境によって影響される、毎日が映画のような素晴らしい日々ではない。<br/>
+目を背けたくなるような現実が今日も目の前にぶら下がっている。</p>
+
+<p>先人たちは常にチャレンジをし続けてきたからあの世界があり、<br/>
+これからもきっと辿り着くことはできないだろう。</p>
+
+<p>キリギリスの結末は飢えて死ぬことだ。当然の結果だ。</p>
+
+<p>自分の置かれた環境が、妥協の連続しかなかったんだ。<br/>
+そういう人が周りにいたら気付けたのかもしれない。しかしもう遅い。<br/>
+仕方ない結果だ。目を背けたくなるような現実が<br/>
+今日も目の前にぶら下がっているからだ。</p>
+
+<p>環境の違いだ。仕方ない。仕方のないことなんだ。<br/>
+どこかのタイミングで気付けていれば、何か突き抜けたものがありさえすれば<br/>
+今いる世界は違うだろう。<br/>
+私もアリの世界にいたのかもしれない。しかし現実は違う。</p>
+
+<p>始めるのが遅かったんだ。自分が置かれた環境が<br/>
+妥協の連続を選択してきた人間しかいなかったんだ。仕方のない結果だ。</p>
+
+<p>私はキリギリスだ。私を特定できるものは何もない。<br/>
+キリギリスの結末は飢えて死ぬことだ。当然の結果だ。</p>
+
+<p>キリギリスが動き出すのはアリが動くよりも大変なことだ。<br/>
+妥協の連続に慣れきった身体が鉛のように身動きを妨げるから。</p>
+
+<p>キリギリスが動き出すのはアリが動くよりも大変なことだ。<br/>
+目標なんてものを持ったこともなければ、達成した経験もない。</p>
+
+<p>環境さえ違えば、別の道があったのかもしれない。<br/>
+私はキリギリスの中で生まれてキリギリスのように死んでいく。</p>
+
+<p>力があれば、経験があれば、知識が、体験があれば。</p>
+
+<p>人間はいつか死ぬ。キリギリスはアリにはなれない。<br/>
+私はキリギリスだ。キリギリスの結末は飢えて死ぬことだ。<br/>
+当然の結果だ。</p>
+
+<p>言い分はわかった。キリギリスはアリにはなれない。<br/>
+環境が悪かった。周りの人間が悪かった。そうだろう。<br/>
+結局お前はキリギリスとして何も行動をせず、<br/>
+困難を受け入れるわけでもなく、目の前の現実に目を背け<br/>
+誰に喜ばれるわけでもなく死んでいくんだ。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/15/201402-book/">2014/02読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-15T21:00:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB1-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194280%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194280" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51eRw7Xha8L._SL160_.jpg" width="104" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB1-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194280%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194280" target="_blank">基本にカエル英語の本 英文法入門 レベル1</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E7%9F%B3%E5%B4%8E%E7%A7%80%E7%A9%82" target="_blank">石崎秀穂</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">スリーエーネットワーク</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2007-07</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4883194280" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB2-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194299%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194299" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51BNO%2B%2BCijL._SL160_.jpg" width="105" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB2-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194299%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194299" target="_blank">基本にカエル英語の本 英文法入門 レベル2</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E7%9F%B3%E5%B4%8E%E7%A7%80%E7%A9%82" target="_blank">石崎秀穂</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">スリーエーネットワーク</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2007-09</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4883194299" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB3-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194302%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194302" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51Fo8Uu0GNL._SL160_.jpg" width="105" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E5%9F%BA%E6%9C%AC%E3%81%AB%E3%82%AB%E3%82%A8%E3%83%AB%E8%8B%B1%E8%AA%9E%E3%81%AE%E6%9C%AC-%E8%8B%B1%E6%96%87%E6%B3%95%E5%85%A5%E9%96%80-%E3%83%AC%E3%83%99%E3%83%AB3-%E7%9F%B3%E5%B4%8E-%E7%A7%80%E7%A9%82/dp/4883194302%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4883194302" target="_blank">基本にカエル英語の本 英文法入門 レベル3</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E7%9F%B3%E5%B4%8E%E7%A7%80%E7%A9%82" target="_blank">石崎秀穂</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">スリーエーネットワーク</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2007-10</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4883194302" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E7%A7%81%E6%9C%AC%E5%A4%AA%E5%B9%B3%E8%A8%98-01-%E3%81%82%E3%81%97%E3%81%8B%E3%81%8C%E5%B8%96-%E5%90%89%E5%B7%9D-%E8%8B%B1%E6%B2%BB-ebook/dp/B00G3QMEZY%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00G3QMEZY" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51b6JBk8CcL._SL160_.jpg" width="100" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E7%A7%81%E6%9C%AC%E5%A4%AA%E5%B9%B3%E8%A8%98-01-%E3%81%82%E3%81%97%E3%81%8B%E3%81%8C%E5%B8%96-%E5%90%89%E5%B7%9D-%E8%8B%B1%E6%B2%BB-ebook/dp/B00G3QMEZY%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00G3QMEZY" target="_blank">私本太平記 01 あしかが帖</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em"></div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2013-10-22</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/B00G3QMEZY" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

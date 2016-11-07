@@ -1,0 +1,50 @@
+---
+layout: post
+title: "2014/09読んだ本"
+published: true
+date: "2014-10-01T00:00:00+09:00"
+comments: true
+
+
+---
+
+Akamaiの本が面白かった。  
+BGP繋ぎこんで終わりの世界だと思っていたので  
+目からうろこだった。  
+  
+初速思考、[しばゆー君の記事](http://shibayu36.hatenablog.com/entry/2014/09/15/102509)で面白そうだなと思って読んだ。  
+正直手を抜いていたところがあったので、  
+そうだよな〜、ちゃんとやるべきだよな〜って思って  
+メモを取るようにした。あと、覚えておいた方がいいもの  
+調べておいた方がいいものを御座なりにしないよう心がけ始めた。  
+まずは手を動かす、細かいことでも取り敢えずやりきる習慣を身につけたいものだ。  
+  
+あとは、これからアプリケーション周りのコードを書くつもりなので  
+プログラミング周りの有名な2冊をささっと読んだ。  
+  
+新しい環境は既にAnsibleが入っていたので困らない限りはAnsible使って行ってみたい。  
+[mozaic.fm #7](http://mozaic.fm/post/95128341833/7-rest)がとても面白かったので例の書籍を今更読んでみた。  
+  
+Go、ちゃんとやりたいけどまず仕事で使いそうなRailsを学習しているので  
+10月はそこをカチっとやっていく。あと瞬間英作文の復習を合間にやっていけたらいいな。  
+  
+宇宙博の帰りに宇宙兄弟の最新刊が当日発売されているの知って  
+ちょっとテンション上がった。  
+  
+幕張メッセ、大ホールとかすっからかんで面白かった。  
+[レッドブルのこれ](https://flic.kr/p/pkXS8j)かっこよかった。  
+  
+カミさんがこれ本物？レプリカって書いてないよ？レプリカより本物が良い。  
+って言ってて本物志向だった。  
+  
+あとJAXAのTシャツ着て行ったらJAXAの美人広報さんに見つかって  
+チラチラTシャツ見られながらすごい熱心に  
+海中から引き上げられたH2ロケットの説明を色々話してくれて  
+めちゃくちゃJAXA好きみたいになってて結構恥ずかしかった。  
+  
+とても面白かった。
+  
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年09月 (9作品)</div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00MALTGDY" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51Ef9h7qfpL._SL75_.jpg" width="47" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00MALTGDY" target="_blank">入門Ansible</a><br /><a href="http://booklog.jp/author/%E8%8B%A5%E5%B1%B1%E5%8F%B2%E9%83%8E" target="_blank">若山史郎</a><br />読了日：09月06日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4774142042" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51qo6pgjaSL._SL75_.jpg" width="54" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4774142042" target="_blank">Webを支える技術 -HTTP、URI、HTML、そしてREST (WEB+DB PRESS plus)</a><br /><a href="http://booklog.jp/author/%E5%B1%B1%E6%9C%AC%E9%99%BD%E5%B9%B3" target="_blank">山本陽平</a><br />読了日：09月06日<br /><img src="http://booklog.jp/images/rank/5.gif" width="59" height="12" alt="評価5" /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4774166278" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61gSqezYgPL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4774166278" target="_blank">WEB+DB PRESS Vol.82</a><br /><a href="http://booklog.jp/author/%E5%B1%B1%E5%8F%A3%E5%BE%B9" target="_blank">山口徹</a><br />読了日：09月06日<br /><img src="http://booklog.jp/images/rank/5.gif" width="59" height="12" alt="評価5" /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00MIFE3BC" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51T4L8K2yLL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00MIFE3BC" target="_blank">アカマイ　知られざるインターネットの巨人 (角川ＥＰＵＢ選書)</a><br /><a href="http://booklog.jp/author/%E5%B0%8F%E5%B7%9D%E6%99%83%E9%80%9A" target="_blank">小川晃通</a><br />読了日：09月10日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4534050887" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41R-WuPO9yL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4534050887" target="_blank">初速思考 30代で一気に突き抜ける人の集中戦略</a><br /><a href="http://booklog.jp/author/%E9%87%91%E7%94%B0%E5%8D%9A%E4%B9%8B" target="_blank">金田博之</a><br />読了日：09月10日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4798111112" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51Y4DWH4N3L._SL75_.jpg" width="54" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4798111112" target="_blank">オブジェクト指向入門 第2版 原則・コンセプト (IT Architect’Archive クラシックモダン・コンピューティング)</a><br /><a href="http://booklog.jp/author/%E3%83%90%E3%83%BC%E3%83%88%E3%83%A9%E3%83%B3%E3%83%89%E3%83%BB%E3%83%A1%E3%82%A4%E3%83%A4%E3%83%BC" target="_blank">バートランド・メイヤー</a><br />読了日：09月18日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00JEYPPOE" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51LZpcbh3LL._SL75_.jpg" width="59" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00JEYPPOE" target="_blank">Code Complete 第2版 上　完全なプログラミングを目指して</a><br /><a href="http://booklog.jp/author/%E3%82%B9%E3%83%86%E3%82%A3%E3%83%BC%E3%83%96%E3%83%BB%E3%83%9E%E3%82%B3%E3%83%8D%E3%83%AB" target="_blank">スティーブ・マコネル</a><br />読了日：09月18日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4274066428" target="_blank"><img src="http://ecx.images-amazon.com/images/I/4151YFZ27NL._SL75_.jpg" width="57" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4274066428" target="_blank">プログラミングRuby 第2版 言語編</a><br /><a href="http://booklog.jp/author/Dave+Thomas" target="_blank">Dave Thomas</a><br />読了日：09月18日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4063883515" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61UN%2BOSffyL._SL75_.jpg" width="52" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4063883515" target="_blank">宇宙兄弟(24) (モーニング KC)</a><br /><a href="http://booklog.jp/author/%E5%B0%8F%E5%B1%B1%E5%AE%99%E5%93%89" target="_blank">小山宙哉</a><br />読了日：09月22日<br /></div><br style="clear:both;" /></div><div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+
+

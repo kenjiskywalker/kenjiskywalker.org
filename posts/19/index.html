@@ -1,0 +1,1099 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="Sensu導入と初期設定についての続きのエントリーになります。 pluginの書き方 http://sensuapp.org/docs/0.12/checks
+http://sensuapp.org/docs/0.12/adding_a_check 上記ドキュメントを参考にして頂くとわかる通り &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/19/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/03/sensu-monitoring-setting/">Sensuの監視の設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-03T02:59:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://blog.kenjiskywalker.org/blog/2014/05/02/newbie-sensu/">Sensu導入と初期設定について</a>の続きのエントリーになります。</p>
+
+<h3>pluginの書き方</h3>
+
+<p><a href="http://sensuapp.org/docs/0.12/checks">http://sensuapp.org/docs/0.12/checks</a><br/>
+<a href="http://sensuapp.org/docs/0.12/adding_a_check">http://sensuapp.org/docs/0.12/adding_a_check</a></p>
+
+<p>上記ドキュメントを参考にして頂くとわかる通り</p>
+
+<ul>
+<li>status code が<code>0</code>であれば<code>OK</code></li>
+<li>status code が<code>1</code>であれば<code>WARNING</code></li>
+<li>status code が<code>2</code>であれば<code>CRITICAL</code></li>
+<li>status code が<code>3</code>であれば<code>UNKNOWN</code></li>
+</ul>
+
+
+<p>という方法で監視を行います。</p>
+
+<p>コミュニティプラグインを確認すると、そのほとんどが<br/>
+<code>require 'sensu-plugin/check/cli'</code>を呼び出していることがわかります。</p>
+
+<h3><a href="https://github.com/sensu/sensu-plugin">https://github.com/sensu/sensu-plugin</a></h3>
+
+<p>check用のメソッド、metrics用のメソッドを<br/>
+それぞれ利用することが可能になります。<br/>
+まだ私はpluginを書いたことがないので、また書く機会があれば<br/>
+その時に改めて詳細を書きたいと思います。</p>
+
+<h3>気を付けなければならないこと</h3>
+
+<p>導入以前は、Sensuはアラートとメトリクスのデータを<br/>
+同じデータを利用して監視を行うことができると考えていたのですが<br/>
+これは誤りで、</p>
+
+<ul>
+<li>checkはcheck用のプラグイン</li>
+<li>metricsはmetircs用のプラグイン</li>
+</ul>
+
+
+<p>と分かれています。なかなかZABBIXのように万能にはいかないようです。</p>
+
+<h2>checks</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "checks": {
+</span><span class='line'>    "check_cpu": {
+</span><span class='line'>      "command": "/etc/sensu/plugins/check-cpu.rb -w 90 -c 100",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "occurrences": 5,
+</span><span class='line'>      "subscribers": ["all"],
+</span><span class='line'>      "handlers": ["hipchat", "mailer"]
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "checks": {
+</span><span class='line'>    "check_cpu_nervous": {
+</span><span class='line'>      "command": "/etc/sensu/plugins/check-cpu.rb -w 10 -c 30",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "subscribers": ["admin"],
+</span><span class='line'>      "handlers": ["hipchat", "mailer"]
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>&ldquo;check_cpu&rdquo;, &ldquo;check_cpu_nervous&rdquo;</li>
+</ul>
+
+
+<p>設定内容の名前です。<br/>
+Sensuは設定内容のjsonがdeep_mergeされるので、ここはユニークな値にしてください。<br/>
+よくあるミスとして、利用するプラグインは同じで<br/>
+上記のように設定内容が微妙に違うという場合、元のファイルをコピーし<br/>
+名前を変更するのを忘れて上書きされてしまい<br/>
+設定ファイルを作成したのに上手く認識されない。ということがよくあります。</p>
+
+<ul>
+<li>&ldquo;commnand&rdquo;</li>
+</ul>
+
+
+<p>実行するコマンドです。status codeとSTDOUT,STDERRのどちらかが返ってくれば、<br/>
+Rubyでなくとも、シェルスクリプトやGo、pythonなど何を利用しても問題ありません。<br/>
+nagios pluginと設定を合わせている為、nagiosのpluginを利用することが可能です。</p>
+
+<ul>
+<li>&ldquo;interval&rdquo;</li>
+</ul>
+
+
+<p>コマンドを実行する間隔です。</p>
+
+<ul>
+<li>&ldquo;occurrences&rdquo;</li>
+</ul>
+
+
+<p>監視通知の閾値です。例えば<code>occurrences</code>が<code>3</code>に設定されていた場合<br/>
+<em>3回継続してアラートの条件を満たした場合にアラート通知する。</em><br/>
+という条件になります。デフォルトは<code>1</code>で、1回でも<br/>
+アラートの条件を満たしたら通知が行われます。</p>
+
+<ul>
+<li>&ldquo;subscribers&rdquo;</li>
+</ul>
+
+
+<p>ここでホストとアラートの紐付けを行います。<br/>
+client側で設定されている<code>subscriptions</code>を見て<br/>
+<code>subscribers</code>と同じであれば、その監視を行う条件を満たし<br/>
+監視コマンドが実行されるようになります。</p>
+
+<ul>
+<li>&ldquo;handlers&rdquo;</li>
+</ul>
+
+
+<p>アラートの条件を満たしていた場合の通知先の設定です。<br/>
+上記設定例でいうと、HipChatとmailを利用します。<br/>
+通知先の設定内容はSensu server側にて行います。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/hipchat.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "handlers": {
+</span><span class='line'>    "hipchat": {
+</span><span class='line'>      "type": "pipe",
+</span><span class='line'>      "command": "/etc/sensu/handlers/hipchat.rb"
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "hipchat": {
+</span><span class='line'>    "apikey": "APIKEY",
+</span><span class='line'>    "apiversion": "v1",
+</span><span class='line'>    "room": "ROOM_NAME",
+</span><span class='line'>    "from": "FROM_NAME"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/mailer.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "handlers": {
+</span><span class='line'>    "mailer": {
+</span><span class='line'>      "type": "pipe",
+</span><span class='line'>      "command": "/etc/sensu/handlers/mailer.rb"
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "mailer": {
+</span><span class='line'>    "mail_from": "sensu@example.com",
+</span><span class='line'>    "mail_to": "alert@example.com",
+</span><span class='line'>    "smtp_address": "192.0.2.100",
+</span><span class='line'>    "smtp_port": "25",
+</span><span class='line'>    "smtp_domain": "example.com"
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のような設定を行います。</p>
+
+<h2>metircs</h2>
+
+<p>checkとの違いは<code>"type": "metric"</code>の有無の違いのみ。<br/>
+<code>"type": "metric"</code>が存在すると<em>handle_event</em>メソッドを実行します。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/metrics/metrics-cpu.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "checks": {
+</span><span class='line'>    "metrics_cpu_pcnt-usage": {
+</span><span class='line'>      "type": "metric",
+</span><span class='line'>      "command": "/etc/sensu/plugins/cpu-pcnt-usage-metrics.rb --scheme stats.:::name:::.cpu",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "subscribers": [ "all" ],
+</span><span class='line'>      "handlers": ["graphite"]
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>&ldquo;command&rdquo;</li>
+</ul>
+
+
+<p>基本的にmetircs系のプラグインはschemeの設定が可能になっている。<br/>
+これは大変便利で、上記設定例でいうと<br/>
+<code>stats.hostname.cpu.cpu_pcnt.*</code>のように
+スキーマを定義することが可能になります。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/graphite.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "handlers": {
+</span><span class='line'>    "graphite": {
+</span><span class='line'>      "type": "tcp",
+</span><span class='line'>      "socket": {
+</span><span class='line'>        "host": "127.0.0.1",
+</span><span class='line'>        "port": 2003
+</span><span class='line'>      },
+</span><span class='line'>      "mutator": "only_check_output"
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記graphiteの設定は、<em>pipe</em>、<em>tcp</em>や<em>udp</em>などを利用し<br/>
+handlerへ渡すことが可能なので、それを利用した設定内容になります。</p>
+
+<ul>
+<li>&ldquo;mutator&rdquo;: &ldquo;only_check_output&rdquo;</li>
+</ul>
+
+
+<p><code>only_check_output.rb</code>を見る限り、<br/>
+<code>check</code>の結果を<code>0</code>で返す(checkを行わない)オプションのようです。</p>
+
+<h2>client</h2>
+
+<ul>
+<li>/etc/sensu/conf.d/client.json</li>
+</ul>
+
+
+<blockquote><p><em>/etc/sensu/conf.d/</em>ディレクトリ配下であれば<br/>
+clientの設定のファイル名に決まりはありません。</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "client": {
+</span><span class='line'>    "name": "client_name",
+</span><span class='line'>    "address": "192.0.2.10",
+</span><span class='line'>    "subscriptions": ["all", "admin", "foo"]
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>&ldquo;name&rdquo;</li>
+</ul>
+
+
+<p>Sensu clientの名前です。</p>
+
+<ul>
+<li>&ldquo;address&rdquo;</li>
+</ul>
+
+
+<p>Sensu clientのアドレスです。<br/>
+IPアドレスでもDNS名でも何でも良いです。誤っていたからといって<br/>
+Sensu serverと接続できなくなるということはありません。</p>
+
+<ul>
+<li>&ldquo;subscriptions&rdquo;</li>
+</ul>
+
+
+<p>Sensu server側で行ったcheck、metricsに対する関連付けです。<br/>
+関連付けされる対象は<code>subscribers</code>です。</p>
+
+<h2>五月雨式ではありますが</h2>
+
+<p>監視をする上での細かい設定内容の解説でした。<br/>
+ドキュメントを読み進める上でのお役に立てれば幸いです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/02/newbie-sensu/">Sensu導入と初期設定について</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-02T14:48:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>Chef: 11.8.0<br/>
+sensu: 0.12.3<br/>
+RabbitMQ: 3.1.5<br/>
+erlang R14B-04.1.4<br/>
+Redis :2.6.17</p></blockquote>
+
+<h2>参考 :</h2>
+
+<p><a href="http://blog.glidenote.com/blog/2013/11/26/sensu/">監視ソフトをNagiosからSensuに切り替えて2ヶ月経ったのでまとめた - Glide Note</a><br/>
+<a href="http://inokara.hateblo.jp/entry/2014/03/03/013147">Amazon Linux 上に sensu-server を構築する（1）- ようへいの日々精進 XP</a></p>
+
+<p>特にようへいさんのブログはSensuのエントリーが多く、大変参考になります。<br/>
+ありがとうございます。</p>
+
+<h2>Sensu server + Sensu client のインストール</h2>
+
+<p>Chefを利用します。<br/>
+インストール自体は<a href="http://blog.kenjiskywalker.org/blog/2014/01/05/sensu-centos6-4-erlang-install/">RabbitMQでコケる記事</a>を参考にして下さい。<br/>
+2014/05/02 現在、RabbitMQのインストールで失敗することはなくなりました。
+また、下記に記載しますが、インストール先サーバのRubyのバージョンに環境が左右されないように<br/>
+<code>"use_embedded_ruby": true</code>としてembedded rubyを利用することをおすすめいたします。</p>
+
+<h4>tips</h4>
+
+<p><a href="https://github.com/kenjiskywalker/sensu-chef/commit/9377295e8c5fabf9631104b52a84ee6d10683383">sensu-chef から include_recipe&#8221;yum&#8221; 外す</a></p>
+
+<p>基本的にsensuをインストールするのに既存のものを破壊することはないのですが<br/>
+<code>sensu-chef</code>の中に<strong>include_recipe &ldquo;yum&rdquo;</strong>しているところがあり<br/>
+この設定をよしなにしないと<code>yum.conf</code>が書き換えられてしまいます。</p>
+
+<p>sensuのインストールは<code>sensu.repo</code>を追加して行うので「include_recipe &ldquo;yum&#8221;」は不要です。<br/>
+既存のサーバにインストールするときは気を付けて下さい。</p>
+
+<p>この前<a href="https://github.com/sensu/sensu-chef/pull/235">ryuzeeさんのpull request</a>が取り込まれて<br/>
+Amazon Linuxにインストールすることができるようになりました。</p>
+
+<ul>
+<li>sensu_server.json</li>
+</ul>
+
+
+<p>sensuとredisとrabbitmqをインストールしてください。</p>
+
+<ul>
+<li>sensu_server.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "sensu": {
+</span><span class='line'>      "use_embedded_ruby": true,
+</span><span class='line'>      "dashboard": {
+</span><span class='line'>          "user": "foo",
+</span><span class='line'>          "password": "bar"
+</span><span class='line'>      },
+</span><span class='line'>       "rabbitmq": {
+</span><span class='line'>          "host": "localhost",
+</span><span class='line'>          "port": 5671,
+</span><span class='line'>          "vhost": "/sensu",
+</span><span class='line'>          "password": "baz"
+</span><span class='line'>      },
+</span><span class='line'>      "node_subscriptions": [
+</span><span class='line'>          "sensu_server"
+</span><span class='line'>      ]
+</span><span class='line'>  },
+</span><span class='line'>  "run_list": ["recipe[sensu]", "recipe[sensu::redis]", "recipe[sensu::rabbitmq]"]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記内容でChefを廻せばインストールされるかと思います。<br/>
+パスワードやポートなどデフォルトの設定のままで問題なければ指定は不要です。</p>
+
+<h2>Sensu client のインストール</h2>
+
+<p>clientはsensu-clientだけが動いていれば大丈夫です。</p>
+
+<ul>
+<li>sensu_client.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "sensu": {
+</span><span class='line'>        "use_embedded_ruby": true,
+</span><span class='line'>        "node_subscriptions": [ "sensu_client" ],
+</span><span class='line'>        "use_embedded_ruby": true,
+</span><span class='line'>        "rabbitmq": {
+</span><span class='line'>              "host": "sensu-server",
+</span><span class='line'>              "port": 5671,
+</span><span class='line'>              "vhost": "/sensu",
+</span><span class='line'>              "password": "baz"
+</span><span class='line'>          }
+</span><span class='line'>
+</span><span class='line'>    }
+</span><span class='line'>  },
+</span><span class='line'>  "run_list": ["recipe[sensu]"]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記内容でChefを廻せばインストールされるかと思います。<br/>
+パスワードやポートなどデフォルトの設定のままで問題なければ指定は不要です。</p>
+
+<h2>Sensu serverの設定</h2>
+
+<p>Chefの動作が問題なければ<code>/etc/sensu/config.json</code>のファイルが作成されているかと思います。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/sensu-server start
+</span><span class='line'>$ tail -F /var/log/sensu/sensu-server.log</span></code></pre></td></tr></table></div></figure>
+
+
+<p>起動できることを確認してください。<br/>
+最初、すごい勘違いしていたのですが、sensu-apiはdashboardの為の機能で<br/>
+sensu-serverには必要ないと思っていたのですが、基本的なミドルウェア間のやり取りは<br/>
+sensu-apiを通して利用することになります。なので</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/sensu-api start
+</span><span class='line'>$ tail -F /var/log/sensu/sensu-api.log</span></code></pre></td></tr></table></div></figure>
+
+
+<p>として、sensu-apiを起動してください。<br/>
+これでsensu-clientからデータを受け付ける準備ができました。</p>
+
+<h2>Sensu clientの設定</h2>
+
+<p><a href="https://github.com/kenjiskywalker/sensu-client-plugin">https://github.com/kenjiskywalker/sensu-client-plugin</a></p>
+
+<p>多分みなさんこのような自前recipeを作成しているかと思いますが<br/>
+上記のrecipeを利用して<code>/etc/sensu/conf.d/client.json</code>という<br/>
+client用のjsonファイルを作成します。</p>
+
+<p>pluginの配布も上記cookbookを利用して配布しようかなと考えていますが<br/>
+Chefの実行自体のコストが地味に大きいので、配布自体はrsyncか何かで配布して<br/>
+Chefで冪等性を確保するのが効率良いのかなとも考えています。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/sensu-client start
+</span><span class='line'>$ tail -F /var/log/sensu/sensu-client.log</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>監視項目の追加(server)</h2>
+
+<ul>
+<li>監視に利用するプラグインのコマンド置き場</li>
+</ul>
+
+
+<p><code>/etc/sensu/plugins/</code></p>
+
+<ul>
+<li>通知に利用するプラグインのコマンド置き場</li>
+</ul>
+
+
+<p><code>/etc/sensu/handlers/</code></p>
+
+<ul>
+<li>監視内容の設定・通知の設定など</li>
+</ul>
+
+
+<p><code>/etc/sensu/conf.d/</code></p>
+
+<h2>ファイル構成</h2>
+
+<ul>
+<li>server</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/sensu/
+</span><span class='line'>├── conf.d
+</span><span class='line'>│   ├── checks
+</span><span class='line'>│   │   ├── check_cpu.json
+</span><span class='line'>│   │   ├── check_disk.json
+</span><span class='line'>│   │   ├── check_mailq.json
+</span><span class='line'>│   │   ├── check_memcached.json
+</span><span class='line'>│   │   ├── check_mongodb.json
+</span><span class='line'>│   │   ├── check_mongodb_replica.json
+</span><span class='line'>│   │   ├── check_proc_apache.json
+</span><span class='line'>│   │   ├── check_proc_nginx.json
+</span><span class='line'>│   │   ├── check_redis_info.json
+</span><span class='line'>│   │   ├── check_redis_info_slave.json
+</span><span class='line'>│   │   ├── check_smtp.json
+</span><span class='line'>│   ├── handlers
+</span><span class='line'>│   │   ├── graphite.json
+</span><span class='line'>│   │   ├── hipchat.json
+</span><span class='line'>│   │   └── mailer.json
+</span><span class='line'>│   ├── metrics
+</span><span class='line'>│   │   ├── metrics-cpu.json
+</span><span class='line'>│   │   ├── metrics-disk_usage.json
+</span><span class='line'>│   │   ├── metrics-net.json
+</span><span class='line'>│   │   ├── metrics-netstat-tcp.json
+</span><span class='line'>│   │   └── metrics-vmstat.json
+</span><span class='line'>│   └── README.md
+</span><span class='line'>├── config.json
+</span><span class='line'>├── extensions
+</span><span class='line'>├── handlers
+</span><span class='line'>│   ├── hipchat.rb
+</span><span class='line'>│   └── mailer.rb
+</span><span class='line'>├── mutators
+</span><span class='line'>├── plugins
+</span><span class='line'>└── ssl
+</span><span class='line'>    ├── cert.pem
+</span><span class='line'>    └── key.pem</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sensu serverを監視しないとういことはないので<br/>
+<code>/etc/sensu/plugins/</code>配下に監視用のコマンドを起きますが<br/>
+Sensu serverが動く最低限の設定例を記載します。</p>
+
+<p>Sensu serverはSensu clientにこれを実行してねという機能を持ち<br/>
+Sensu clientはserverから受け取ったjobを実行し<br/>
+serverへ結果を返す。という繰り返しを行います。</p>
+
+<ul>
+<li>client</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/sensu/
+</span><span class='line'>├── conf.d
+</span><span class='line'>│   ├── client.json
+</span><span class='line'>│   └── README.md
+</span><span class='line'>├── config.json
+</span><span class='line'>├── extensions
+</span><span class='line'>├── handlers
+</span><span class='line'>├── mutators
+</span><span class='line'>├── plugins
+</span><span class='line'>│   ├── check-cpu.rb
+</span><span class='line'>│   ├── check-disk.rb
+</span><span class='line'>│   ├── check-http.rb
+</span><span class='line'>│   ├── check-mailq.rb
+</span><span class='line'>│   ├── check-memcached-stats.rb
+</span><span class='line'>│   ├── check_mongodb.py
+</span><span class='line'>│   ├── check_mongo_replica_stat.rb
+</span><span class='line'>│   ├── check-procs.rb
+</span><span class='line'>│   ├── check-redis-info.rb
+</span><span class='line'>│   ├── cpu-pcnt-usage-metrics.rb
+</span><span class='line'>│   ├── disk-usage-metrics.rb
+</span><span class='line'>│   ├── metrics-net.rb
+</span><span class='line'>│   ├── metrics-netstat-tcp.rb
+</span><span class='line'>│   └── vmstat-metrics.rb
+</span><span class='line'>└── ssl
+</span><span class='line'>    ├── cert.pem
+</span><span class='line'>    └── key.pem</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Sensu server</h3>
+
+<ul>
+<li>監視の設定は必要(<em>/etc/sensu/conf.d/etc/</em>)</li>
+<li>監視のコマンドは必要ない(<em>/etc/sensu/plugins/</em>)</li>
+</ul>
+
+
+<h3>Sensu client</h3>
+
+<ul>
+<li>監視の設定は必要ない(<em>/etc/sensu/conf.d/etc/</em>)</li>
+<li>監視のコマンドは必要(<em>/etc/sensu/plugins/</em>)</li>
+</ul>
+
+
+<p>ということになります。</p>
+
+<p>まだ完全に動作を理解してるわけではないので<br/>
+次はもう少し確認した後、監視の仕組みについてまとめたいと思います。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/28/alice-in-secret/">Heartbleedの件があったので「秘密の国のアリス」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-28T21:11:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/gp/product/B00H372H18/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B00H372H18&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B00H372H18&Format=_SL250_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B00H372H18" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p><a href="http://heartbleed.com/">heartbleed</a>の件を持って、そもそもSSLというか<br/>
+暗号はどうやってやりとりされているんだ？という謎に光りを当てててくれる本でした。</p>
+
+<p>情報系の大学出てたり、根っからのプログラマだと理解しているのかもしれないけど<br/>
+コンピュータについて詳しくないので大変助かった。</p>
+
+<p>みんな当たり前に読んでるのかもしれないけど徳丸本</p>
+
+<p><a href="http://www.amazon.co.jp/gp/product/B00E5TJ120/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B00E5TJ120&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B00E5TJ120&Format=_SL250_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B00E5TJ120" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p>と合わせて必読なタイプの本だと思いました。<br/>
+おすすめです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/27/201403-book/">2014/03読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-27T17:00:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>忘れていた。しや君に教えてもらった<br/>
+ハートで感じる英文法は面白かった。</p>
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E7%94%9F%E5%91%BD%E4%BF%9D%E9%99%BA%E3%81%AE%E3%82%AB%E3%83%A9%E3%82%AF%E3%83%AA-%E6%96%87%E6%98%A5%E6%96%B0%E6%9B%B8-%E5%B2%A9%E7%80%AC-%E5%A4%A7%E8%BC%94/dp/4166607235%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4166607235" target="_blank"><img src="http://ecx.images-amazon.com/images/I/31Q5WY6ztHL._SL160_.jpg" width="92" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E7%94%9F%E5%91%BD%E4%BF%9D%E9%99%BA%E3%81%AE%E3%82%AB%E3%83%A9%E3%82%AF%E3%83%AA-%E6%96%87%E6%98%A5%E6%96%B0%E6%9B%B8-%E5%B2%A9%E7%80%AC-%E5%A4%A7%E8%BC%94/dp/4166607235%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4166607235" target="_blank">生命保険のカラクリ (文春新書)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%B2%A9%E7%80%AC%E5%A4%A7%E8%BC%94" target="_blank">岩瀬大輔</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">文藝春秋</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2009-10-17</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4166607235" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E2%80%9C%E3%81%8A%E8%8C%B6%E2%80%9D%E3%81%AF%E3%81%AA%E3%81%9C%E5%A5%B3%E3%81%AE%E3%82%82%E3%81%AE%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%9F%E3%81%8B%E2%80%95%E8%8C%B6%E9%81%93%E3%81%8B%E3%82%89%E8%A6%8B%E3%82%8B%E6%88%A6%E5%BE%8C%E3%81%AE%E5%AE%B6%E6%97%8F-%E5%8A%A0%E8%97%A4-%E6%81%B5%E6%B4%A5%E5%AD%90/dp/4314009721%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4314009721" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41PPS6ZRBDL._SL160_.jpg" width="100" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E2%80%9C%E3%81%8A%E8%8C%B6%E2%80%9D%E3%81%AF%E3%81%AA%E3%81%9C%E5%A5%B3%E3%81%AE%E3%82%82%E3%81%AE%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%9F%E3%81%8B%E2%80%95%E8%8C%B6%E9%81%93%E3%81%8B%E3%82%89%E8%A6%8B%E3%82%8B%E6%88%A6%E5%BE%8C%E3%81%AE%E5%AE%B6%E6%97%8F-%E5%8A%A0%E8%97%A4-%E6%81%B5%E6%B4%A5%E5%AD%90/dp/4314009721%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4314009721" target="_blank">“お茶”はなぜ女のものになったか―茶道から見る戦後の家族</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%8A%A0%E8%97%A4%E6%81%B5%E6%B4%A5%E5%AD%90" target="_blank">加藤恵津子</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">紀伊國屋書店</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2004-12</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4314009721" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E3%83%8F%E3%83%BC%E3%83%88%E3%81%A7%E6%84%9F%E3%81%98%E3%82%8B%E8%8B%B1%E6%96%87%E6%B3%95%E2%80%95NHK3%E3%81%8B%E6%9C%88%E3%83%88%E3%83%94%E3%83%83%E3%82%AF%E8%8B%B1%E4%BC%9A%E8%A9%B1-%E8%AA%9E%E5%AD%A6%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA-%E5%A4%A7%E8%A5%BF-%E6%B3%B0%E6%96%97/dp/4141892750%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4141892750" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51Y27HBKQSL._SL160_.jpg" width="106" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E3%83%8F%E3%83%BC%E3%83%88%E3%81%A7%E6%84%9F%E3%81%98%E3%82%8B%E8%8B%B1%E6%96%87%E6%B3%95%E2%80%95NHK3%E3%81%8B%E6%9C%88%E3%83%88%E3%83%94%E3%83%83%E3%82%AF%E8%8B%B1%E4%BC%9A%E8%A9%B1-%E8%AA%9E%E5%AD%A6%E3%82%B7%E3%83%AA%E3%83%BC%E3%82%BA-%E5%A4%A7%E8%A5%BF-%E6%B3%B0%E6%96%97/dp/4141892750%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4141892750" target="_blank">ハートで感じる英文法―NHK3か月トピック英会話 (語学シリーズ)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%A4%A7%E8%A5%BF%E6%B3%B0%E6%96%97" target="_blank">大西泰斗</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">日本放送出版協会</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2005-12</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4141892750" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E5%AE%87%E5%AE%99%E5%85%84%E5%BC%9F-23-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E5%B0%8F%E5%B1%B1-%E5%AE%99%E5%93%89/dp/4063872947%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063872947" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51JrEnXQevL._SL160_.jpg" width="105" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E5%AE%87%E5%AE%99%E5%85%84%E5%BC%9F-23-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E5%B0%8F%E5%B1%B1-%E5%AE%99%E5%93%89/dp/4063872947%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063872947" target="_blank">宇宙兄弟(23) (モーニングKC)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%B0%8F%E5%B1%B1%E5%AE%99%E5%93%89" target="_blank">小山宙哉</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">講談社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2014-03-20</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4063872947" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/24/ruby-certificate-verify-failed/">Rubyでconnect&#8217;: SSL_connect Returned=1 Errno=0 state=SSLv3 Read Server Certificate B: Certificate Verify Failed (OpenSSL::SSL::SSLError) が出た時の対応方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-24T23:00:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SensuでSSL使うプラグインでエラーが出ていた。<br/>
+その対処法を忘れないようにメモ。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$
+</span><span class='line'>$ /opt/sensu/embedded/bin/ruby -ropenssl -e "p OpenSSL::X509::DEFAULT_CERT_FILE"
+</span><span class='line'>"/opt/sensu/embedded/ssl/cert.pem"
+</span><span class='line'>$
+</span><span class='line'>$ ls /opt/sensu/embedded/ssl/cert.pem
+</span><span class='line'>ls: cannot access /opt/sensu/embedded/ssl/cert.pem: No such file or directory
+</span><span class='line'>$
+</span><span class='line'>$ wget -O /opt/sensu/embedded/ssl/cert.pem http://curl.haxx.se/ca/cacert.pem
+</span><span class='line'>--2014-04-24 08:10:09--  http://curl.haxx.se/ca/cacert.pem
+</span><span class='line'>Resolving curl.haxx.se... 80.67.6.50, 2a00:1a28:1200:9::2
+</span><span class='line'>Connecting to curl.haxx.se|80.67.6.50|:80... connected.
+</span><span class='line'>HTTP request sent, awaiting response... 200 OK
+</span><span class='line'>Length: 250283 (244K)
+</span><span class='line'>Saving to: “/opt/sensu/embedded/ssl/cert.pem”
+</span><span class='line'>
+</span><span class='line'>100%[============================================================================================================================================&gt;] 250,283      253K/s   in 1.0s
+</span><span class='line'>
+</span><span class='line'>2014-04-24 08:10:11 (253 KB/s) - “/opt/sensu/embedded/ssl/cert.pem” saved [250283/250283]
+</span><span class='line'>
+</span><span class='line'>$ ls /opt/sensu/embedded/ssl/cert.pem
+</span><span class='line'>/opt/sensu/embedded/ssl/cert.pem
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,596 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="参考エントリ 式年遷宮Infrastracture 「技術的負債」を問いなおす」というタイトルでJAWS DAYS 2014で話してきた - delirious thoughts どうでもいいこと 世界的な表現で言うBlueGreenDeploymentについて気付いたことがあったのでメモ。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/18/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/21/shikinensengoo-infrastractor-blue-green-deployment/">式年遷宮インフラストラクチャについて</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-21T01:53:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>参考エントリ</h2>
+
+<h5><a href="http://blog.kenjiskywalker.org/blog/2013/08/11/shikinen-sengoo-infrastracture/">式年遷宮Infrastracture</a></h5>
+
+<h5><a href="http://blog.kentarok.org/entry/2014/03/15/224227">「技術的負債」を問いなおす」というタイトルでJAWS DAYS 2014で話してきた - delirious thoughts</a></h5>
+
+<h2>どうでもいいこと</h2>
+
+<p>世界的な表現で言う<a href="http://martinfowler.com/bliki/BlueGreenDeployment.html">BlueGreenDeployment</a>について気付いたことがあったのでメモ。<br/>
+式年遷宮が行われた2013年の当日のメンテナンス時間について調べてみた。</p>
+
+<ul>
+<li><p>皇大神宮
+10月2日　午後1時から翌3日午前5時</p></li>
+<li><p>豊受大神宮
+10月5日　午後1時から翌6日午前5時</p></li>
+</ul>
+
+
+<p>16hour x 2days ということだったらしい。<br/>
+この間は神様もお休みしていたのだ。</p>
+
+<p>これを稼働率で計算すると</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>24(hour) * 365(days) * 20(years) = 175,200
+</span><span class='line'>(16hour * 2days)       / 175,200 = 0.0001826484
+</span><span class='line'>100 - 0.0001826484               = 99.9998173516</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>99.9998%</strong>の稼働率となる。わけはなく<br/>
+そもそも24時間稼働しているわけではないのでそんな計算は成り立たない。</p>
+
+<p>何が言いたいのかというと、ガチで毎日切り替わるような<br/>
+BlueGreenDeploymentなシステムをつくるなら<br/>
+少なくとも毎日アクセスの少ない30分ぐらいはダウンしてても良いのではないか。<br/>
+それぐらい許容しないで運用でカバーするのは大変なんじゃないかと思った。</p>
+
+<p>何でもかんでもノンストップのコストって結構あるよなって感じるけど<br/>
+実際はどうなんだろ。神様も儀式立てて切り替えているんだし<br/>
+その辺インターネットのシステムも儀式立てて本番環境切り替えた方が良いのではないか。</p>
+
+<p>なんてことを日本酒飲みながら考えていたりした。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/12/autoscaling-ami-attach-ephemeral-disk/">AWSのAutoScalingで起動するインスタンスにEhemeral Diskをattachする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-12T18:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>AutoScalignのLaunch ConfigurationでEphemeral DiskをAttachすることが可能です。<br/>
+存在しない場合は無視されるので、下記のように4本など<br/>
+事前に指定しておくのが良いかと思います。</p>
+
+<ul>
+<li>create-launch-configuration</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ aws autoscaling --region REGION create-launch-configuration --launch-configuration-name AUTOSCALINGLAUNGCONFIG \
+</span><span class='line'>                  --image-id AMI \
+</span><span class='line'>                  --instance-type m1.small \
+</span><span class='line'>                  --key-name KEYNAME \
+</span><span class='line'>                  --security-groups sg-00000000 sg-00000001 \
+</span><span class='line'>                  --block-device-mappings '[ {"DeviceName":"/dev/sdb","VirtualName":"ephemeral0"}, \
+</span><span class='line'>                                             {"DeviceName":"/dev/sdc","VirtualName":"ephemeral1"}, \
+</span><span class='line'>                                             {"DeviceName":"/dev/sdd","VirtualName":"ephemeral2"}, \
+</span><span class='line'>                                             {"DeviceName":"/dev/sde","VirtualName":"ephemeral3"} \
+</span><span class='line'>                                           ]'
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>aws autoscaling &ndash;region REGION describe-launch-configurations</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>    "LaunchConfigurations": [
+</span><span class='line'>        {
+</span><span class='line'>            "UserData": null,
+</span><span class='line'>            "EbsOptimized": false,
+</span><span class='line'>            "LaunchConfigurationARN": "arn:aws:ARN:REGION:NUM:launchConfiguration:NUM:launchConfigurationName/AUTOSCALINGLAUNGCONFIG",
+</span><span class='line'>            "InstanceMonitoring": {
+</span><span class='line'>                "Enabled": true
+</span><span class='line'>            },
+</span><span class='line'>            "ImageId": "AMI",
+</span><span class='line'>            "CreatedTime": "2014-01-01T01:00:00.000Z",
+</span><span class='line'>            "BlockDeviceMappings": [
+</span><span class='line'>                {
+</span><span class='line'>                    "DeviceName": "/dev/sdd",
+</span><span class='line'>                    "VirtualName": "ephemeral2"
+</span><span class='line'>                },
+</span><span class='line'>                {
+</span><span class='line'>                    "DeviceName": "/dev/sdb",
+</span><span class='line'>                    "VirtualName": "ephemeral0"
+</span><span class='line'>                },
+</span><span class='line'>                {
+</span><span class='line'>                    "DeviceName": "/dev/sde",
+</span><span class='line'>                    "VirtualName": "ephemeral3"
+</span><span class='line'>                },
+</span><span class='line'>                {
+</span><span class='line'>                    "DeviceName": "/dev/sdc",
+</span><span class='line'>                    "VirtualName": "ephemeral1"
+</span><span class='line'>                }
+</span><span class='line'>            ],
+</span><span class='line'>            "KeyName": "KEYNAME",
+</span><span class='line'>            "SecurityGroups": [
+</span><span class='line'>                "sg-00000000",
+</span><span class='line'>                "sg-00000001"
+</span><span class='line'>            ],
+</span><span class='line'>            "LaunchConfigurationName": "AUTOSCALINGLAUNGCONFIG",
+</span><span class='line'>            "KernelId": null,
+</span><span class='line'>            "RamdiskId": null,
+</span><span class='line'>            "InstanceType": "m1.small"
+</span><span class='line'>        }
+</span><span class='line'>    ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>突然Ephemeral DiskがAttachされない状態で起動するようになっててハマりました。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/12/sensu-multi-settings/">Sensuで一つのJSONファイルに複数の設定を記述する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-12T16:40:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>deep_mergeなのでこう書けます。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/checks/check_hoge.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "checks": {
+</span><span class='line'>    "check_hoge_one": {
+</span><span class='line'>      "command": "/etc/sensu/plugins/check-hoge.rb -C 1",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "subscribers": ["all"],
+</span><span class='line'>      "handlers": ["hipchat", "mailer"]
+</span><span class='line'>    },
+</span><span class='line'>    "check_hoge_two": {
+</span><span class='line'>      "command": "/etc/sensu/plugins/check-hoge.rb -C 2",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "subscribers": ["all"],
+</span><span class='line'>      "handlers": ["hipchat", "mailer"]
+</span><span class='line'>    },
+</span><span class='line'>    "check_hoge_three": {
+</span><span class='line'>      "command": "/etc/sensu/plugins/check-hoge.rb -C 3",
+</span><span class='line'>      "interval": 60,
+</span><span class='line'>      "subscribers": ["all"],
+</span><span class='line'>      "handlers": ["hipchat", "mailer"]
+</span><span class='line'>    }
+</span><span class='line'>  }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/09/autoscaling-tag/">AWSのAutoScalingGroupにタグを付けて起動されるEC2インスタンスにもタグが自動的に付与される</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-09T18:00:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://aws.typepad.com/aws_japan/2014/05/tag-your-auto-scaled-ec2-instances.html">【AWS発表】オートスケールされたEC2インスタンスにタグ付け可能に - Amazon Web Services ブログ</a></p>
+
+<p>こちらの便利機能が追加されたので早速設定してみました。</p>
+
+<h2><a href="http://docs.aws.amazon.com/cli/latest/reference/autoscaling/create-or-update-tags.html">AWS CLI - create-or-update-tags</a></h2>
+
+<blockquote><p>&ndash;tags ResourceId=string,ResourceType=string,Key=string,Value=string,PropagateAtLaunch=boolean</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>aws --region REGION autoscaling create-or-update-tags \
+</span><span class='line'>    --tags ResourceId=AUTOSCALINGGROUP_NAME, \
+</span><span class='line'>           ResourceType=auto-scaling-group, \
+</span><span class='line'>           Key=KEY, \
+</span><span class='line'>           Value=VALUE, \
+</span><span class='line'>           PropagateAtLaunch=true</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ResourceId</li>
+</ul>
+
+
+<p>tagを設定するAutoScalingGroupの名前を指定</p>
+
+<ul>
+<li>ResourceType</li>
+</ul>
+
+
+<p>他に何の設定があるのかは不明ですが<code>auto-scaling-group</code>を指定しておけば問題ないかと</p>
+
+<ul>
+<li>Key</li>
+</ul>
+
+
+<p>tagのKey名</p>
+
+<ul>
+<li>Value</li>
+</ul>
+
+
+<p>tagのValue名</p>
+
+<ul>
+<li>PropagateAtLaunch</li>
+</ul>
+
+
+<p>設定したtagをAutoScalingGroupによって起動されたEC2インスタンスにも適用させるかどうか</p>
+
+<p>上記の設定を行うことで、AutoScalingGroupにて起動されたEC2インスタンスへ<br/>
+タグが適用されるようになります。大変便利ですね。ありがとうございます。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/05/04/201404-book/">2014/04読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-04T11:37:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>秘密の国のアリスは本当に面白かった。</p>
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E6%96%B0%E7%89%88%E6%9A%97%E5%8F%B7%E6%8A%80%E8%A1%93%E5%85%A5%E9%96%80-%E7%A7%98%E5%AF%86%E3%81%AE%E5%9B%BD%E3%81%AE%E3%82%A2%E3%83%AA%E3%82%B9-%E7%B5%90%E5%9F%8E-%E6%B5%A9-ebook/dp/B00H372H18%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00H372H18" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51njmeGhpKL._SL160_.jpg" width="117" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E6%96%B0%E7%89%88%E6%9A%97%E5%8F%B7%E6%8A%80%E8%A1%93%E5%85%A5%E9%96%80-%E7%A7%98%E5%AF%86%E3%81%AE%E5%9B%BD%E3%81%AE%E3%82%A2%E3%83%AA%E3%82%B9-%E7%B5%90%E5%9F%8E-%E6%B5%A9-ebook/dp/B00H372H18%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00H372H18" target="_blank">新版暗号技術入門　秘密の国のアリス</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E7%B5%90%E5%9F%8E%E6%B5%A9" target="_blank">結城浩</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">SBクリエイティブ株式会社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2013-12-04</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/B00H372H18" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E3%82%AD%E3%83%B3%E3%82%B0%E3%83%80%E3%83%A0-33-%E3%83%A4%E3%83%B3%E3%82%B0%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%97%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9DIGITAL-%E5%8E%9F%E6%B3%B0%E4%B9%85-ebook/dp/B00JB6MKNE%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00JB6MKNE" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61R9IocV0wL._SL160_.jpg" width="120" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E3%82%AD%E3%83%B3%E3%82%B0%E3%83%80%E3%83%A0-33-%E3%83%A4%E3%83%B3%E3%82%B0%E3%82%B8%E3%83%A3%E3%83%B3%E3%83%97%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9DIGITAL-%E5%8E%9F%E6%B3%B0%E4%B9%85-ebook/dp/B00JB6MKNE%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00JB6MKNE" target="_blank">キングダム 33 (ヤングジャンプコミックスDIGITAL)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%8E%9F%E6%B3%B0%E4%B9%85" target="_blank">原泰久</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">集英社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2014-01-17</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/B00JB6MKNE" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E9%80%B2%E6%92%83%E3%81%AE%E5%B7%A8%E4%BA%BA-13-%E8%AC%9B%E8%AB%87%E7%A4%BE%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9-%E8%AB%AB%E5%B1%B1-%E5%89%B5/dp/4063950441%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063950441" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51SFLJl2H%2BL._SL160_.jpg" width="100" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E9%80%B2%E6%92%83%E3%81%AE%E5%B7%A8%E4%BA%BA-13-%E8%AC%9B%E8%AB%87%E7%A4%BE%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9-%E8%AB%AB%E5%B1%B1-%E5%89%B5/dp/4063950441%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063950441" target="_blank">進撃の巨人(13) (講談社コミックス)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E8%AB%AB%E5%B1%B1%E5%89%B5" target="_blank">諫山創</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">講談社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2014-04-09</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4063950441" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/GIANT-KILLING-31-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E3%83%84%E3%82%B8%E3%83%88%E3%83%A2/dp/406388323X%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D406388323X" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61IUk7JRAwL._SL160_.jpg" width="105" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/GIANT-KILLING-31-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E3%83%84%E3%82%B8%E3%83%88%E3%83%A2/dp/406388323X%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D406388323X" target="_blank">GIANT KILLING(31) (モーニングKC)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E3%83%84%E3%82%B8%E3%83%88%E3%83%A2" target="_blank">ツジトモ</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">講談社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2014-04-23</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/406388323X" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E3%81%B8%E3%81%86%E3%81%92%E3%82%82%E3%81%AE-18-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E5%B1%B1%E7%94%B0-%E8%8A%B3%E8%A3%95/dp/4063883256%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063883256" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41kIi4KK3VL._SL160_.jpg" width="105" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E3%81%B8%E3%81%86%E3%81%92%E3%82%82%E3%81%AE-18-%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0KC-%E5%B1%B1%E7%94%B0-%E8%8A%B3%E8%A3%95/dp/4063883256%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4063883256" target="_blank">へうげもの(18) (モーニングKC)</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E5%B1%B1%E7%94%B0%E8%8A%B3%E8%A3%95" target="_blank">山田芳裕</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">講談社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2014-04-23</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4063883256" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

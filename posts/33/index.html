@@ -1,0 +1,673 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="配列の要素数と配列の中身を渡したかっただけだったのに
+2時間ぐらい時間つかいました。
+\@hogeを@hogeで渡してたからだった。 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/33/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/22/xslate-array/">Text::Xslateで配列</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-22T13:30:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>配列の要素数と配列の中身を渡したかっただけだったのに<br/>
+2時間ぐらい時間つかいました。<br/>
+<code>\@hoge</code>を<code>@hoge</code>で渡してたからだった。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/env perl
+</span><span class='line'>
+</span><span class='line'>use strict;
+</span><span class='line'>use warnings;
+</span><span class='line'>use utf8;
+</span><span class='line'>use 5.010; 
+</span><span class='line'>
+</span><span class='line'>use Text::Xslate;
+</span><span class='line'>use Data::Section::Simple;
+</span><span class='line'>
+</span><span class='line'>my @hoge = qw/foo bar baz hage/;
+</span><span class='line'>
+</span><span class='line'>my $vpath = Data::Section::Simple-&gt;new()-&gt;get_data_section();
+</span><span class='line'>my $tx = Text::Xslate-&gt;new(path =&gt; [$vpath]);
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>my $template = $tx-&gt;render("template.tx",
+</span><span class='line'>    {
+</span><span class='line'>        hage =&gt; \@hoge
+</span><span class='line'>    }
+</span><span class='line'>);
+</span><span class='line'>
+</span><span class='line'>printf $template;
+</span><span class='line'>
+</span><span class='line'>1;
+</span><span class='line'>
+</span><span class='line'>__DATA__
+</span><span class='line'>
+</span><span class='line'>@@ template.tx
+</span><span class='line'>
+</span><span class='line'>: for $hage -&gt; $item {
+</span><span class='line'>   item is &lt;: $item :&gt;
+</span><span class='line'>   Number is &lt;: $~item.index :&gt;
+</span><span class='line'>
+</span><span class='line'>: }</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ちなみにRubyだと</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/env ruby
+</span><span class='line'>
+</span><span class='line'>require 'erb'
+</span><span class='line'>
+</span><span class='line'>hoge = ["foo", "bar", "baz", "hage"]
+</span><span class='line'>hage = 1
+</span><span class='line'>
+</span><span class='line'>puts ERB.new(DATA.read).result(binding)
+</span><span class='line'>
+</span><span class='line'>__END__
+</span><span class='line'>&lt;% hoge.each_with_index do |h, i| %&gt;item is &lt;%= h %&gt;
+</span><span class='line'>number is &lt;%= i %&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;% end %&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じでした。<br/>
+<code>$~item.index</code>と<code>each_with_index</code>を覚えました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>my @list = (1, 4, 3, 2, 4, 6);
+</span><span class='line'>say $#list;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>$#</code>、趣きがありますね。<br/>
+Perl、どこか東山文化の風を感じますね。</p>
+
+<h3>追記</h3>
+
+<blockquote class="twitter-tweet"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> hage =&gt; に @ hoge を渡すと、展開されるから例えば @ hoge が ( dame, leon, bar) だとすると、( hage =&gt; &#39;dame&#39;, leon =&gt; &#39;bar&#39;) になるお</p>&mdash; soh335 (@soh335) <a href="https://twitter.com/soh335/statuses/381652207138902016">September 22, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+<blockquote class="twitter-tweet"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> 合ってるよ。あと$<a href="https://twitter.com/search?q=%23%E3%81%AF%E8%AA%AD%E3%81%BF%E3%81%A5%E3%82%89%E3%81%84%E3%81%AE%E3%81%A7%E9%85%8D%E5%88%97%E3%81%AE%E8%A6%81%E7%B4%A0%E6%95%B0%E3%82%92%E6%B1%82%E3%82%81%E3%82%8B&amp;src=hash">#は読みづらいので配列の要素数を求める</a> scalar @ foo を使うほうがいいですね</p>&mdash; fujiwara (@fujiwara) <a href="https://twitter.com/fujiwara/statuses/381653503489220608">September 22, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+<blockquote class="twitter-tweet"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> 基本リファレンスでやってれば解決</p>&mdash; 柴崎優季 (@shiba_yu36) <a href="https://twitter.com/shiba_yu36/statuses/381652730680332289">September 22, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>リファレンスで渡さないとハッシュ化します。おぼえました。<br/>
+要素数求める場合は<code>scalar(@hoge)</code>使います。<code>scalar()</code>おぼえました。<br/>
+ありがとうございます。</p>
+
+<p>某面白法人、YAPCスピーカーが多くて大変素晴らしい環境です。<br/>
+某はてな社、YAPCスピーカーが多くて大変素晴らしい環境です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/20/serverspec-with-cron/">本番環境でのserverspecの運用方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-20T02:18:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>ミドルウェアの管理はchefを使用している</li>
+<li>サーバへのデプロイはcapistranoを使用している</li>
+</ul>
+
+
+<p>上記2点が当てはまる場合、serverspecの使い方として</p>
+
+<ul>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/07/13/serverspec-chef-cookbook/">Testing #chef Cookbook by #serverspec #devops / さよならインターネット</a></li>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/07/31/serverspec-attribute/">serverspecでchefのjsonを読み込む / さよならインターネット</a></li>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/06/30/serverspec-jenkins/">serverspecをJenkins氏で回す場合について / さよならインターネット</a></li>
+</ul>
+
+
+<p>上記エントリーを参考にして頂ければchef + serverspecである程度の<br/>
+インフラストラクチャの構築とテストが行えるかと思います。</p>
+
+<p>また、こちらのエントリーのように、chefのrecipeからserverspecのテスト自体を<br/>
+生成してしまうという素晴らしいアイデアもあります。最高ですね。</p>
+
+<h4><a href="http://tily.hatenablog.com/entry/2013/07/21/150404">Chef のレシピから serverspec のテストを自動生成する chef-serverspec-handler という gem を作ってみた</a></h4>
+
+<p>で、結局使えるのはわかったのですが、どのように運用すべきか<br/>
+というところは各所で試行錯誤中かと思います。<br/>
+一例として、基礎的な内容ではありますが、現在試している内容を<br/>
+記載してみようと思います。</p>
+
+<h2>前提条件</h2>
+
+<blockquote><p>capistranoを実行するサーバは、対象の全サーバのrootアカウントに<br/>
+鍵認証でノーパスワードでログインが可能である</p></blockquote>
+
+<h2>chefをcapistranoでdeploy時にテスト</h2>
+
+<p>capistranoの設定にserverspecの項目を増やすことで<br/>
+chef-soloなどが実行された後に、serverspecが実行されます。<br/>
+これは台数が多いと時間が結構かかるので良し悪しがあるかと思います。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  desc "run serverspec"
+</span><span class='line'>  task :run_serverspec do
+</span><span class='line'>    `cd /root/chef/ ; rake`
+</span><span class='line'>  end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>cronで定時実行</h2>
+
+<p><code>/etc/cron.d/serverspec</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 */1 * * * root cd /root/chef/ ; rake 1&gt; /dev/null</span></code></pre></td></tr></table></div></figure>
+
+
+<p>正常終了であればログを破棄、エラーが出力された際には<br/>
+メールにて通知するようにします。</p>
+
+<h2>とても簡単なことですが</h2>
+
+<p>取り敢えずの導入としては、上記２つの方法を実践しています。<br/>
+新しくミドルウェアを追加した際にテストがコケたりするので<br/>
+なかなか面白いです。</p>
+
+<p>serverspecでどのような監視をしているかなど話し合うの面白そうですよね。</p>
+
+<p>以上、ご参考になれば幸いです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/20/logfile-backup-to-s3/">ログファイルをS3にバックアップする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-20T00:44:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>デイリーのログファイルをS3へバックアップしたいという事案はよくあると思います。<br/>
+一つの例として私の方法を載せますので、よりよい方法などあれば教えて頂きたいです。</p>
+
+<h2>backup dir</h2>
+
+<p><code>/var/log/backup/nginx/YYYYMMDD/</code><br/>
+<code>/var/log/backup/app/YYYYMMDD/</code></p>
+
+<h2>backup file</h2>
+
+<p><code>/var/log/backup/nginx/20130918/access.20130918-00.log.gz</code>
+<code>/var/log/backup/nginx/20130918/access.20130918-01.log.gz</code>
+<code>/var/log/backup/nginx/20130918/access.20130918-02.log.gz</code><br/>
+&hellip;</p>
+
+<p><code>/var/log/backup/app/20130918/app.20130918-00.log.gz</code>
+<code>/var/log/backup/app/20130918/app.20130918-01.log.gz</code>
+<code>/var/log/backup/app/20130918/app.20130918-02.log.gz</code><br/>
+&hellip;</p>
+
+<p>上記ディレクトリに、それぞれ<br/>
+nginx、アプリケーションのログがあるとします。</p>
+
+<p>nginxのログはtd-agentによって</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;store&gt;
+</span><span class='line'>  type file_alternative
+</span><span class='line'>  time_slice_format %Y%m%d-%H
+</span><span class='line'>  path /var/log/backup/nginx/access
+</span><span class='line'>  output_data_type attr:msg
+</span><span class='line'>  localtime
+</span><span class='line'>  output_include_time false
+</span><span class='line'>&lt;/store&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/var/log/backup/nginx/access.20130919-00.log</code>
+<code>/var/log/backup/nginx/access.20130919-01.log</code>
+<code>/var/log/backup/nginx/access.20130919-02.log</code></p>
+
+<p>このように吐き出され、それを日付が変わったのち</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/sh
+</span><span class='line'>
+</span><span class='line'># set -e
+</span><span class='line'>DATE=`date --date '1 days ago' +%Y%m%d`
+</span><span class='line'>BASE="/var/log/backup"
+</span><span class='line'>for type in nginx app;
+</span><span class='line'>do
+</span><span class='line'>  DIR="${BASE}/${type}/${DATE}"
+</span><span class='line'>  mkdir "${DIR}"
+</span><span class='line'>  mv ${BASE}/${type}/*${DATE}*log "${DIR}"
+</span><span class='line'>  nice gzip --fast ${DIR}/*log
+</span><span class='line'>done</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こちらのアーカイブスクリプトによって</p>
+
+<p><code>/var/log/backup/nginx/YYYYMMDD/</code></p>
+
+<p>というディレクトリを作成し、その配下へ昨日分のログファイルをgzip化し退避します。<br/>
+そして、退避したログファイルをS3へバックアップします。</p>
+
+<p>バックアップは<a href="http://s3tools.org/s3cmd">s3cmd</a>を利用しても良いですが<br/>
+先日1.0のリリースが行われた<a href="https://github.com/aws/aws-cli">awscli</a>を利用します。</p>
+
+<h2>backup script</h2>
+
+<div><script src='https://gist.github.com/6625841.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p><code>aws s3 cp --recursive</code>によって昨日分のログファイルディレクトリを<br/>
+再帰的にバックアップを行い、ファイルの整合性を担保する為に<br/>
+ファイルサイズの比較を行っています。(可能であればMD5チェックを行いたい)</p>
+
+<p>このように、深夜に昨日分のログファイルをS3にバックアップするようにしています。</p>
+
+<p>以上、ご参考になれば幸いです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/19/imayaro-bot/">Imayaro-bot</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-19T15:55:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://d.hatena.ne.jp/sugyan/20130207/1360168005">げんきだしてbot / すぎゃーんメモ</a></p>
+
+<p>類似品つくらせてもらいました。</p>
+
+<blockquote class="twitter-tweet"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> いますぐやりましょう！</p>&mdash; imayaro_bot (@imayaro_bot) <a href="https://twitter.com/imayaro_bot/statuses/380513922539081728">September 19, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<ul>
+<li><a href="https://github.com/kenjiskywalker/imayaro-bot">https://github.com/kenjiskywalker/imayaro-bot</a></li>
+<li><a href="https://twitter.com/imayaro_bot">https://twitter.com/imayaro_bot</a></li>
+</ul>
+
+
+<p>やりたいことを今やろう！って気概になると思います。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/18/dzr-spd/">ビンディングペダルにした</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-18T23:20:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="http://www.specialized.com/us/en/bikes/archive/2010/allez/allezelitecompact">SPECIARIZED ALLEZ COMPACT 2010</a></h3>
+
+<p>というロードバイクに載っているのですが、今までは<br/>
+<a href="http://www.amazon.com/Power-Grips-Sport-Pedal-Strap/dp/B001FYGGLC">Power Grips</a>というものを使っていたのですが<br/>
+一度は試してみようということで、ビンディングペダルに換装してみました。</p>
+
+<h3>買ったもの</h3>
+
+<ul>
+<li><a href="http://www.amazon.co.jp/gp/product/B001EIEH0G/ref=as_li_ss_tl?ie=UTF8&camp=247&creative=7399&creativeASIN=B001EIEH0G&linkCode=as2&tag=13nightcrows-22">SHIMANO(シマノ) PD-A530 シルバー ペダル 片面SPD</a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B001EIEH0G" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></li>
+<li><a href="http://www.tokyolife.co.jp/shop/twstore/C22-DZR-midnigh">DZR　midnight</a></li>
+</ul>
+
+
+<p>結果的には普段履きの靴としてもイケるので、SPDペダルは両面でもよかったなって感じです。<br/>
+街乗りでもそこそこ面白いけど高速巡航の時の爽快感が全然違う感じです。</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/spd.png" alt="https://dl.dropboxusercontent.com/u/5390179/spd.png" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

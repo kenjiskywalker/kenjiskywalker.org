@@ -1,0 +1,17 @@
+---
+layout: post
+title: "2014/06読んだ本"
+published: true
+date: "2014-07-26T16:22:00+09:00"
+comments: true
+
+
+---
+
+わかりやすいJavaはなんかわかりやすかった。  
+ハイパフォーマンスブラウザネットワーキングは  
+全部覚えてられるほどスペック良くないので  
+チューニングが必要な時にリファレンスみたいな感じで読むのが正解だと思う。  
+  
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年06月 (5作品)</div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00HKDWP58" target="_blank"><img src="http://ecx.images-amazon.com/images/I/510BA3W5WLL._SL75_.jpg" width="58" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00HKDWP58" target="_blank">わかりやすいJava オブジェクト指向編</a><br /><a href="http://booklog.jp/author/%E5%B7%9D%E5%A0%B4%E9%9A%86" target="_blank">川場隆</a><br />読了日：06月21日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4873116767" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51x2sA8N%2BTL._SL75_.jpg" width="59" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4873116767" target="_blank">ハイパフォーマンス ブラウザネットワーキング ―ネットワークアプリケーションのためのパフォーマンス最適化</a><br /><a href="http://booklog.jp/author/Ilya+Grigorik" target="_blank">Ilya Grigorik</a><br />読了日：06月22日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3QSM5U" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51kl8YTyY%2BL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3QSM5U" target="_blank">私本太平記 04 帝獄帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：06月26日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3QUOQU" target="_blank"><img src="http://ecx.images-amazon.com/images/I/512Pbog6cML._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3QUOQU" target="_blank">私本太平記 05 世の辻の帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：06月26日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3QWOW2" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51TeXZ56ALL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3QWOW2" target="_blank">私本太平記 06 八荒帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：06月26日<br /></div><br style="clear:both;" /></div><div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>  
+  

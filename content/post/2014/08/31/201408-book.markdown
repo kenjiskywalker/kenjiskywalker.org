@@ -1,0 +1,19 @@
+---
+layout: post
+title: "2014/07読んだ本"
+published: true
+date: "2014-08-31T16:06:00+09:00"
+comments: true
+
+
+---
+
+booklogというサービス、デザインと使い勝手が本当に良い。  
+  
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年08月 (4作品)</div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4063951413" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51q59350wWL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4063951413" target="_blank">進撃の巨人(14) (講談社コミックス)</a><br /><a href="http://booklog.jp/author/%E8%AB%AB%E5%B1%B1%E5%89%B5" target="_blank">諫山創</a><br />読了日：08月09日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4041013992" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51qjvPhcfgL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4041013992" target="_blank">多重人格探偵サイコ (20) (カドカワコミックス・エース)</a><br /><a href="http://booklog.jp/author/%E7%94%B0%E5%B3%B6%E6%98%AD%E5%AE%87" target="_blank">田島昭宇</a><br />読了日：08月09日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4053031737" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41OmvQ2%2BeZL._SL75_.jpg" width="54" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4053031737" target="_blank">成川の「なぜ」がわかる英文法の授業 (大学受験Nシリーズ)</a><br /><a href="http://booklog.jp/author/%E6%88%90%E5%B7%9D%E5%8D%9A%E5%BA%B7" target="_blank">成川博康</a><br />読了日：08月17日<br /></div><br style="clear:both;" /></div><div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4774165786" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51XYWUokftL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4774165786" target="_blank">フロントエンドエンジニア養成読本 [HTML、CSS、JavaScriptの基本から現場で役立つ技術まで満載! ] (Software Design plus)</a><br /><a href="http://booklog.jp/author/%E6%96%89%E8%97%A4%E7%A5%90%E4%B9%9F" target="_blank">斉藤祐也</a><br />読了日：08月17日<br /></div><br style="clear:both;" /></div><div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>  
+  
+この前  
+[GitHubで最近更新されていないプロジェクトを簡単に見分けるChrome Extentionつくった](http://blog.kenjiskywalker.org/blog/2014/06/09/github-add-color-to-recently-not-update-file/)  
+で  
+JavaScriptやってみたけど基本的なこと全然理解していなかったので  
+本読んだ。JavaScriptとか目に見えて変わるものは面白い。

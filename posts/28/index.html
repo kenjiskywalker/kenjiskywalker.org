@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="Monitoring Casual Talk in Kyotoへ参加してきました。 Zabbix::Senriganを成仏させるために発表の機会を求めていたら、 モニカジが京都で開催されるとのことだったので
+夜行バスや新幹線などの費用を調べて、京都へ旅行へ行ってきました。
+参加できたのも、@ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/28/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/01/monitoringcasual-kyoto/">Monitoring Casual Talk in Kyoto 行ってきた #monitoringcasual</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-01T18:53:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.zusaar.com/event/1377006">Monitoring Casual Talk in Kyoto</a>へ参加してきました。</p>
+
+<p><a href="https://github.com/kenjiskywalker/p5-Zabbix-Senrigan/">Zabbix::Senrigan</a>を成仏させるために発表の機会を求めていたら、 <br/>
+モニカジが京都で開催されるとのことだったので<br/>
+夜行バスや新幹線などの費用を調べて、京都へ旅行へ行ってきました。<br/>
+参加できたのも、@shiba_yu36君がお家に宿泊させてくれたからでした。<br/>
+紅葉シーズンど真ん中でどこも空いていなかったので助かりました。<br/>
+ありがとうございました！</p>
+
+<p>また、京都に行くきっかけをつくってくれた@shoichimasuharaさん<br/>
+ありがとうございました！おつかれさまでした！</p>
+
+<p>発表、デモサーバとZabbixサーバを立ててる自宅サーバにつながらなくて<br/>
+カミさんに連絡したら、ブレーカー落としちゃったって聞いて大変でした。<br/>
+こういうこともあるのだなと、バックアップ体制について考えなおすきっかけになりました。</p>
+
+<p>まともに発表できないのなら、せめて京都繋がりで有意義な発表をすべく<br/>
+私の大好きな<a href="http://blog.kenjiskywalker.org/blog/2013/07/18/kiga-to-sensou/">応仁の乱の話</a>でもしようかと考えたのですが<br/>
+40分ぐらいかかるようだったので、みなさんに聞きたいですか？と確認し<br/>
+誰ひとり手を挙げてくれなかったので、普通にみんなのイメージに委ねながら発表をしました。</p>
+
+<p><a href="https://gist.github.com/kenjiskywalker/7703670">発表内容</a></p>
+
+<p>完結に書くと、何かツールを使っていて<br/>
+そのツールがイケていないなら自分で何かつくってフォローしようという話でした。<br/>
+もちろんそのツールがプラガブルならどんどん組み込めばいいし<br/>
+フォローツールのせいで管理するソフトウェアが多くなってくるなら<br/>
+もともと利用しているソフトウェアを見直すべきです。</p>
+
+<p>というように、状況も厳しく、内容も軽めだったのに<br/>
+全体的にDocker、Sensu、Immutable Infrastructureなど<br/>
+ウェブサービスのミドルウェア構成管理のモダンな話が多く<br/>
+2014年を迎えるにあたっての技術者としての姿勢を正さなければならない状態でした。<br/>
+関西で気軽に勉強会に参加すると返り討ちにあう可能性が高いです。<br/>
+関東各位は気を引き締めて参加されたし。</p>
+
+<p>会場ははてな社だったのですが、無限にビールが出てきて最高の勉強会環境でした。<br/>
+近くの席に@hitode909っていう人がいていよいよ無限にビール出てくる状況でした。</p>
+
+<p>飲み会、挙動不審の若者がいて、何やってるんですか？って聞いたら<br/>
+鹿児島出身の大学生で広島の大学に通っていて、京都に旅行へ来ていて<br/>
+調べたら宿泊しているホテルの隣りのビルがはてな社だったので<br/>
+遊びに行ってみたら勉強会していたので参加した。みたいなこと言っていて<br/>
+&ldquo;持ってる&#8221;青年でした。はてなのサービスには興味がないって言って<br/>
+ずっともりすさんにLINEのサービスのこと熱心に聞いてて面白かったです。</p>
+
+<p>そういえば、帰り際に興味深い体験がありました。<br/>
+新幹線までの時間、鴨川で遊んでいると、川沿いにある長屋が目に飛び込んできて<br/>
+長屋、火事になると隣家が燃えて大変になる。そこで編み出されたのが<br/>
+長屋を壊しやすくして、火事になればすぐに取り壊して建て替えるシステムだったな。<br/>
+はて、これはもしやImmutable Infrastructureではないのか。<br/>
+不要になったものを取り壊し、新しくつくりなおす。<br/>
+まさにImmutable Infrastructureでした。<br/>
+我々日本人は、ちょんまげの頃に既に<br/>
+Immutable Infrastructureの概念を取り入れていたのです。</p>
+
+<p>まるで新しい概念のように受け入れていたimmutable infrastructureは<br/>
+車輪の再発明にすぎなかったことに、おろどきを隠せませんでした。</p>
+
+<p>Blue-Green Developmentも式年遷宮の再発明なので、いい加減我々は<br/>
+インターネットからもう少し視野を広げて物事を考えなければ<br/>
+ならないのではないかと実感した京都旅行でした。</p>
+
+<p>このように学びを得るために毎年京都に来たいです。<br/>
+ありがとうございました。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/29/work-shift/">「ワーク・シフト 孤独と貧困から自由になる働き方の未来図<2025>」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-29T04:04:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>何故これを借りたのか全く覚えてなくて、<br/>
+流し読み程度で読んでいたのですが大変興味深い書籍でした。<br/>
+将来の自分の社会との関わり方に疑問を抱いていたので<br/>
+今後の物事の指標を置くための補助としての情報として、役立てられればと想います。</p>
+
+<div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/%E3%83%AF%E3%83%BC%E3%82%AF%E3%83%BB%E3%82%B7%E3%83%95%E3%83%88-%E2%80%95-%E5%AD%A4%E7%8B%AC%E3%81%A8%E8%B2%A7%E5%9B%B0%E3%81%8B%E3%82%89%E8%87%AA%E7%94%B1%E3%81%AB%E3%81%AA%E3%82%8B%E5%83%8D%E3%81%8D%E6%96%B9%E3%81%AE%E6%9C%AA%E6%9D%A5%E5%9B%B3%E3%80%882025%E3%80%89-%E3%83%AA%E3%83%B3%E3%83%80%E3%83%BB%E3%82%B0%E3%83%A9%E3%83%83%E3%83%88%E3%83%B3/dp/4833420163%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4833420163" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51q5jtSKEQL._SL160_.jpg" width="103" height="150" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/%E3%83%AF%E3%83%BC%E3%82%AF%E3%83%BB%E3%82%B7%E3%83%95%E3%83%88-%E2%80%95-%E5%AD%A4%E7%8B%AC%E3%81%A8%E8%B2%A7%E5%9B%B0%E3%81%8B%E3%82%89%E8%87%AA%E7%94%B1%E3%81%AB%E3%81%AA%E3%82%8B%E5%83%8D%E3%81%8D%E6%96%B9%E3%81%AE%E6%9C%AA%E6%9D%A5%E5%9B%B3%E3%80%882025%E3%80%89-%E3%83%AA%E3%83%B3%E3%83%80%E3%83%BB%E3%82%B0%E3%83%A9%E3%83%83%E3%83%88%E3%83%B3/dp/4833420163%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4833420163" target="_blank">ワーク・シフト ― 孤独と貧困から自由になる働き方の未来図〈2025〉</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/%E3%83%AA%E3%83%B3%E3%83%80%E3%83%BB%E3%82%B0%E3%83%A9%E3%83%83%E3%83%88%E3%83%B3" target="_blank">リンダ・グラットン</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em">プレジデント社</div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2012-07-28</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/4833420163" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+<p>訳者あとがきの一節が大変すばらしくまとまっていましたので<br/>
+備忘録の為に抜粋させて頂きます。</p>
+
+<blockquote><p>略) 私たちが働き方をどう&lt;シフト(転換)>させるべきかを提案する。</p>
+
+<p>&lt;第一のシフト>は、一つの企業の中でしか通用しない技能で満足せず、高度な専門技能を磨き、ほかの多くの人たちから自分を差別化するために「自分」ブランドを築くこと</p>
+
+<p>&lt;第二のシフト>は、難しい課題に取り組む上で頼りになる少人数の盟友グループ(ポッセ)と、
+イノベーションの源泉となるバラエティに富んだ大勢の知り合いのネットワーク(ビッグアイデア・クラウド)、そしてストレスを和らげるための打算のない友人関係(自己再生のコミュニティ)
+という、三種類の人的ネットワークをはぐくむこと</p>
+
+<p>&lt;第三のシフト>は、大量消費主義を脱却し、家庭や趣味、社会貢献などの面で充実した創造的経験をすることを重んじる生き方に転換すること。</p></blockquote>
+
+<p>物質的にも精神的にも裕福ではなかった時代があって、<br/>
+物質的に裕福になった一部の地域ができてきた時に、精神的に裕福になるためには<br/>
+過剰に物質的欲求を満たすのではなく、社会貢献や、家族、仲間との時間を過ごす<br/>
+方向に流れていくのは自然かなとは思います。</p>
+
+<p>先人の経験や慣例から得られるものと、これから先の大きな変化と<br/>
+自分が何ができるか、というものを並べて、常に問いながら、<br/>
+なるべくならその選択が、自分を含めた環境にとって<br/>
+最善の選択になるように生きていければよいですね。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/20/click-to-unsubscribe/">メルマガ、サイトにログインしないと配信停止できないの</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-20T23:15:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://harknesslabs.com/post/66570723467/stop-doing-this-crap-on-your-startups-website">Stop doing this crap on your startups website</a></p>
+
+<blockquote><p>1: One click unsubscribe<br/>
+Many sites butcher this process. You should have a link to 1-click unsubscribe at both the top and bottom of all emails you send. Don’t settle for “log in to unsubscribe” - Yes, its legal for transactional emails but its still stupid. You (the webmaster) will be the only one hurt when your user just marks you as spam instead because he doesn’t remember his password. If you want to ensure email deliver-ability for those who want your emails, there is zero benefit in hiding or making the unsubscribe difficult.</p></blockquote>
+
+<p>「別れる前に最後に１回だけデートしよ。」みたいになってるので止めましょう(意訳)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/16/hhk/">Happy Hacking Keyboardがコーヒーを飲んだら</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-16T14:35:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote class="twitter-tweet"><p>HHKの恐怖体験です <a href="http://t.co/JAjpk5mFob">pic.twitter.com/JAjpk5mFob</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/401584902602100736">November 16, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>水で洗って終わりではありません。ゴムの部分に大量の水が付着しています。<br/>
+水ジャブ放置だけではなく、必ず分解して乾かしましょう。</p>
+
+<blockquote class="twitter-tweet"><p>東プレさん、あともう少しだけケーブル伸ばしてくれ <a href="http://t.co/YLfiYxNxP4">pic.twitter.com/YLfiYxNxP4</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/401585581777371136">November 16, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>外すことはできるのですが、この部分もう少し長いとメンテが楽になるかと思います。<br/>
+東プレさん、よろしくお願いいたします。</p>
+
+<p>分解したきっかけは<code>e</code>がチャタりだして、おいおいマジかよ&hellip;<br/>
+って分解してみたら〜でした。ゴムと基板の間の他に、キートップの隙間にも<br/>
+水分が溜まっていて、アチャ〜って感じでした。</p>
+
+<p>全部掃除して、ハメ直して試したら今度は<code>x</code>がチャタってて、終わった&hellip;<br/>
+ってなったんですけど、基板とゴムの部分のネジを弛めて、<br/>
+バネが真ん中の方に来るようにカタカタ揺らして、基板のネジを全部強く締め直したら直りました。</p>
+
+<p>日頃の行いよくしてこ</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/16/think-simple/">「Think Simple」を読んだ。おすすめです</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-16T12:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/gp/product/B008YOHMCS/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B008YOHMCS&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B008YOHMCS&Format=_SL160_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B008YOHMCS" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p>何か事ある度に「人が集まるとろくなことがない」って口にしているのですが<br/>
+その解がこの本には詰まっていました。</p>
+
+<iframe src="http://widgets.itunes.apple.com/widget.html?c=jp&brc=FFFFFF&blc=FFFFFF&trc=FFFFFF&tlc=FFFFFF&d=&t=&m=movie&e=movie&w=250&h=300&ids=727851606&wt=discovery&partnerId=&affiliate_id=&at=&ct=" frameborder=0 style="overflow-x:hidden;overflow-y:hidden;width:250px;height: 300px;border:0px"></iframe>
+
+
+<p>人間と人間とがぶつかり合い、意見を戦わせることで良いものができるという研磨機おじさんの話はこちらを参照ください。</p>
+
+<p>読んでいて引っかかったところをメモ。</p>
+
+<h2>進め方の話</h2>
+
+<blockquote><p>プロジェクトの成果の質は、そこにかかわる人間の多さに反比例する</p></blockquote>
+
+<p>渋い。</p>
+
+<blockquote><p>プロジェクトの成果の質は、最終的な意思決定者がかかわる程度に比例する</p></blockquote>
+
+<p>渋い。</p>
+
+<blockquote><p>プロセスが王様のときに、アイデアはけっして王様にはなれない。プロセスの段階を増やせば増やすほど、完成品の質が悪くなることは、&lt;常識>を働かせればわかるだろう。</p></blockquote>
+
+<p>厳しい。</p>
+
+<blockquote><p>フォーカスグループによって製品をデザインするのはとてもむずかしい。多くの場合、一般の人は実際に製品を見るまで、何がほしいかわかっていないからだ。</p></blockquote>
+
+<p>有名なヤツだ。消費者を馬鹿にしているんじゃなくて、クリエイティブなものをつくるのに、人の意見ばかり気にするんじゃなくて、徹底的に最高のものをつくろうとすることが大切だ。みたいな話だった。</p>
+
+<blockquote><p>ピクサー内部で彼(ジョブズ)は、クリエイティブな会議には出席しないように求められていた。さもなければ、ライターやアーティストが大量に造反する恐れがあったからだ。</p></blockquote>
+
+<p>案外言うこと聞くんだなって笑ってた。</p>
+
+<h2>話しあいの話</h2>
+
+<blockquote><p>シンプルさはせっかちだ。いきなり本題に入って、大事なことに集中したがる。</p></blockquote>
+
+<p>会議で完結に要点を伝えないとすぐに追い出されるの、相当きついと思う。</p>
+
+<blockquote><p>クライアントを結論に導くことと、クライアントを愚か者のように扱うことはわずかな違いしかない。おそらくスティーブが「導かれる」ことに反応したのもそこに理由があったのだろう。スティーブに対する最良のアプローチは、ただ事実をテーブルの上に並べて、議論を始めることだった。</p></blockquote>
+
+<p>資料音読会議に対するアンサーソングだ。</p>
+
+<blockquote><p>最後に「何かご質問は？」と問いかけても、議論を推奨しているわけではない。最終的に、ほとんどのビジネスは人間関係の問題になる。堅苦しくないプレゼンで正直な議論をすることは、人間関係を深める道であり、それがよりよい結果をもたらすのだ。</p></blockquote>
+
+<p>建設的だ。</p>
+
+<h2>アイデアの話</h2>
+
+<blockquote><p>アップルの競争相手が売る電話機は、ほとんどの名前が覚えられないほど難しい。その理由は、あまりにもモデルの数が多いのと、それらがブランド名や電話の機能とは関連がないからだ。</p>
+
+<p>iPadが披露されたときに、ライバル各社は特徴がないと批判した。〜中略〜iPadに「欠けている」ものをすべて足して、魅力的な機器にしようとした。ところが、そうした足し算では売れなかった。消費者にとって魅力的に映ったのは、アップルがデザイン段階でおこなう引き算だったのだ。</p></blockquote>
+
+<p>万物のすべてにおいて、デコ盛りしてよかった試しなんてほとんどない。</p>
+
+<blockquote><p>たとえば、スティーブの承認を得た広告を作っていて、撮影中や編集中にもっといいアイデアを思いついたとしよう。そのとき私たちは、いつでも新しいアイデアをスティーブに提案することができた。彼もそれを期待しているようで、新しい広告が議題にあがることを楽しみにしていた。</p></blockquote>
+
+<p>ロストインタビューで言っていた研磨機の話だ。</p>
+
+<blockquote><p>スティーブはそうした「幸運なアクシデント」、つまり、ランダムに起こる話しあいを信じていた。</p></blockquote>
+
+<p>研磨機おじさんだ。</p>
+
+<blockquote><p>プロセスによって効率を上げることはできる。だが、イノベーションは人が廊下で出くわしたり、夜の10時半に電話をかけあったりするところから生まれるのだ。新しいアイデアを思いついたとか、ある問題に関して行き詰まっている原因に思い当たったとかいう理由でね。最高にクールで新しいものを考えだした人間が、そのアイデアについて意見を聞きたいと思って電話をかけた6人が集まる。そこで臨時会議がはじまるというわけだ。</p></blockquote>
+
+<p>研磨機だ。</p>
+
+<blockquote><p>シンプルさのためには、あなたも否定的な答えに遭ったときには精査するとよい。その「ノー」はたんにあなたの要求が高すぎることを言っているだけかもしれない。しかしそう要求することが、普通以上の結果を得るためには必要なのだ。</p></blockquote>
+
+<p>プロジェクト単位で取り入れるとデスマ礼賛になる。これは自分自身への要求へ置き換えるのが正解だ。</p>
+
+<blockquote><p>ある問題を解決しようとして、最初に考えだした解決策がとても複雑だったとしよう。ほとんどの人はそこで考えるのをやめてしまう。だが、そこでやめずに考えつづけて、タマネギの皮をむくようにムダなものをそぎ落としていくと、とても洗練されたシンプルな解決策にたどり着くことがよくある。</p></blockquote>
+
+<p>良い話だ。</p>
+
+<blockquote><p>イノベーションをするときに、ミスをすることがある。最良の手は、すぐにミスを認めて、イノベーションのほかの面をどんどん進めることだ。</p></blockquote>
+
+<p>肝に銘じよう。</p>
+
+<h2>プロダクトの話</h2>
+
+<blockquote><p>PCメーカーのように、無秩序にモデルを増やし、各モデルの違いがわからない状態とは依然としてまったく違う。</p></blockquote>
+
+<p>やめてあげて。</p>
+
+<blockquote><p>アップルが極端に走る理由は、顧客が箱に触れた瞬間から品質のよさを感じてもらいたいからだ。</p></blockquote>
+
+<p>良い話だ。</p>
+
+<blockquote><p>アップルが何よりも優先するものがあるとすれば、それは顧客体験だ。アップルとかかわることすべてにおいて、顧客が常にすばらしい体験をすることが目標だ。</p></blockquote>
+
+<p>アップルケアっていうバカ高いサポート費用払わなくても気軽に修理してくれると合点できる。</p>
+
+<h2>まとめ</h2>
+
+<blockquote><p>シンプルさはあなたのビジネスにすばらしい結果をもらたしてくれるだろうか？もちろんそうだ。なぜなら、シンプルさは目標ではなく、目標を達成へと導いていくれる光だからだ。</p></blockquote>
+
+<p>シンプルは光だ。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

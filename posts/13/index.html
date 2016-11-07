@@ -1,0 +1,774 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="Sensu Casual Talks #1にいってきた。 @timwataさんのGraphiteのスケールの話が興味深かった。
+3000台ぐらいのクライアントをSensuとGraphiteで見てるの
+相当貴重な知見だと思う。 自分が話してきたのは特にどうということもなくて &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/13/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/17/sensu-casual/">Sensu Casual Talks #1 に行ってきた #sensucasual</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-17T23:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.zusaar.com/event/7607003">Sensu Casual Talks #1</a>にいってきた。</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/sensu-sushi.jpg" alt="https://dl.dropboxusercontent.com/u/5390179/sensu-sushi.jpg" /></p>
+
+<p><a href="https://twitter.com/timwata">@timwata</a>さんのGraphiteのスケールの話が興味深かった。<br/>
+3000台ぐらいのクライアントをSensuとGraphiteで見てるの<br/>
+相当貴重な知見だと思う。</p>
+
+<p>自分が話してきたのは特にどうということもなくて<br/>
+Chefを使えばOfficial cookbookと自分で何個かcookbookを書くことで<br/>
+比較的簡単に(※1)導入、運用ができるという話をしてきた。</p>
+
+<script async class="speakerdeck-embed" data-id="a9228a4020a1013253af5234a31dec8b" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+
+
+<p></p>
+
+<p>cookbookはここにまとめてある。</p>
+
+<p><a href="https://github.com/kenjiskywalker/chef/tree/master/site-cookbooks">https://github.com/kenjiskywalker/chef/tree/master/site-cookbooks</a></p>
+
+<p>Sensu、スケールしていくとどこがボトルネックになるか<br/>
+みたいな話はユースケースが増えていくとコツみたいなのが<br/>
+見えてくると思う。だけどnagiosで困っていないのにわざわざ<br/>
+sensuに乗り換えるのは無駄だと思う。</p>
+
+<p>KAIZEN社は日本のウェッブ業界でも最先端の会社なので<br/>
+定期的に現状を確認しに行きたいと思う。</p>
+
+<p>Tシャツありがとうございました。<br/>
+開催して頂いた@glidenote氏、ありがとうございました！</p>
+
+<iframe src="//instagram.com/p/tDBpKKJqkv/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<blockquote><p>※1… 個人差があります</p></blockquote>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/09/consul-key-value/">Consulでkey/valueを叩く</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-09T23:09:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>TL;DR</h2>
+
+<p>Consulでkey/valueを叩く</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% curl -X PUT -d 'bar' http://127.0.0.1:8500/v1/kv/foo
+</span><span class='line'>true
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.1:8500/v1/kv/foo | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 538,
+</span><span class='line'>    "ModifyIndex": 538,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": "YmFy"
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.2:8500/v1/kv/foo | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 538,
+</span><span class='line'>    "ModifyIndex": 538,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": "YmFy"
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -X PUT -d 'barbar' http://127.0.0.2:8500/v1/kv/foofoo
+</span><span class='line'>true
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.1:8500/v1/kv/foofoo | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 540,
+</span><span class='line'>    "ModifyIndex": 540,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foofoo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": "YmFyYmFy"
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>delete</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']%
+</span><span class='line'>['-']% curl -X DELETE -d 'barbar' http://127.0.0.2:8500/v1/kv/foofoo
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.1:8500/v1/kv/foofoo | jq .
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -X PUT -d 'barbar' http://127.0.0.2:8500/v1/kv/foofoo
+</span><span class='line'>true%                                                                                                  ['-']%
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>再帰もいける</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% curl -s 'http://127.0.0.1:8500/v1/kv/?recurse' | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 555,
+</span><span class='line'>    "ModifyIndex": 555,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foofoo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": "YmFyYmFy"
+</span><span class='line'>  },
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 538,
+</span><span class='line'>    "ModifyIndex": 538,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": "YmFy"
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>flags</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.2:8500/v1/kv/foofoo | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 555,
+</span><span class='line'>    "ModifyIndex": 559,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foofoo",
+</span><span class='line'>    "Flags": 0,
+</span><span class='line'>    "Value": null
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -X PUT 'barbar' -s 'http://127.0.0.1:8500/v1/kv/foofoo?flags=1' | jq .
+</span><span class='line'>true
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s http://127.0.0.2:8500/v1/kv/foofoo | jq .
+</span><span class='line'>[
+</span><span class='line'>  {
+</span><span class='line'>    "CreateIndex": 555,
+</span><span class='line'>    "ModifyIndex": 560,
+</span><span class='line'>    "LockIndex": 0,
+</span><span class='line'>    "Key": "foofoo",
+</span><span class='line'>    "Flags": 1,
+</span><span class='line'>    "Value": null
+</span><span class='line'>  }
+</span><span class='line'>]
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>階層化とdecode</h3>
+
+<blockquote><p>BSD の base64 コマンドだと<br/>
+-dがdebugで-Dがdecodeだった</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% curl -X PUT -d 'bazbazbaz' -s 'http://127.0.0.1:8500/v1/kv/foo/bar/baz'
+</span><span class='line'>true
+</span><span class='line'>['x']%
+</span><span class='line'>['x']% curl -s 'http://127.0.0.1:8500/v1/kv/foo/bar/baz' | jq '.[]'
+</span><span class='line'>{
+</span><span class='line'>  "CreateIndex": 565,
+</span><span class='line'>  "ModifyIndex": 568,
+</span><span class='line'>  "LockIndex": 0,
+</span><span class='line'>  "Key": "foo/bar/baz",
+</span><span class='line'>  "Flags": 0,
+</span><span class='line'>  "Value": "YmF6YmF6YmF6"
+</span><span class='line'>}
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% curl -s 'http://127.0.0.1:8500/v1/kv/foo/bar/baz' | jq '.[].Value' -r | base64 -D
+</span><span class='line'>bazbazbaz
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/09/consul-event-handle-watches/">Consulでnodeの増減時に特定のスクリプトを実行させる</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-09T22:21:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>TL;DR</h2>
+
+<p>ConsulでSerfのEvent Handlerのようなものを試したメモ</p>
+
+<h2>main</h2>
+
+<p>Consulの<a href="https://www.hashicorp.com/blog/consul-0-4.html">0.4</a>から<code>Watches</code>という機能が追加されて<br/>
+Serfのevent handlerのようなことができるようになった。</p>
+
+<p>昨日つくった<a href="https://github.com/kenjiskywalker/consul-test">consul-test</a>に</p>
+
+<ul>
+<li>node01/config.json</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "node_name": "node01",
+</span><span class='line'>  "data_dir": "./node01/",
+</span><span class='line'>  "bind_addr": "127.0.0.1",
+</span><span class='line'>  "client_addr": "127.0.0.1",
+</span><span class='line'>  "ui_dir": "./dist/",
+</span><span class='line'>  "watches": [
+</span><span class='line'>    {
+</span><span class='line'>      "type": "nodes",
+</span><span class='line'>      "handler": "./node01/hosts_update.rb"
+</span><span class='line'>    }
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>watchesの設定を追加してみた。</p>
+
+<p><code>hosts_update.rb</code>でやっていることはシンプルで<br/>
+nodesに変化があった場合に、標準入力でnodesの情報を取得し、<br/>
+同ディレクトリに<code>_hosts</code>ファイルを生成して、<br/>
+nodeの名前とそのAddressを<br/>
+hostsファイルに似せて出力するようにしている。</p>
+
+<blockquote><p>Consulには<code>SERF_EVENT</code>のような<br/>
+管理しているnodeの変化の状態をSTDINで受け取る方法はないのだろうか</p></blockquote>
+
+<h2>雑談</h2>
+
+<p>このような簡単なスクリプトはGoで書いてもいいかもしれないけど<br/>
+バイナリだけ置いてあるような状態の時に<br/>
+<em>作成者を全面的に信用する</em>みたいな部活っぽい対応になりそう。<br/>
+簡易スクリプトをGoで書いたらバイナリとそのソースファイルを<br/>
+同ディレクトリに置いておくとかが良いんだろうか。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/08/consul-test-tool/">Consul Clusterを手元に構築する簡単なスクリプトかいた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-08T21:01:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://github.com/kenjiskywalker/consul-test">https://github.com/kenjiskywalker/consul-test</a></h2>
+
+<p>READMEのとおりですが</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Node    Address         Status  Type    Build  Protocol
+</span><span class='line'>node01  127.0.0.1:8301  alive   server  0.4.0  2
+</span><span class='line'>node02  127.0.0.2:8301  alive   server  0.4.0  2
+</span><span class='line'>node03  127.0.0.3:8301  alive   server  0.4.0  2
+</span><span class='line'>node04  127.0.0.4:8301  alive   client  0.4.0  2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記構成のConsul Clusterを<br/>
+OS X上に簡単に作成できるスクリプトをつくりましたので<br/>
+よかったらご利用ください。</p>
+
+<h3>あわせてよみたい</h3>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2014/06/06/consul-dns-round-robin/">ConsulのDNSラウンドロビンの検証</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/06/ss-command/">Ssコマンドの使えそうなもののメモ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-06T23:11:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><code>$ss -lt</code>と<code>$ss -ltp</code>は使える。<br/>
+<code>-i</code>は面白いけど本当に確認するなら<code>ngrep</code>か<code>tcpdump</code>だろうな</p>
+
+<h2>セッションを開いているホスト名を名前解決しない(デフォルト)</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -n
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>セッションを開いているホスト名を名前解決する</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -r
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TCPのセッションのみ表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -t
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -A tcp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>UDPのセッションのみ表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -u
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -A udp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TCPとUDPのセッションのみ表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -tu
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -A tcp,udp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>UNIX Domainのセッションのみ表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -x
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -A unix
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>特定のセッションの状態のものを抽出</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -t state fin-wait-2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TCPでLISTENしているポートを表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -lt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>TCPでLISTENしているポートのプロセス名を表示</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ss</span> -ltp
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>コマンド名自体が短いからササッと確認するのには良さそう</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,794 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="TL;DR CircleCIのEnvironment variablesを利用して
+ファイルにdecryptのパスワードを記入する 設定 Environment variables - CircleCI
+Vault - Ansible CircleCIの環境変数に値を設定する機能を利用し、 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/11/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/17/ansible-vault-circleci/">Ansible Vaultで暗号化されたファイルをCircleCIで利用する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-17T14:08:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>TL;DR</h2>
+
+<p>CircleCIのEnvironment variablesを利用して<br/>
+ファイルにdecryptのパスワードを記入する</p>
+
+<h2>設定</h2>
+
+<ul>
+<li><a href="https://circleci.com/docs/environment-variables">Environment variables - CircleCI</a></li>
+<li><a href="http://docs.ansible.com/playbooks_vault.html">Vault - Ansible</a></li>
+</ul>
+
+
+<p>CircleCIの環境変数に値を設定する機能を利用し、<br/>
+テスト実行前にその環境変数に設定したVault用の<br/>
+パスワードをファイルに出力しておき、ansible実行時には<br/>
+そのファイルを見に行くようにする。</p>
+
+<ul>
+<li>circle.yml</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>machine:
+</span><span class='line'>  services:
+</span><span class='line'>    - docker
+</span><span class='line'>
+</span><span class='line'>dependencies:
+</span><span class='line'>  pre:
+</span><span class='line'>    - if [[ -e docker_ansible_image.tar ]]; then cat docker_ansible_image.tar | docker import - kenjiskywalker/dockerfile-centos-ansible ; docker load --input docker_ansible_image.tar ; else docker build . ; docker save -o docker_ansible_image.tar kenjiskywalker/dockerfile-centos-ansible ; fi
+</span><span class='line'>    - echo "${ANSIBLE_VAULT}" &gt; $(pwd)/ansible/vault.txt
+</span><span class='line'>
+</span><span class='line'>  cache_directories:
+</span><span class='line'>    - "docker_ansible_image.tar"
+</span><span class='line'>
+</span><span class='line'>test:
+</span><span class='line'>  post:
+</span><span class='line'>    - docker run -v $(pwd)/ansible:/ansible kenjiskywalker/dockerfile-centos-ansible ansible-playbook /ansible/ci.yml  --vault-password-file /ansible/vault.txt -i /ansible/inventory_localhost -c local</span></code></pre></td></tr></table></div></figure>
+
+
+<p>他に良いプラクティスあれば教えてください。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/13/circleci-docker-ansible-serverspec/">CircleCIでDockerコンテナに対してansibleを実行しserverspecでテストをする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-13T21:11:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>参考</h3>
+
+<p><a href="https://speakerdeck.com/naoya/kaizen-platform-inc-niokeruyun-yong-zi-dong-hua">KAIZEN platform Inc. における運用自動化 - Speaker Deck</a><br/>
+<a href="https://circleci.com/docs/docker">Continous Integration and Delivery with Docker - CircleCI</a></p>
+
+<h2>TL;DR</h2>
+
+<p>CircleCI上でDockerコンテナを立て、<br/>
+そのコンテナに対してプロビジョニングを行い、<br/>
+プロビジョニング後のコンテナに対してテストを行う</p>
+
+<h2>DockerコンテナにAnsibleを実行する</h2>
+
+<p>コミットする度にDockerのimageをpullするのは時間がもったいないので<br/>
+<code>cache_directories</code>を利用し、imageをexportしておき<br/>
+実行時にimportするようにすると多少速くなる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>.
+</span><span class='line'>├── Dockerfile
+</span><span class='line'>├── ansible/
+</span><span class='line'>└── circle.yml</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Dockerfile</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>FROM kenjiskywalker/dockerfile-centos-ansible</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>circle.yml</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>machine:
+</span><span class='line'>  services:
+</span><span class='line'>    - docker
+</span><span class='line'>
+</span><span class='line'>dependencies:
+</span><span class='line'>  pre:
+</span><span class='line'>    - if [[ -e docker_ansible_image.tar ]]; then cat docker_ansible_image.tar | docker import - kenjiskywalker/dockerfile-centos-ansible ; docker load --input docker_ansible_image.tar ; else docker build . ; docker save -o docker_ansible_image.tar kenjiskywalker/dockerfile-centos-ansible ; fi
+</span><span class='line'>
+</span><span class='line'>  cache_directories:
+</span><span class='line'>    - "docker_ansible_image.tar"
+</span><span class='line'>
+</span><span class='line'>test:
+</span><span class='line'>  post:
+</span><span class='line'>    - docker run -v `pwd`/ansible:/ansible kenjiskywalker/dockerfile-centos-ansible ansible-playbook /ansible/ci.yml -i /ansible/inventory_localhost -c local</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じの設定ファイルを置いておくと<code>ansible</code>ディレクトリをマウントし<br/>
+Dockerコンテナがansibleを実行できる状態であればDockerコンテナに対して<br/>
+ansibleが実行できる。この続きにServerspecを記述することで</p>
+
+<ol>
+<li>リポジトリにansibleのファイルをコミットする</li>
+<li>CircleCI上にてDockerコンテナを起動</li>
+<li>Dockerコンテナに対してansibleでプロビジョニング</li>
+<li>そのプロビジョニング結果をServerspecでテストをする</li>
+</ol>
+
+
+<p>のようなことができる。</p>
+
+<h2>wercker</h2>
+
+<p>werckerでも同じようなことができる。<br/>
+CircleCIと同様にファイルをキャッシュするには<br/>
+<code>$WERCKER_CACHE_DIR</code>を利用すればよいかと。</p>
+
+<ul>
+<li>wercker.yml</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>box: wercker-labs/docker
+</span><span class='line'>build:
+</span><span class='line'>  steps:
+</span><span class='line'>    - script:
+</span><span class='line'>        name: docker build
+</span><span class='line'>        code: docker build .
+</span><span class='line'>    - script:
+</span><span class='line'>        name: docker run
+</span><span class='line'>        code: docker run -v `pwd`/ansible:/ansible dockerfile/ansible ansible-playbook /ansible/ci.yml -i /ansible/inventory_localhost -c local</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上、メモです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/10/shellscript-old-style/">シェルスクリプトで外部コマンドを利用する場合の注意点</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-10T15:37:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>TL;DR</h2>
+
+<p>シェルスクリプトでbackquoteを見つけたら<br/>
+オールドスタイルおじさんを探し、矯正させよう</p>
+
+<blockquote><p>GNU Bash-2.05 manual</p></blockquote>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   When the old-style backquote form of substitution is used, backslash retains its  lit-  
+</span><span class='line'>   eral  meaning except when followed by $, `, or \.  The first backquote not preceded by  
+</span><span class='line'>   a backslash terminates the command substitution.  When using the $(command) form,  all  
+</span><span class='line'>   characters between the parentheses make up the command; none are treated specially.</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">a</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="s1">&#39;\&#39;`</span>
+</span><span class='line'><span class="s1">echo ${a} # \</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">b=`echo &quot;\\&quot;`</span>
+</span><span class='line'><span class="s1">echo ${b} # unexpected EOF while looking for matching `&quot;&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">c</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="err">&#39;</span><span class="se">\&#39;</span><span class="k">)</span>
+</span><span class='line'><span class="nb">echo</span> <span class="k">${</span><span class="nv">c</span><span class="k">}</span> <span class="c"># \</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">d</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&quot;\\&quot;</span><span class="k">)</span>
+</span><span class='line'><span class="nb">echo</span> <span class="k">${</span><span class="nv">d</span><span class="k">}</span> <span class="c"># \</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>参考</h2>
+
+<p><a href="http://hyperpolyglot.org/unix-shells#cmd-subst-note">http://hyperpolyglot.org/unix-shells#cmd-subst-note</a></p>
+
+<h2>追記</h2>
+
+<blockquote class="twitter-tweet" lang="en"><p>csh系では動かないのでは？というご意見を頂いておりますが、csh系を利用されている方は基本的に強い意思を持って取り組まれているかと存じますので、わざわざ説明することはないと判断しております</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/status/531709951777857536">November 10, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/02/201410-book/">2014/10読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-02T01:59:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>太平記、いよいよ尊氏がのし上がってきた。</p>
+
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年10月 (7作品)</div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4061592998" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41Z7F36DYDL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4061592998" target="_blank">本を読む本 (講談社学術文庫)</a><br /><a href="http://booklog.jp/author/J%E3%83%BB%E3%83%A2%E3%83%BC%E3%83%86%E3%82%A3%E3%83%9E%E3%83%BC%E3%83%BB%E3%82%A2%E3%83%89%E3%83%A9%E3%83%BC" target="_blank">J・モーティマー・アドラー</a><br />読了日：10月10日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3QYKEM" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51bjX8kwqEL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3QYKEM" target="_blank">私本太平記 07 千早帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：10月10日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4063883817" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61roFPa3QIL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4063883817" target="_blank">GIANT KILLING(33) (モーニング KC)</a><br /><a href="http://booklog.jp/author/%E3%83%84%E3%82%B8%E3%83%88%E3%83%A2" target="_blank">ツジトモ</a><br />読了日：10月26日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3R04NC" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51kD3wswI8L._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3R04NC" target="_blank">私本太平記 08 新田帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：10月26日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3R1M2E" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51QdHojEjuL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3R1M2E" target="_blank">私本太平記 09 建武らくがき帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：10月26日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4774167681" target="_blank"><img src="http://ecx.images-amazon.com/images/I/61FyzLfkvnL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4774167681" target="_blank">サーバ/インフラ徹底攻略 (WEB+DB PRESS plus)</a><br /><a href="http://booklog.jp/author/%E4%BC%8A%E8%97%A4%E7%9B%B4%E4%B9%9F" target="_blank">伊藤直也</a><br />読了日：10月26日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00NFW7RCY" target="_blank"><img src="http://ecx.images-amazon.com/images/I/619ts5KepqL._SL75_.jpg" width="52" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00NFW7RCY" target="_blank">高校サッカーダイジェスト Vol.7 2014年 11/1号 [雑誌]</a><br />読了日：10月27日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/26/server-infra-webdb-book/">「サーバ/インフラ徹底攻略」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-26T18:05:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/%E3%82%B5%E3%83%BC%E3%83%90-%E3%82%A4%E3%83%B3%E3%83%95%E3%83%A9%E5%BE%B9%E5%BA%95%E6%94%BB%E7%95%A5-WEB-PRESS-plus/dp/4774167681%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4774167681" target="_blank" title="サーバ/インフラ徹底攻略 (WEB+DB PRESS plus)"><img src="http://ecx.images-amazon.com/images/I/61FyzLfkvnL.jpg" width="354" height="500" alt="サーバ/インフラ徹底攻略 (WEB+DB PRESS plus)" /></a></p>
+
+<p><a href="http://www.amazon.co.jp/%E3%82%B5%E3%83%BC%E3%83%90-%E3%82%A4%E3%83%B3%E3%83%95%E3%83%A9%E5%BE%B9%E5%BA%95%E6%94%BB%E7%95%A5-WEB-PRESS-plus/dp/4774167681%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4774167681" target="_blank">サーバ/インフラ徹底攻略 (WEB+DB PRESS plus)</a></p>
+
+<p>ご恵贈ありがとうございます！</p>
+
+<h2>TL;DR</h2>
+
+<p>mizzyさんのServerspecを利用したインフラCIの章、<br/>
+サイバーエージェント社のメンテナンスの章は最高だった</p>
+
+<h2>もくじ</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>巻頭企画
+</span><span class='line'>［入門］コードによるインフラ構築
+</span><span class='line'>サーバ構成管理の自動化を実現する
+</span><span class='line'>
+</span><span class='line'>第1章：ChefとVagrantによるインフラのコード化
+</span><span class='line'>設定の一元管理で作業を省力化する……伊藤 直也
+</span><span class='line'>第2章：Serverspecによるテスト駆動インフラ構築
+</span><span class='line'>設定変更の反映を確実なものにする……伊藤 直也
+</span><span class='line'>特集1
+</span><span class='line'>Amazon Web Services最新活用
+</span><span class='line'>レイヤ別比較，構築の定石，構成管理の自動化
+</span><span class='line'>
+</span><span class='line'>第1章：Amazon Web Servicesレイヤ別比較
+</span><span class='line'>各サービスの特徴を理解し，うまく使い分ける……片山 暁雄，平山 毅
+</span><span class='line'>第2章：EC2とVPCによるシステム構築
+</span><span class='line'>セキュアで可用性を高めたインフラの作り方……舟崎 健治，吉荒 祐一
+</span><span class='line'>第3章：RDSによるデータベースの活用
+</span><span class='line'>作成，デプロイ，バックアップ……今井 雄太，八木橋 徹平
+</span><span class='line'>第4章：CloudFormationによる構築の自動化
+</span><span class='line'>テンプレートの作成からミドルウェア構築設定まで……安川 健太
+</span><span class='line'>特集2
+</span><span class='line'>テスト駆動インフラ＆CI最前線
+</span><span class='line'>Infrastructure as Codeがもたらすワークフローの刷新
+</span><span class='line'>
+</span><span class='line'>第1章：インフラのテストとその重要性
+</span><span class='line'>「インフラのコード化」による開発手法の応用……宮下 剛輔
+</span><span class='line'>第2章：テスト駆動インフラの実践
+</span><span class='line'>VirtualBox，Vagrant，Puppet，Serverspecによるテスト自動化……宮下 剛輔
+</span><span class='line'>第3章：インフラCIの実践
+</span><span class='line'>GitHub，Wercker，DigitalOceanによる継続的テスト……宮下 剛輔
+</span><span class='line'>第4章：インフラの継続的改善の実践
+</span><span class='line'>GitHub Flowをベースとしたワークフロー変革……宮下 剛輔
+</span><span class='line'>特集3
+</span><span class='line'>実践Immutable Infrastructure
+</span><span class='line'>使い捨てサーバによる運用の変革
+</span><span class='line'>
+</span><span class='line'>第1章：Immutable Infrastructureとは何か
+</span><span class='line'>不変なサーバ，Blue-green Deploymentとそれらの利点……田中 慎司
+</span><span class='line'>第2章：Immutable Infrastructureで利用するツール／サービス
+</span><span class='line'>比較・整理と，システム全体での組み合わせ……田中 慎司
+</span><span class='line'>第3章：コンテナ型仮想化とクラウドによる実践
+</span><span class='line'>Docker+HAProxy，Amazon EC2+ELB……田中 慎司
+</span><span class='line'>第4章：クラスタ管理ツールによる実践
+</span><span class='line'>Apache Mesosでリソース管理の自動化……田中 慎司
+</span><span class='line'>特集4
+</span><span class='line'>［詳解］nginx
+</span><span class='line'>設定の柔軟性と優れたスケーラビリティ
+</span><span class='line'>
+</span><span class='line'>第1章：nginxの世界へようこそ
+</span><span class='line'>アーキテクチャ，用途，メリット，デメリット……久保 達彦
+</span><span class='line'>第2章：はじめてのnginx
+</span><span class='line'>インストール，起動と終了，基本設定……道井 俊介
+</span><span class='line'>第3章：一般的なWebサーバの構築
+</span><span class='line'>バーチャルホスト，アクセス制御，SSL通信，基本認証……飯田 祐基
+</span><span class='line'>第4章：実践的なWebアプリケーションサーバの構築
+</span><span class='line'>Unicorn/RailsやPHP-FPMと連携させる……道井 俊介
+</span><span class='line'>第5章：大規模コンテンツ配信システムの構築
+</span><span class='line'>キャッシュ，ロードバランシングを活用する……飯田 祐基
+</span><span class='line'>第6章：拡張モジュールのしくみと作り方
+</span><span class='line'>nginxを自由にカスタマイズするための基礎知識……久保 達彦
+</span><span class='line'>特集5
+</span><span class='line'>メンテナンス本格入門
+</span><span class='line'>緊急対応，計画停止，メンテフリー化
+</span><span class='line'>
+</span><span class='line'>第1章：メンテナンスとは
+</span><span class='line'>種類と手法を整理する……桑野 章弘
+</span><span class='line'>第2章：計画メンテナンスの流れ
+</span><span class='line'>事前準備，作業のチェック，振り返り……松浦 隼人
+</span><span class='line'>第3章：緊急メンテナンスの流れ
+</span><span class='line'>普段から備えるべきこと，障害時の対応……松浦 隼人
+</span><span class='line'>第4章：メンテフリーへのアプローチ【インフラ編】
+</span><span class='line'>省力運用を実現するインフラ，データベース設計と障害検知……松浦 隼人，中村 俊之
+</span><span class='line'>第5章：メンテフリーへのアプローチ【アプリケーション編】
+</span><span class='line'>ダウンタイムを減らすリリース手法とアプリケーション設計……福永 亘，中村 俊之，松浦 隼人
+</span><span class='line'>第6章：ガールフレンド（仮）とアメーバピグの事例
+</span><span class='line'>現場でどう実践し，どう障害を切り抜けたか……福永 亘，杉山 仁則
+</span><span class='line'>一般記事
+</span><span class='line'>
+</span><span class='line'>Dockerで軽量な仮想環境
+</span><span class='line'>Linuxコンテナでインフラを瞬時に構築する……伊藤 直也</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>感想</h2>
+
+<h3>なおやさんの章</h3>
+
+<p>Vagrant、Chef、Serverspecなどを利用したことのない人が<br/>
+手元でひと通り読みながら進めるとインフラのコード化を実感できる.</p>
+
+<h3>AWSさんの章</h3>
+
+<p>Amazon Web Servicesの章はひと通りのサービスの説明と<br/>
+実際にアプリケーションを動かす例が記載されている.<br/>
+これを読めばいきなりAWSを駆使できるかと言われればNoだが<br/>
+AWS全体のサービスを把握するのに良さそう.</p>
+
+<h3>mizzyさんの章</h3>
+
+<p>mizzyさんの章はServerspecの作者であるmizzyさんご自身の<br/>
+Serverspecの活用方法で、実際に<a href="https://www.digitalocean.com/">DigitalOcean</a>と<a href="http://wercker.com/">wercker</a>を利用して<br/>
+手を動かしながら、インフラのCIを体験することができる.<br/>
+利用しているサービスも、DigitalOceanは一般的なインスタンスでも<br/>
+1時間に1.6円(2014/10現在)で利用でき、<br/>
+werckerはまだ無料の(2014/10現在)CIサービスなのでとても簡単に始めることができる.</p>
+
+<p>導入だけでなく<a href="http://scottchacon.com/2011/08/31/github-flow.html">GitHub Flow</a>を利用してどのように運用するかまで載っているので<br/>
+インフラのCIインフラのCIって最近よく聞くけどどうやったらいいんだ.<br/>
+という私と同じようなエンジニアにとっては大変ありがたい章だ.<br/>
+全体のデザインのモチーフが宇宙観があって最高だった.</p>
+
+<h3>stanakaさんの章</h3>
+
+<p>先ほどのmizzyさんの章のモチーフが宇宙だったのに比べ、stanakaさんの章は神社だ.<br/>
+Immutable Infrastructureをどのように実践するかの具体的な内容が記載されている.<br/>
+はてな社はこの環境でプロダクトのサービスが動いているのだろうか.すごい.</p>
+
+<h3>nginxの章</h3>
+
+<p>nginxについて色々な内容が書いてあった.<br/>
+本書の全体の構成の中で、nginxだけを扱うというスコープが<br/>
+他の章と比べると少し変な感じがした.</p>
+
+<h3>メンテナンスの章</h3>
+
+<p>サイバーエージェント社の存在するサービスに対して<br/>
+どのようにメンテナンス作業を行っているのかという社外に出てこないような知見を<br/>
+このように書籍として読めるのは本当に貴重だと思う.</p>
+
+<p>ウェブサービス業界のサーバサイドの勉強会はかなり多く開催されているが、<br/>
+このような泥臭いというか、目新しくはないけど<br/>
+確実に行わなければならない企業毎の知見みたいなものを共有していく重要性を<br/>
+改めて考えさせられた章だった.ありがたい</p>
+
+<h3>Dockerの章</h3>
+
+<p>Vagrant + Dockerの基本的な内容が記載されている.<br/>
+とりあえずどんなものか知るのに良さそう.</p>
+
+<h2>まとめ</h2>
+
+<p>職人がサーバひとつひとつ温もりを持って構築している職場を改善したい人や、<br/>
+大企業でメンテナンス作業がどう行われているのか知りたいエンジニア、<br/>
+インフラのコード化、インフラのCI、AWSなどざざっと把握してみたい人には良いと思う.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

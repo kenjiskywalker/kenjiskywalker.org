@@ -1,0 +1,1318 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="EC2がちょくちょくStatus ChecksがコケてTerminateされていたので
+CloudWatchで見ているStatus Checkの値の変異を見て
+SNSに通知をさせている。 SNS &lt;-&gt; PagerDuty &lt;-&gt; Slack 参考URL &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-07-12T11:44:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>EC2がちょくちょくStatus ChecksがコケてTerminateされていたので<br/>
+CloudWatchで見ているStatus Checkの値の変異を見て<br/>
+SNSに通知をさせている。</p>
+
+<p><code>SNS &lt;-&gt; PagerDuty &lt;-&gt; Slack</code></p>
+
+<h4>参考URL</h4>
+
+<ul>
+<li><a href="http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html">インスタンスのステータスチェック</a></li>
+<li><a href="https://www.pagerduty.com/docs/guides/aws-cloudwatch-integration-guide/">AWS CloudWatch Integration Guide:PagerDuty</a></li>
+<li><a href="https://www.pagerduty.com/docs/guides/slack-integration-guide/">Slack Integration Guide:PagerDuty</a></li>
+</ul>
+
+
+<p>一番良いのはEC2が立ち上がってきた時に自分自身に下記設定を導入し<br/>
+自分が消える時に設定を削除するのが好ましいが、所々事情があり<br/>
+下記のようなスクリプトを特定のEC2で回している。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">region</span> <span class="o">=</span> <span class="s1">&#39;REGION&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># インスタンスID一覧を取得する ( --max-items XXX # インスタンス数次第 )</span>
+</span><span class='line'><span class="n">instance_ids</span> <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="n">region</span><span class="si">}</span><span class="sb"> ec2 describe-instances \</span>
+</span><span class='line'><span class="sb">                    --max-items XXX \</span>
+</span><span class='line'><span class="sb">                    --filters Name=tag-key,Values=Name \</span>
+</span><span class='line'><span class="sb">                    | jq -r &#39;.Reservations[].Instances[].InstanceId&#39;</span>
+</span><span class='line'><span class="sb">                    `</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># CloudWatchでStatusCheckFailed_Checkが設定されているインスタンスID一覧 ( --max-items XXX # インスタンス数次第 )</span>
+</span><span class='line'><span class="n">checked_instance_ids</span> <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="n">region</span><span class="si">}</span><span class="sb"> cloudwatch describe-alarms \</span>
+</span><span class='line'><span class="sb">                            --max-items XXX \</span>
+</span><span class='line'><span class="sb">                            | jq -r &#39;.MetricAlarms[].AlarmName&#39; \</span>
+</span><span class='line'><span class="sb">                            | grep &#39;StatusCheckFailed_Check&#39; \</span>
+</span><span class='line'><span class="sb">                            | cut -f 1 -d &#39; &#39;</span>
+</span><span class='line'><span class="sb">                            `</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 改行で要素を分割</span>
+</span><span class='line'><span class="n">instance_ids</span> <span class="o">=</span> <span class="n">instance_ids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="n">checked_instance_ids</span> <span class="o">=</span> <span class="n">checked_instance_ids</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># インスタンス一覧にあってCloudWatch側にない監視追加対象のインスタンスID一覧を抽出</span>
+</span><span class='line'><span class="n">new_instance_ids</span> <span class="o">=</span> <span class="n">instance_ids</span> <span class="o">-</span> <span class="n">checked_instance_ids</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># CloudWatch側にあってインスタンス一覧にない削除対象のインスタンスID一覧を抽出</span>
+</span><span class='line'><span class="n">deleted_instance_ids</span> <span class="o">=</span> <span class="n">checked_instance_ids</span> <span class="o">-</span> <span class="n">instance_ids</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 監視追加対象のインスタンスID一覧が空でなければCloudWatchに追加していく</span>
+</span><span class='line'><span class="k">unless</span> <span class="n">new_instance_ids</span><span class="o">.</span><span class="n">empty?</span>
+</span><span class='line'>  <span class="n">new_instance_ids</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">instance_id</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># StageというKeyのタグで本番かそれ以外を分けている</span>
+</span><span class='line'>    <span class="n">stage</span> <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="n">region</span><span class="si">}</span><span class="sb"> ec2 describe-instances \</span>
+</span><span class='line'><span class="sb">                 --instance-ids </span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">                 --query &#39;Reservations[].Instances[].Tags[?Key==\`</span><span class="no">Stage</span><span class="p">\</span><span class="sb">`].Value&#39; \</span>
+</span><span class='line'><span class="sb">                 --output text</span>
+</span><span class='line'><span class="sb">                 `</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># 本番の場合は通知先が違うのでSNSの向き先を変える</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">stage</span> <span class="o">==</span> <span class="s1">&#39;production&#39;</span>
+</span><span class='line'>      <span class="n">sns_topic</span> <span class="o">=</span> <span class="s1">&#39;PRODUCTION_SNS_TOPIC&#39;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="n">sns_topic</span> <span class="o">=</span> <span class="s1">&#39;OTHER_SNS_TOPIC&#39;</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># MAIN: ここで設定を追加する</span>
+</span><span class='line'>    <span class="sb">`aws --region </span><span class="si">#{</span><span class="n">region</span><span class="si">}</span><span class="sb"> cloudwatch put-metric-alarm \</span>
+</span><span class='line'><span class="sb">         --alarm-name &quot;</span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="sb"> StatusCheckFailed_Check&quot; \</span>
+</span><span class='line'><span class="sb">         --metric-name StatusCheckFailed \</span>
+</span><span class='line'><span class="sb">         --namespace AWS/EC2 \</span>
+</span><span class='line'><span class="sb">         --statistic Maximum \</span>
+</span><span class='line'><span class="sb">         --dimensions Name=InstanceId,Value=</span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">         --period 60 \</span>
+</span><span class='line'><span class="sb">         --unit Count \</span>
+</span><span class='line'><span class="sb">         --evaluation-periods 1 \</span>
+</span><span class='line'><span class="sb">         --threshold 0 \</span>
+</span><span class='line'><span class="sb">         --comparison-operator GreaterThanThreshold \</span>
+</span><span class='line'><span class="sb">         --ok-actions </span><span class="si">#{</span><span class="n">sns_topic</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">         --alarm-actions </span><span class="si">#{</span><span class="n">sns_topic</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">         --insufficient-data-actions </span><span class="si">#{</span><span class="n">sns_topic</span><span class="si">}</span><span class="sb"></span>
+</span><span class='line'><span class="sb">         `</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="s2"> StatusCheckFailed_Check is created&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 削除対象のインスタンスID一覧が空でなければ設定を削除していく</span>
+</span><span class='line'><span class="k">unless</span> <span class="n">deleted_instance_ids</span><span class="o">.</span><span class="n">empty?</span>
+</span><span class='line'>  <span class="n">deleted_instance_ids</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">instance_id</span><span class="o">|</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1"># MAIN: ここで設定を削除する</span>
+</span><span class='line'>    <span class="sb">`aws --region </span><span class="si">#{</span><span class="n">region</span><span class="si">}</span><span class="sb"> cloudwatch delete-alarms \</span>
+</span><span class='line'><span class="sb">         --alarm-names &quot;</span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="sb"> StatusCheckFailed_Check&quot;`</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nb">puts</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">instance_id</span><span class="si">}</span><span class="s2"> StatusCheckFailed_Check is deleted&quot;</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じでやってる。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-07-12T10:31:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><code>query</code>オプションとかよー使わんわということで個人的メモ</h3>
+
+<p><code>Name</code>タグを出力したければこう</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ aws ec2 describe-instances \
+</span><span class='line'>          --instance-ids i-XXXXXXXX \
+</span><span class='line'>          --query 'Reservations[].Instances[].Tags[?Key==`Name`].Value' \
+</span><span class='line'>          --output text</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-07-08T13:32:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>件の通り</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr"><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> そんな仕組みあるの？</p>&mdash; そのっつ (Naotoshi Seo) (@sonots) <a href="https://twitter.com/sonots/status/751219867785711616">July 8, 2016</a></blockquote>
+
+
+<p> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr"><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> クレクレ</p>&mdash; そのっつ (Naotoshi Seo) (@sonots) <a href="https://twitter.com/sonots/status/751220071335235585">July 8, 2016</a></blockquote>
+
+
+<p> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>今見直したら結構ひどい感じだったけど一旦公開しておく。<br/>
+AWS SDK for Rubyを利用してもいいし、これぐらいならgoで書いても良いスね。</p>
+
+<h3>仕組み</h3>
+
+<ul>
+<li><code>Role</code>  - web, db, app, etc&hellip;</li>
+<li><code>Stage</code> - development, staging, production, etc&hellip;</li>
+</ul>
+
+
+<p><code>EC2</code>のインスタンスそれぞれに<a href="http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/Using_Tags.html">タグ</a>の設定を入れている。<br/>
+それぞれのインスタンスは<a href="http://docs.aws.amazon.com/ja_jp/AutoScaling/latest/DeveloperGuide/WhatIsAutoScaling.html">AutoScalingGroup</a>管理下にあり、<br/>
+上記タグもそれぞれのAutoScalingGroupにてインスタンス起動時に付与するようになっている。</p>
+
+<h4>起動時に浮いたEIPをアサインさせたい</h4>
+
+<p>Ref: <a href="http://qiita.com/toshihirock/items/81d6612511f0d1f5db77">Qiita:AmazonLinuxのcloud-initについての調査メモ</a></p>
+
+<p><code>cloud-init</code>のいい感じのオフィシャルドキュメントってどこにあるんだ&hellip;</p>
+
+<ul>
+<li>/var/lib/cloud/scripts/per-boot/004_assign-elastic-ip.rb</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># 基本的に 各Role に EIP を付与するインスタンスは 2台 毎</span>
+</span><span class='line'><span class="c1"># </span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">INSTANCEID</span>  <span class="o">=</span> <span class="sb">`curl -s http://169.254.169.254/latest/meta-data/instance-id/`</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">REGION</span>      <span class="o">=</span> <span class="s1">&#39;ap-northeast-1&#39;</span>
+</span><span class='line'><span class="no">ROLE</span>        <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="no">REGION</span><span class="si">}</span><span class="sb"> ec2 describe-instances \</span>
+</span><span class='line'><span class="sb">                 --instance-ids </span><span class="si">#{</span><span class="no">INSTANCEID</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">                 --output text \</span>
+</span><span class='line'><span class="sb">                 --query &#39;Reservations[].Instances[].Tags[?Key==\`</span><span class="no">Role</span><span class="p">\</span><span class="sb">`].[Value]&#39; \</span>
+</span><span class='line'><span class="sb">                 `</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'><span class="no">STAGE</span>       <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="no">REGION</span><span class="si">}</span><span class="sb"> ec2 describe-instances \</span>
+</span><span class='line'><span class="sb">                 --instance-ids </span><span class="si">#{</span><span class="no">INSTANCEID</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">                 --output text \</span>
+</span><span class='line'><span class="sb">                 --query &#39;Reservations[].Instances[].Tags[?Key==\`</span><span class="no">Stage</span><span class="p">\</span><span class="sb">`].[Value]&#39; \</span>
+</span><span class='line'><span class="sb">                 `</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># foo, bar以外はEIPの付与はないので一旦この条件を設定する</span>
+</span><span class='line'><span class="nb">exit</span> <span class="mi">0</span> <span class="k">unless</span> <span class="no">ROLE</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span> <span class="o">||</span> <span class="no">ROLE</span> <span class="o">==</span> <span class="s1">&#39;bar&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># 浮いたEIPを入れる変数</span>
+</span><span class='line'><span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># ROLE と STAGE 毎に保持している EIP は違う</span>
+</span><span class='line'><span class="c1"># TODO: hash or json</span>
+</span><span class='line'><span class="k">case</span> <span class="no">ROLE</span>
+</span><span class='line'><span class="k">when</span> <span class="s1">&#39;foo&#39;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;development&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="p">,</span> <span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">elsif</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;staging&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="p">,</span> <span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">when</span> <span class="s1">&#39;bar&#39;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;production&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">elsif</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;staging&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">when</span> <span class="s1">&#39;baz&#39;</span>
+</span><span class='line'>  <span class="k">if</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;production&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">elsif</span> <span class="no">STAGE</span> <span class="o">==</span> <span class="s1">&#39;staging&#39;</span>
+</span><span class='line'>    <span class="n">elasticip_allocation_ids</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;eipalloc-XXXXXXXX&#39;</span><span class="o">]</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>    <span class="nb">exit</span> <span class="mi">0</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'>  <span class="nb">exit</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">elasticip_allocation_ids</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">eip_id</span><span class="o">|</span>
+</span><span class='line'>  <span class="c1"># 対象のEIPにEC2が紐付いているか確認(浮いたEIPを探す)</span>
+</span><span class='line'>  <span class="n">assigned_instance_id</span> <span class="o">=</span> <span class="sb">`aws --region </span><span class="si">#{</span><span class="no">REGION</span><span class="si">}</span><span class="sb"> ec2 describe-addresses \</span>
+</span><span class='line'><span class="sb">                            --allocation-ids </span><span class="si">#{</span><span class="n">eip_id</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">                            | jq &#39;.Addresses[].InstanceId&#39; \</span>
+</span><span class='line'><span class="sb">                            `</span><span class="o">.</span><span class="n">chomp</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># 浮いたEIPがあれば付与する処理へ移る</span>
+</span><span class='line'>  <span class="k">next</span> <span class="k">unless</span> <span class="n">assigned_instance_id</span> <span class="o">==</span> <span class="s1">&#39;null&#39;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1"># EIPを付与する</span>
+</span><span class='line'>  <span class="sb">`aws --region </span><span class="si">#{</span><span class="no">REGION</span><span class="si">}</span><span class="sb"> ec2 associate-address \</span>
+</span><span class='line'><span class="sb">     --allocation-id </span><span class="si">#{</span><span class="n">eip_id</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">     --instance-id </span><span class="si">#{</span><span class="no">INSTANCEID</span><span class="si">}</span><span class="sb">`</span>
+</span><span class='line'>  <span class="nb">puts</span> <span class="s2">&quot;COMPLETE: associate-address --allocation-id </span><span class="si">#{</span><span class="n">eip_id</span><span class="si">}</span><span class="s2"> --instance-id </span><span class="si">#{</span><span class="no">INSTANCEID</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'>  <span class="nb">exit</span> <span class="mi">0</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">puts</span> <span class="s2">&quot;CANNOT ASSOCIATE EIP to `hostname`&quot;</span>
+</span><span class='line'><span class="nb">exit</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>という感じで<code>/var/lib/cloud/scripts/per-boot/</code>配下にスクリプトを置いている。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-07-08T12:45:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>みんなのネットワーク環境が安定しているのか..<br/>
+我々の世界線にノイズが混在してしまっているのか&hellip;</p>
+
+<p>それを調べるすべはないが、下記のような問題があった。</p>
+
+<ul>
+<li><code>mackerel</code>で突然グラフが表示されなくなる</li>
+<li>そのグラフを表示しているのは<code>fluent-plugin-mackerel</code>を利用して<code>fluentd</code>経由で作成している</li>
+<li>その<code>td-agent</code>は再起動しようとすると<code>Timeout error</code>になる</li>
+</ul>
+
+
+<p>ということで怪奇現象を解決する為にやったことをメモ</p>
+
+<h3>愚直に<code>td-agent</code>の再起動を試みてみる</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$ 
+</span><span class='line'>[watashi@example-host ~]$ 
+</span><span class='line'>[watashi@example-host ~]$ sudo service td-agent restart
+</span><span class='line'>Restarting td-agent:
+</span><span class='line'>
+</span><span class='line'>Timeout error occurred trying to stop td-agent...                                          [  OK  ]
+</span><span class='line'>[watashi@example-host ~]$ </span></code></pre></td></tr></table></div></figure>
+
+
+<p>ダメや</p>
+
+<p>fluentdのコミッターの<a href="https://twitter.com/sonots">@sonots</a>さんに</p>
+
+<ul>
+<li>ログは出ない</li>
+<li>デーモンは生きている</li>
+</ul>
+
+
+<p>そんな現象に出会ったことない？と聞いたところ <br/>
+fluentdには<a href="https://github.com/frsyuki/sigdump">sigdump</a>が入っているから<br/>
+そこでstacktraceを追ってみれば、と意識の高いお返事を頂いたので実行してみる。</p>
+
+<h4>kill -CONT</h4>
+
+<p><a href="https://github.com/frsyuki/sigdump#usage">ドキュメント</a>に書いてあるように<code>CONT</code>のシグナルを送る</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+</span><span class='line'>td-agent  7779  0.0  0.3 241756 26700 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>[watashi@example-host ~]$ 
+</span><span class='line'>[watashi@example-host ~]$ sudo kill -CONT 7915
+</span><span class='line'>[watashi@example-host ~]$ 
+</span><span class='line'>[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+</span><span class='line'>td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>[watashi@example-host ~]$</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>sigdumpができあがっている</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$ ls -la /tmp/
+</span><span class='line'>total 1048
+</span><span class='line'>-rw-rw-rw-  1 td-agent td-agent    5937 Jul  7 10:51 sigdump-7915.log
+</span><span class='line'>[watashi@example-host ~]$</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>sigdumpの中身を見てみる</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$ sudo view /tmp/sigdump-7915.log
+</span><span class='line'>Sigdump at 2016-07-07 10:52:00 +0900 process 7915 (/usr/sbin/td-agent)
+</span><span class='line'>  Thread #&lt;Thread:0x007fce4f19e658&gt; status=run priority=0
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:39:in `backtrace'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:39:in `dump_backtrace'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:25:in `block in dump_all_thread_backtrace'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:24:in `each'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:24:in `dump_all_thread_backtrace'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:16:in `block in dump'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:119:in `open'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:119:in `_open_dump_path'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:14:in `dump'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:7:in `block in setup'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `join'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `block in shutdown'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `each'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `shutdown'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:131:in `block in shutdown'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:130:in `each'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:130:in `shutdown'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/engine.rb:229:in `shutdown'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/engine.rb:200:in `run'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:597:in `run_engine'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:148:in `block in start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:352:in `call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:352:in `main_process'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:325:in `block in supervise'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:324:in `fork'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:324:in `supervise'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:142:in `start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/command/fluentd.rb:171:in `&lt;top (required)&gt;'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/site_ruby/2.1.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/site_ruby/2.1.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/bin/fluentd:6:in `&lt;top (required)&gt;'
+</span><span class='line'>      /opt/td-agent/embedded/bin/fluentd:23:in `load'
+</span><span class='line'>      /opt/td-agent/embedded/bin/fluentd:23:in `&lt;top (required)&gt;'
+</span><span class='line'>      /usr/sbin/td-agent:7:in `load'
+</span><span class='line'>      /usr/sbin/td-agent:7:in `&lt;main&gt;'
+</span><span class='line'>  Thread #&lt;Thread:0x007fce4f1910c0&gt; status=sleep priority=0
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `sleep'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `wait'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `cond_wait'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:149:in `run'
+</span><span class='line'>  Thread #&lt;Thread:0x007fce4f192880&gt; status=sleep priority=0
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/cool.io-1.4.2/lib/cool.io/loop.rb:88:in `run_once'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/cool.io-1.4.2/lib/cool.io/loop.rb:88:in `run'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/plugin/out_forward.rb:185:in `run'
+</span><span class='line'>  Thread #&lt;Thread:0x007fce4f18eb40&gt; status=sleep priority=0
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `block in connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/timeout.rb:75:in `timeout'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:863:in `do_start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:852:in `start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:1375:in `request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:82:in `perform_request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:40:in `block in call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:87:in `with_net_http_connection'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:32:in `call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/rack_builder.rb:139:in `build_response'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:377:in `run_request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:177:in `post'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/mackerel-client-0.1.0/lib/mackerel/client.rb:108:in `post_service_metrics'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:161:in `send'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:151:in `write'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:345:in `write_chunk'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:324:in `pop'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:329:in `try_flush'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:140:in `run'
+</span><span class='line'>  
+</span><span class='line'>  ...
+</span><span class='line'>  
+</span><span class='line'>    GC stat:
+</span><span class='line'>      count: 59808
+</span><span class='line'>      heap_used: 261
+</span><span class='line'>      heap_length: 261
+</span><span class='line'>      heap_increment: 0
+</span><span class='line'>      heap_live_slot: 105333
+</span><span class='line'>      heap_free_slot: 1061
+</span><span class='line'>      heap_final_slot: 0
+</span><span class='line'>      heap_swept_slot: 26253
+</span><span class='line'>      heap_eden_page_length: 261
+</span><span class='line'>      heap_tomb_page_length: 0
+</span><span class='line'>      total_allocated_object: 2536413815
+</span><span class='line'>      total_freed_object: 2536308482
+</span><span class='line'>      malloc_increase: 3756384
+</span><span class='line'>      malloc_limit: 16777216
+</span><span class='line'>      minor_gc_count: 58261
+</span><span class='line'>      major_gc_count: 1547
+</span><span class='line'>      remembered_shady_object: 2178
+</span><span class='line'>      remembered_shady_object_limit: 2276
+</span><span class='line'>      old_object: 62144
+</span><span class='line'>      old_object_limit: 112630
+</span><span class='line'>      oldmalloc_increase: 3800672
+</span><span class='line'>      oldmalloc_limit: 16777216
+</span><span class='line'>  Built-in objects:
+</span><span class='line'>   106,394: TOTAL
+</span><span class='line'>    47,172: T_STRING
+</span><span class='line'>    21,189: T_DATA
+</span><span class='line'>    16,574: T_ARRAY
+</span><span class='line'>     6,805: T_NODE
+</span><span class='line'>     3,221: T_OBJECT
+</span><span class='line'>     3,064: T_CLASS
+</span><span class='line'>     2,418: T_HASH
+</span><span class='line'>     1,910: T_FILE
+</span><span class='line'>     1,300: FREE
+</span><span class='line'>       736: T_ICLASS
+</span><span class='line'>       719: T_REGEXP
+</span><span class='line'>       701: T_STRUCT
+</span><span class='line'>       287: T_MATCH
+</span><span class='line'>       168: T_MODULE
+</span><span class='line'>        61: T_BIGNUM
+</span><span class='line'>        59: T_RATIONAL
+</span><span class='line'>         9: T_FLOAT
+</span><span class='line'>         1: T_COMPLEX
+</span><span class='line'>[watashi@example-host ~]$</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>よくわからんが読んで見る</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  Thread #&lt;Thread:0x007fce4f18f1a8&gt; status=sleep priority=0
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `block in connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/timeout.rb:75:in `timeout'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:863:in `do_start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:852:in `start'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:1375:in `request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:82:in `perform_request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:40:in `block in call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:87:in `with_net_http_connection'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:32:in `call'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/rack_builder.rb:139:in `build_response'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:377:in `run_request'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:177:in `post'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/mackerel-client-0.1.0/lib/mackerel/client.rb:108:in `post_service_metrics'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:161:in `send'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:151:in `write'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:345:in `write_chunk'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:324:in `pop'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:329:in `try_flush'
+</span><span class='line'>      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:140:in `run'</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>fluent-plugin-mackerel</code>と<code>faraday</code>という文字列が見える</p>
+
+<h3>mackerel-client-rubyにPRを送る</h3>
+
+<p><a href="https://github.com/mackerelio/mackerel-client-ruby/pull/24">pull/24</a>のやりとりがそれ</p>
+
+<p><code>faraday</code>に<code>timeout</code>のオプションがなかったので足した。</p>
+
+<h2>後処理</h2>
+
+<ul>
+<li>対象サーバで<code>mackerel-client-ruby</code>をバージョンアップ</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$
+</span><span class='line'>[watashi@example-host ~]$ sudo /opt/td-agent/embedded/bin/gem update mackerel-client
+</span><span class='line'>Updating installed gems
+</span><span class='line'>Updating mackerel-client
+</span><span class='line'>Fetching: mackerel-client-0.1.1.gem (100%)
+</span><span class='line'>Successfully installed mackerel-client-0.1.1
+</span><span class='line'>Parsing documentation for mackerel-client-0.1.1
+</span><span class='line'>Installing ri documentation for mackerel-client-0.1.1
+</span><span class='line'>Installing darkfish documentation for mackerel-client-0.1.1
+</span><span class='line'>Done installing documentation for mackerel-client after 0 seconds
+</span><span class='line'>Parsing documentation for mackerel-client-0.1.1
+</span><span class='line'>Done installing documentation for mackerel-client after 0 seconds
+</span><span class='line'>Gems updated: mackerel-client
+</span><span class='line'>[watashi@example-host ~]$</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>対象のプロセスを始末してデーモンを起動</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[watashi@example-host ~]$ kill 7915
+</span><span class='line'>[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+</span><span class='line'>td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>[watashi@example-host ~]$
+</span><span class='line'>[watashi@example-host ~]$ kill 7779
+</span><span class='line'>[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+</span><span class='line'>td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+</span><span class='line'>[watashi@example-host ~]$
+</span><span class='line'>[watashi@example-host ~]$ kill -9 7915
+</span><span class='line'>[watashi@example-host ~]$ kill -9 7779
+</span><span class='line'>[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+</span><span class='line'>[watashi@example-host ~]$
+</span><span class='line'>[watashi@example-host ~]$
+</span><span class='line'>[watashi@example-host ~]$ sudo  service td-agent start
+</span><span class='line'>Starting td-agent:                                         [  OK  ]
+</span><span class='line'>[watashi@example-host ~]$</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ログや<code>mackerel</code>などで問題なく出力がされているか確認する。</p>
+
+<p>サービスを利用させてもらっている側もこのように地味なところで貢献できるので<br/>
+何かあったら色々とやってみよう💪</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-07-06T09:52:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Terraformとは</h2>
+
+<p><a href="https://www.terraform.io">https://www.terraform.io</a>ここ見てください。<br/>
+<code>INFRASTRUCTURE AS CODE</code>と書いてあります。</p>
+
+<h2>何が便利か</h2>
+
+<p>たとえばAWSの新規VPCの作成など画面ポチポチで設定していくオペレーションをコードに落とせる。</p>
+
+<blockquote><p>それってAPI叩けば同じでは？<br/>
+PaaSが<a href="https://www.terraform.io/docs/providers/index.html">色々</a>対応している。MySQLにも対応しているの&hellip;</p></blockquote>
+
+<h2>伝えたいこと</h2>
+
+<p>たとえばVPCを構築するとして</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr">Terraformの有識者にどうにかしてresourceの名前にvariableの値を入れる方法を教えてほしい🤔</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/status/750200917312417792">July 5, 2016</a></blockquote>
+
+
+<p> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>resource "aws_vpc" "${var.prefix}-${var.environment_name}-vpc" {
+</span><span class='line'>    cidr_block           = "${var.vpc.cidr_block}"
+</span><span class='line'>    enable_dns_hostnames = true
+</span><span class='line'>    enable_dns_support   = true
+</span><span class='line'>    instance_tenancy     = "default"
+</span><span class='line'>
+</span><span class='line'>    tags {
+</span><span class='line'>        "Name" = "${var.environment_name}-vpc"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>などと<code>resource</code>名をユニークな感じでやろうとしたのだけれど</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr">so this is by design.と言われればそれまでだ <a href="https://t.co/Im2kwIqiQa">https://t.co/Im2kwIqiQa</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/status/750218349884301313">July 5, 2016</a></blockquote>
+
+
+<p> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><code>by design</code>と言われていたので、なんだか使いづらいな〜と考えていた。が</p>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr">そもそもresourceは固有な名前を設定すべきではないという思想が理解できていなかった、例えばpublicであればfoo-development-publicなどとうい名前を付けるべきではなかった</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/status/750243305481396224">July 5, 2016</a></blockquote>
+
+
+<p> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>そうなのだ。そもそもこの発想で良く、<code>resource</code>はあくまでTerraform内での管理するためだけの命名であるので</p>
+
+<ul>
+<li>vpc.tf</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>resource "aws_vpc" "main-vpc" {
+</span><span class='line'>    cidr_block           = "${var.vpc.cidr_block}"
+</span><span class='line'>    enable_dns_hostnames = true
+</span><span class='line'>    enable_dns_support   = true
+</span><span class='line'>    instance_tenancy     = "default"
+</span><span class='line'>
+</span><span class='line'>    tags {
+</span><span class='line'>        "Name" = "${var.environment_name}-vpc"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このように<code>Name Tags</code>でユニークな情報を付与すれば良かった。  <br/>
+このことに気付かず<code>resource</code>にひたすら<code>variable</code>の値を入れようと頑張っていた。</p>
+
+<p>結局、上記のように<code>resource</code>にユニークな情報を入れない仕組みで汎用性は担保できた。<br/>
+これで似たような環境も</p>
+
+<ul>
+<li>vpc.tf</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Create Subnet
+</span><span class='line'># - ec2:CreateSubnet
+</span><span class='line'>resource "aws_subnet" "some-subnet-a" {
+</span><span class='line'>    vpc_id            = "${aws_vpc.main-vpc.id}"
+</span><span class='line'>    cidr_block        = "${var.vpc.public_subnet_a}"
+</span><span class='line'>    availability_zone = "${var.availability_zone.a}"
+</span><span class='line'>    tags {
+</span><span class='line'>        Name = "${var.environment_name}-some-subnet-a"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>variables.tf</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>variable "region" {
+</span><span class='line'>    default = "ap-northeast-1"
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>variable "environment_name" {
+</span><span class='line'>    default = "development"
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>variable "availability_zone" {
+</span><span class='line'>    default = {
+</span><span class='line'>        a = "ap-northeast-1a"
+</span><span class='line'>        c = "ap-northeast-1c"
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>variable "vpc" {
+</span><span class='line'>    default = {
+</span><span class='line'>        cidr_block    = "10.200.0.0/16"
+</span><span class='line'>        some_subnet_a = "10.200.210.0/24"
+</span><span class='line'>        some_subnet_c = "10.200.211.0/24"
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のように<code>variables.tf</code>などと値を別のファイルに分けておくことで<br/>
+汎用的なテンプレートが作成可能となる。しかし便利だな〜</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="新年あけましておめでとうございます。
+年初めは意識高いのでやろうと思ってたこと実行するのに良い機会ですね。 ということでOctopressを入れてみました。 手順 1. nginxの設定 nginx.confに下記内容を記述 1
+2
+3
+4
+5
+6
+7
+server { listen 8080; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/50/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/02/ocococtopress/">さくらVPSでOctopress</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-02T19:34:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>新年あけましておめでとうございます。<br/>
+年初めは意識高いのでやろうと思ってたこと実行するのに良い機会ですね。</p>
+
+<p>ということで<a href="http://octopress.org/">Octopress</a>を入れてみました。</p>
+
+<h3>手順</h3>
+
+<h4>1. nginxの設定</h4>
+
+<p><code>nginx.conf</code>に下記内容を記述</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server {
+</span><span class='line'>    listen 8080;
+</span><span class='line'>    server_name blog.kenjiskywalker.org;
+</span><span class='line'>    root /home/blog/;
+</span><span class='line'>    index index.html;
+</span><span class='line'>    access_log /var/log/nginx/blog/access_log skywalker;
+</span><span class='line'>    error_log  /var/log/nginx/blog/error_log  error;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>8080</code>なのは、フロントにvarnishがいるから。<br/>
+これで <em>blog.kenjiskywalker.org</em> にアクセスが来たら<br/>
+<code>/home/blog/</code>のディレクトリを見に行くようになる。</p>
+
+<h4>2. オフィシャルのドキュメントを読みながらOctopressの設定</h4>
+
+<p><a href="http://java.com/en/download/apple_manual.jsp">Octopress Setup</a></p>
+
+<p>とくに躓くところはなし。</p>
+
+<p><a href="http://octopress.org/docs/deploying/">Deploying</a></p>
+
+<p>さくらVPSで運用する予定なので<br/>
+<a href="http://octopress.org/docs/deploying/rsync/">Deploying With Rsync</a>を読みながら作業。問題なし。</p>
+
+<p><code>Rakefile</code>はnginxにて設定したように</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>document_root  = "/home/blog/" </span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/home/blog/</code>を記述。</p>
+
+<p><a href="http://octopress.org/docs/configuring/">Configuring Octopress</a></p>
+
+<p>最低限の設定を行った。
+この辺はもうちょっといじくりたい。</p>
+
+<ul>
+<li>右サイドバーにGithubのリポジトリ表示したり</li>
+<li>Twitterのストリーミング流したり</li>
+<li>Google Analyticsの設定したりするのもここで行える</li>
+</ul>
+
+
+<p>カスタマイズページを右上に表示してみたかったので</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>default_asides: [asides/about.html, </span></code></pre></td></tr></table></div></figure>
+
+
+<p>と<em>about.html</em>の設定を追記して</p>
+
+<p><code>/source/_includes/asides/about.html</code>にファイルを設置。</p>
+
+<p>参考：<a href="http://qiita.com/items/ac729ec076f477f05ac6">Octopressでサイドバーに簡易プロフィールを表示させよう！</a></p>
+
+<h4>3. Glide Noteさんを参考にvimの設定</h4>
+
+<p><a href="http://blog.glidenote.com/blog/2012/04/02/octoeditor.vim/">Octopressの記事管理用プラグイン、Octoeditor.vimを作った</a></p>
+
+<p>神様。このエントリーもOctoeditor.vim使って書かせてもらっています！</p>
+
+<h4>4. 記事を書いて確認してみる</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake generate
+</span><span class='line'>で、source/配下の(記事であればsource/_post/)ファイルをよしなにpublicへゴリゴリしながらつくりあげて
+</span><span class='line'>
+</span><span class='line'>$ rake preview
+</span><span class='line'>で、localhost:4000で確認
+</span><span class='line'>
+</span><span class='line'>$ rake deploy
+</span><span class='line'>問題がなければデプロイでfinish！</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記コマンドはすべてOctoeditorで完結しているのですが<br/>
+念の為コマンドを打ってみて動きを確認。</p>
+
+<p>deploy先で正常に閲覧できればOKです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

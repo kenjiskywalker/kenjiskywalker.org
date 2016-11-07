@@ -1,0 +1,871 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="日本語の情報があまりなかったので共有しておきます。 aws cli 1.2.9 参考 AWS CLI / request-spot-instances
+基本のドキュメント。
+AWS CLI / run-instances &ndash;user-data (blob) Specifies &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/25/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/07/aws-cli-request-spot-instances/">AWS CLIでスポットインスタンスリクエストを送る</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-07T20:39:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>日本語の情報があまりなかったので共有しておきます。</p>
+
+<blockquote><p>aws cli 1.2.9</p></blockquote>
+
+<h2>参考</h2>
+
+<ul>
+<li><p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/request-spot-instances.html">AWS CLI / request-spot-instances</a><br/>
+基本のドキュメント。</p></li>
+<li><p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html">AWS CLI / run-instances</a></p>
+
+<blockquote><p>&ndash;user-data (blob)</p>
+
+<p>Specifies additional information to make available to the instance(s). This parameter must be passed as a Base64-encoded string.</p></blockquote></li>
+</ul>
+
+
+<p>user-dataをbase64で送らなければいけないことはこちらに書いてあった。</p>
+
+<ul>
+<li><a href="http://blog.awsapi.com/blog/2013/09/17/launch-your-own-nat-instance-under-vpc/">Launch Your Own NAT Instance in VPC - Indefinable Hacking</a><br/>
+ヘンリーさんのやり方がとてもセンスがあった。ほぼヘンリーさんのやり方を踏襲した。</li>
+</ul>
+
+
+<h2>exp) spot_instance_request.sh</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>HOST=$1
+</span><span class='line'>AMI="AMI"
+</span><span class='line'>INSTANCE_TYPE="t1.micro"
+</span><span class='line'>PRICE="0.1"
+</span><span class='line'>KEYPAIR="KEYPAIR"
+</span><span class='line'>AZ="AZ"
+</span><span class='line'>USER_DATA=`echo "${HOST}" | openssl enc -base64`
+</span><span class='line'>REGION="REGION"
+</span><span class='line'>SECURITY_GROUPS="\"default\", \"image\""
+</span><span class='line'>
+</span><span class='line'>### jq check
+</span><span class='line'>JQ_COMMAND=`which jq`
+</span><span class='line'>if [ -z ${JQ_COMMAND} ]; then
+</span><span class='line'>    echo "jq command not found"
+</span><span class='line'>    exit 1
+</span><span class='line'>fi
+</span><span class='line'>
+</span><span class='line'>### SET JSON
+</span><span class='line'>rm -f /tmp/launch_config.json
+</span><span class='line'>cat &lt;&lt; EOF &gt;&gt; /tmp/launch_config.json
+</span><span class='line'>{
+</span><span class='line'>  "ImageId": "${AMI}",
+</span><span class='line'>  "KeyName": "${KEYPAIR}",
+</span><span class='line'>  "InstanceType": "${INSTANCE_TYPE}",
+</span><span class='line'>  "Placement": {
+</span><span class='line'>    "AvailabilityZone": "${AZ}"
+</span><span class='line'>  },
+</span><span class='line'>  "Monitoring": {
+</span><span class='line'>    "Enabled": true
+</span><span class='line'>  },
+</span><span class='line'>  "UserData": "${USER_DATA}",
+</span><span class='line'>  "SecurityGroups": [
+</span><span class='line'>    ${SECURITY_GROUPS}
+</span><span class='line'>  ]
+</span><span class='line'>}
+</span><span class='line'>EOF
+</span><span class='line'>
+</span><span class='line'>### PUT SPOT_REQUEST
+</span><span class='line'>aws ec2 request-spot-instances --spot-price ${PRICE} --region ${REGION} --launch-specification file:///tmp/launch_config.json &gt; /tmp/spot_request.json
+</span><span class='line'>SIR_ID=`jq '.SpotInstanceRequests[0] | .SpotInstanceRequestId' /tmp/spot_request.json --raw-output`
+</span><span class='line'>
+</span><span class='line'>echo "[INFO] SpotInstanceRequestID: ${SIR_ID}";
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>### GET SPOT_INSTANCE INSTANCE_ID
+</span><span class='line'>rm -f /tmp/spot_instance.json
+</span><span class='line'>
+</span><span class='line'>aws ec2 describe-spot-instance-requests --spot-instance-request-ids ${SIR_ID} --region ${REGION} &gt; /tmp/spot_instance.json
+</span><span class='line'>INSTANCE_ID=`jq '.SpotInstanceRequests[0] | .InstanceId' /tmp/spot_instance.json --raw-output`
+</span><span class='line'>
+</span><span class='line'>while [ "${INSTANCE_ID}" == "null" ]
+</span><span class='line'>do
+</span><span class='line'>    aws ec2 describe-spot-instance-requests --spot-instance-request-ids ${SIR_ID} --region ${REGION} &gt; /tmp/spot_instance.json
+</span><span class='line'>    INSTANCE_ID=`jq '.SpotInstanceRequests[0] | .InstanceId' /tmp/spot_instance.json --raw-output`
+</span><span class='line'>
+</span><span class='line'>    sleep 10
+</span><span class='line'>done
+</span><span class='line'>
+</span><span class='line'>echo "[INFO] INSTANCE_ID: ${INSTANCE_ID}";
+</span><span class='line'>
+</span><span class='line'># つづく</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じで取得できます。</p>
+
+<ul>
+<li>Monitoringが渡せなかった。(バージョンを1.2.9にしたら渡せるようになった)</li>
+<li>JSON祭り</li>
+<li>UserDataをbase64にencodeしないといけない</li>
+<li>SecurityGroupsの渡し方がアレだ</li>
+</ul>
+
+
+<p>などなどやっていました。今後は<code>DeleteOnTermination</code>も有効にしたいです。<br/>
+aws cliはバージョンがどんどん上がっているので、そのうち<br/>
+JSON祭りもなくなるのではないかと思います。</p>
+
+<p>参考になれば幸いです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/05/sensu-centos6-4-erlang-install/">CentOS 6.5でChefからSensuをインストールしようとするとRabbitMQでコケる回避策</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-05T18:33:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>date       : 2014/01/05<br/>
+OS         : CentOS 6.5<br/>
+Sensu      : sensu-0.12.3-1.x86_64<br/>
+sensu-chef : 0.8.0</p></blockquote>
+
+<p>=== (2014/01/06)追記 =======================</p>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> CentOS 6.4 → 6.5 にしたら出なくなった･･･うーむ</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/420100517943967744">January 6, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>ドラクエ氏によると、この解決策だと6.4は別のエラーがでるとのこと。</p>
+
+<hr />
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> centos?</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419716838642032641">January 5, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> CentOS 6.4 の openssl のビルド設定が変わってて Erlang が crypto モジュールを読むところで落ちるです</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419717299747037184">January 5, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/naoya_ito">@naoya_ito</a> まさにこれですw どうにかできないかやってみます</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/419717712474959872">January 5, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> うまくいったら教えてくださいｗ</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419717651015823360">January 5, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/voluntas">@voluntas</a> ありがとうございます。R16B02-0.1でいけるならerlang-solutionsでyumインストール時にバージョン指定すれば回避できるのかなと思ってChefでどうやるのか調べております</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/419730565164580864">January 5, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>という感じでうまくいかなかったのでBKっぽいけど取り敢えず回避策を</p>
+
+<h2><a href="https://github.com/sensu/sensu-chef">https://github.com/sensu/sensu-chef</a></h2>
+
+<p>このSensuのリポジトリは<a href="http://community.opscode.com/cookbooks/sensu">opscode</a>に上がっているので<br/>
+knifeで取ってきます。他にも必要なrecipeを合わせて持ってこれるので便利です。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>knife cookbook site vendor sensu -o cookbooks/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>関係するrecipeがダウンロードされたことを確認してください。<br/>
+次にREADMEに書いてあるようにSSL証明書を作成します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd ./cookbooks/sensu/examples/ssl/
+</span><span class='line'>./ssl_certs.sh generate
+</span><span class='line'>knife data bag create sensu
+</span><span class='line'>knife data bag from file sensu ssl.json</span></code></pre></td></tr></table></div></figure>
+
+
+<p>などとSSLを作成しますが
+knifeが上手く動かない場合は</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir ./data_bags/sensu
+</span><span class='line'>cp ./cookbooks/sensu/examples/ssl/ssl.json data_bags/sensu/</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とすることで同じ結果を得られます。
+次に<code>run_list</code>を作成します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{
+</span><span class='line'>  "default_attributes": {
+</span><span class='line'>  },
+</span><span class='line'>  "override_attributes": {
+</span><span class='line'>  },
+</span><span class='line'>  "run_list": [
+</span><span class='line'>    "sensu",
+</span><span class='line'>    "sensu::redis",
+</span><span class='line'>    "sensu::rabbitmq"
+</span><span class='line'>  ]
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この状態でChefを廻します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Recipe: rabbitmq::default
+</span><span class='line'>  * service[rabbitmq-server] action restart
+</span><span class='line'>================================================================================
+</span><span class='line'>Error executing action `restart` on resource 'service[rabbitmq-server]'
+</span><span class='line'>================================================================================
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Mixlib::ShellOut::ShellCommandFailed
+</span><span class='line'>------------------------------------
+</span><span class='line'>Expected process to exit with [0], but received '1'
+</span><span class='line'>---- Begin output of /sbin/service rabbitmq-server start ----
+</span><span class='line'>STDOUT: Starting rabbitmq-server: FAILED - check /var/log/rabbitmq/startup_{log, _err}
+</span><span class='line'>rabbitmq-server.
+</span><span class='line'>STDERR:
+</span><span class='line'>---- End output of /sbin/service rabbitmq-server start ----
+</span><span class='line'>Ran /sbin/service rabbitmq-server start returned 1
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Resource Declaration:
+</span><span class='line'>---------------------
+</span><span class='line'># In /root/chef-solo/cookbooks-3/rabbitmq/recipes/default.rb
+</span><span class='line'>
+</span><span class='line'>106:   service node['rabbitmq']['service_name'] do
+</span><span class='line'>107:     action [:enable, :start]
+</span><span class='line'>108:   end
+</span><span class='line'>109:
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Compiled Resource:
+</span><span class='line'>------------------
+</span><span class='line'># Declared in /root/chef-solo/cookbooks-3/rabbitmq/recipes/default.rb:106:in `from_file'
+</span><span class='line'>
+</span><span class='line'>service("rabbitmq-server") do
+</span><span class='line'>  action [:enable, :start]
+</span><span class='line'>  updated true
+</span><span class='line'>  supports {:restart=&gt;false, :reload=&gt;false, :status=&gt;true}
+</span><span class='line'>  retries 0
+</span><span class='line'>  retry_delay 2
+</span><span class='line'>  service_name "rabbitmq-server"
+</span><span class='line'>  enabled true
+</span><span class='line'>  running true
+</span><span class='line'>  pattern "rabbitmq-server"
+</span><span class='line'>  startup_type :automatic
+</span><span class='line'>  cookbook_name :rabbitmq
+</span><span class='line'>  recipe_name "default"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と、このようにエラーになります。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>diff --git cookbooks/erlang/recipes/package.rb cookbooks/erlang/recipes/package.rb
+</span><span class='line'>index 19f9fce..6cec68f 100644
+</span><span class='line'>--- cookbooks/erlang/recipes/package.rb
+</span><span class='line'>+++ cookbooks/erlang/recipes/package.rb
+</span><span class='line'>@@ -43,5 +43,9 @@ when 'rhel'
+</span><span class='line'>     include_recipe 'yum-erlang_solutions'
+</span><span class='line'>   end
+</span><span class='line'>
+</span><span class='line'>-  package 'erlang'
+</span><span class='line'>+  execute "yum install -y erlang-R16B02" do
+</span><span class='line'>+    user "root"
+</span><span class='line'>+    command "yum install -y erlang-R16B02"
+</span><span class='line'>+    not_if { File.exists? "/usr/bin/erl" }
+</span><span class='line'>+  end
+</span><span class='line'> end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のようにバージョンを含めたパッケージの指定をすることで回避できました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>package 'erlang' do
+</span><span class='line'>  version "R16B02"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この方法でイケるかと思ったのですがそんなバージョンはない。とエラーになりました。<br/>
+以上、取り敢えずの回避策としてご利用下さい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/03/2013/">2013年の振り返り</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-03T11:58:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>去年の振り返り</p>
+
+<h2>発表したこと</h2>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/01/26/qpstudy-buddhism/">#qpstudyと仏教とわたし</a><br/>
+mizzyさんと初めてガッツリ話すことができた。貴重な体験だった。<br/>
+その後、カヤックの勉強会でhsbtさん、kentaroさんともお会いすることができて<br/>
+本当に貴重だった。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/03/09/monitoringcasualvol3/">#monitoringcasual Vol3 に参加してきました</a><br/>
+fluentdのプラグインを2つつくったので発表してきた。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/03/30/perlcasual5/">PerlCasual #5に参加してLTしてきた #perlcasual</a><br/>
+yusukebe氏にお声がけ頂き発表してきた。<br/>
+もうちょっと技術寄りの内容を話したかった。まだまだだ。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/03/30/chibapm2/">Chiba.pm #2に参加してきた #chibapm</a><br/>
+愛するChiba.pmへの初参加だった。とても温かいバイブスが流れていた。<br/>
+モズ君のエモいLTが見れてすごい！ってなってた。また参加したい。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/04/18/mysqlcasual4/">#mysqlcasual vol.4 でカジュアルに発表してきました</a><br/>
+myfinder氏にお声がけ頂き発表してきた。<br/>
+会場で一番MySQLのこと知らない感じだった。まだまだだ。</p>
+
+<p><a href="https://speakerdeck.com/kenjiskywalker/services-on-aws-number-jawsug-yokohama">Service on AWS #jawsug yokohama</a><br/>
+kuwa_tw氏とtmae氏にお声がけ頂き発表してきた。 <br/>
+いまいち刺さらなかった感じがするのでもうちょっと発表の仕方を考えた方がいいと感じた。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/12/01/monitoringcasual-kyoto/">Monitoring Casual Talk in Kyoto 行ってきた #monitoringcasual</a><br/>
+京都最高だった。shiba_yu36君の家に泊まらせてもらってありがたかった。<br/>
+布団がきちんと入らなかったの本当に申し訳なかった。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/12/14/fluentd-casual-3/">Fluentd Casual Talks #3 でChefの話をしてきました #fluentdcasual</a><br/>
+fluentdが太ってきた時にどうしたか、みたいなハウツー共有したくて発表してきた。<br/>
+20分ぐらいかかる内容を5分で話すのむずかしかった。<br/>
+話し方についてもう少し工夫をする必要があるなって思った。</p>
+
+<p>発表するの、今でも緊張するけどそれでもやっぱり場数踏めばそこそこ慣れてくるもので<br/>
+2013年も発表するのでいっぱいいっぱいだったけど、2014年はもう少しゆっくり話せるようにしたい。</p>
+
+<h2>去年のブログ一覧</h2>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/archives/">http://blog.kenjiskywalker.org/blog/archives/</a></p>
+
+<p>AWS元年だった。やったことのないことをやらせて下さいって言って<br/>
+やらせてもらえたから色々学べた。本当にありがたい限りだった。<br/>
+やらせてもらえて学んだことはなるべくアウトプットしていった。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/11/07/example-aws-cost/">AWS費用試算例</a></p>
+
+<p>計算方法とかちゃんと理解していなかったのでこのエントリーを書くことで理解が深まった。<br/>
+t1.microを利用していても転送量で金額がいかようにもなることが頭で理解できた。</p>
+
+<p>ChefとZabbixはだいぶ手に馴染むようになった。<br/>
+細かいtipsなんかもちょくちょくアウトプットできた。</p>
+
+<p>オペミスし易い自分としては、オペミスが起こってもなるべく影響がない状態に持っていければ問題がなくて、若田光一さんがインタビューで「ミスは必ず起こる、そのミスをいかに最小限の影響で終わらすのが大切だ」という話をしていて<br/>
+2014年はまさにそこに注力していきたいと考えている。</p>
+
+<p>設定のミスなどの気付きについては<a href="http://serverspec.org/">serverspec</a>を利用するのが最高だ。感動した流れでpull-reqした。<br/>
+<a href="https://github.com/serverspec/serverspec/pull/63">https://github.com/serverspec/serverspec/pull/63</a><br/>
+<a href="https://github.com/serverspec/serverspec/pull/64">https://github.com/serverspec/serverspec/pull/64</a><br/>
+きっと時間が経つにつれてどんどん恥ずかしくなっていくpull-reqだと思う。<br/>
+エレガントなpull-reqを送れるように精進していこう。</p>
+
+<p>Chefとserverspecを利用しているならこちらを参考にしてもらうと捗ると思う。<br/>
+<a href="http://blog.kenjiskywalker.org/blog/2013/07/31/serverspec-attribute/">Testing #chef Cookbook by #serverspec #devops</a><br/>
+つたない英語で件名にハッシュタグまで付けてみたけど<br/>
+海外の人に全く刺さらなくて社会の厳しさを感じた瞬間だった。</p>
+
+<h2>つくったもの</h2>
+
+<p><a href="https://rubygems.org/gems/fluent-plugin-cloudwatch">fluent-plugin-cloudwatch</a> # ほとんどyunomuさんがつくってくれたものを利用しただけ<br/>
+<a href="https://rubygems.org/gems/fluent-plugin-rds-slowlog">fluent-plugin-rds-slowlog</a><br/>
+<a href="http://blog.kenjiskywalker.org/blog/2013/09/18/temple-kun/">Golang on GAE で軽いものを取り敢えずつくる</a><br/>
+<a href="http://blog.kenjiskywalker.org/blog/2013/10/10/value-domain-update-go/">Goでvalue Domainのアップデートスクリプトかいた</a><br/>
+<a href="https://github.com/kenjiskywalker/imayaro-bot">Imayaro-bot</a><br/>
+<a href="http://blog.kenjiskywalker.org/blog/2013/10/14/scatter_kun/">IRCでお願いしたら分散図つくってくれるscatter_kunつくった</a>
+<a href="http://blog.kenjiskywalker.org/blog/2013/07/10/hisaichi-tweet/">earthquake.gemプラグイン３つ</a><br/>
+<a href="https://gist.github.com/kenjiskywalker/8232758">github_status_check.rb</a> # ikachan使ってる<br/>
+<a href="http://blog.kenjiskywalker.org/blog/2013/10/17/senrigan/">Zabbix::Senriganをつくりました</a></p>
+
+<p>ほかにもちょくちょくあるけど、しょーもないものから日常の便利ツールまで微妙なのをつくった。</p>
+
+<h2>去年は</h2>
+
+<p>すごい人たちとお会いするばかりだった。<br/>
+今年は自分のちからで色々とやらなければならない状態に持っていったので<br/>
+貢献して年収あげてきたい。おじさんズでがんばってこ！</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/01/01/2014/">あけましておめでとうございます</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-01T02:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="https://dl.dropboxusercontent.com/u/5390179/2014.jpg" alt="https://dl.dropboxusercontent.com/u/5390179/2014.jpg" /></p>
+
+<p>今年もよろしくお願いします。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/12/31/working-with-tcp-socket/">「Working With TCP Sockets」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-31T06:34:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><div class="booklog_html"><table><tr><td class="booklog_html_image"><a href="http://www.amazon.co.jp/Working-With-Sockets-Jesse-Storimer-ebook/dp/B00BPYT6PK%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00BPYT6PK" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51uNC60Jm4L._SL160_.jpg" width="160" height="124" style="border:0;border-radius:0;" /></a></td><td class="booklog_html_info" style="padding-left:20px;"><div class="booklog_html_title" style="margin-bottom:10px;font-size:14px;font-weight:bold;"><a href="http://www.amazon.co.jp/Working-With-Sockets-Jesse-Storimer-ebook/dp/B00BPYT6PK%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00BPYT6PK" target="_blank">Working With TCP Sockets</a></div><div style="margin-bottom:10px;"><div class="booklog_html_author" style="margin-bottom:15px;font-size:12px;;line-height:1.2em">著者 : <a href="http://booklog.jp/author/Jesse+Storimer" target="_blank">Jesse Storimer</a></div><div class="booklog_html_manufacturer" style="margin-bottom:5px;font-size:12px;;line-height:1.2em"></div><div class="booklog_html_release" style="font-size:12px;;line-height:1.2em">発売日 : 2012-10-24</div></div><div class="booklog_html_link_amazon"><a href="http://booklog.jp/item/1/B00BPYT6PK" style="font-size:12px;" target="_blank">ブクログでレビューを見る»</a></div></td></tr></table></div>
+
+
+<p></p>
+
+<p>大切なことはここにすべて載っています。<br/>
+<a href="http://shibayu36.hatenablog.com/entry/2013/10/29/205718">Working With TCP Socketsを読んだ - $shibayu36->blog;</a></p>
+
+<p>これも読みました。<br/>
+<a href="http://melborne.github.io/2012/12/13/ruby-parallel-on-ebook/">電子書籍「irbから学ぶRubyの並列処理 ~ forkからWebSocketまで」EPUB版をGumroadから出版しました！</a></p>
+
+<p>100円で完結にまとめられていて最高でした。</p>
+
+<p>コード参考<br/>
+<a href="http://ja.scribd.com/doc/28253878/EventMachine-scalable-non-blocking-i-o-in-ruby">EventMachine: scalable non-blocking i/o in ruby</a></p>
+
+<p>send(2)のマニュアルページ<br/>
+<a href="http://linuxjm.sourceforge.jp/html/LDP_man-pages/man2/sendmsg.2.html">http://linuxjm.sourceforge.jp/html/LDP_man-pages/man2/sendmsg.2.html</a></p>
+
+<h3>ソケットの流れ</h3>
+
+<blockquote><ol>
+<li>socket(2) ソケットの生成</li>
+<li>bind(2)   ソケットとポートの結合</li>
+<li>listen(2)   接続キューの作成(サーバ)</li>
+<li>accept(2)   接続受け入れ(サーバ)</li>
+<li>send(2), write(2) パケット送信</li>
+<li>recv(2), read(2) パケット受信</li>
+<li>close   ソケットの終了</li>
+</ol>
+</blockquote>
+
+<p>基礎について改めて勉強になった。accept_loop便利だった。<br/>
+IO.selectの部分はepollとかkqueueでやってるんじゃないのかな。<br/>
+EventMachineどうなってるんだろう。って思って調べたら</p>
+
+<ul>
+<li>ext/project.h</li>
+</ul>
+
+
+<pre>
+#ifdef HAVE_EPOLL
+#include <sys/epoll.h>
+#endif
+
+#ifdef HAVE_KQUEUE
+#include <sys/event.h>
+#include <sys/queue.h>
+#endif
+
+#ifdef HAVE_INOTIFY
+#include <sys/inotify.h>
+#endif
+</pre>
+
+
+<p>ってやってた。</p>
+
+<p>この人の本はわかりやすくていい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

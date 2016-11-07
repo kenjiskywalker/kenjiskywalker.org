@@ -1,0 +1,706 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="IRKitの初期ロットを利用していたので、モールス信号で
+設定がとばせなくなっていたのでファームウェアのアップデートをした。
+やり方はGitHubのページの通りに行えば問題ない。 https://github.com/irkit/device &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/20/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/20/irkit-firmware-update/">IRKitのファームウェアをアップデートしてWi-Fiに繋がるようになった</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-20T00:05:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>IRKitの初期ロットを利用していたので、モールス信号で<br/>
+設定がとばせなくなっていたのでファームウェアのアップデートをした。<br/>
+やり方はGitHubのページの通りに行えば問題ない。</p>
+
+<p><a href="https://github.com/irkit/device">https://github.com/irkit/device</a></p>
+
+<p>ファームウェアをアップデートしても赤点滅から先に進まなくて<br/>
+参ったなーと思ったのだが、Wi-Fiのアクセスポイントに<a href="https://www.planex.co.jp/product/wireless/mzk-sa300d/">MZK-SA300D</a>を利用していて<br/>
+こいつがたまにgの回線だけ見えなくなる場合があったので<br/>
+アクセスポイントを再起動して、無事接続できた。</p>
+
+<blockquote><p>AppleTV -> 古いREGZA -> JVCのTH-BC2</p></blockquote>
+
+<p>という形式でリビングで音楽流したりしていて、<br/>
+REGZAとTH-BC2をIRKitで操作できるようになった。<br/>
+操作がiPhoneだけで完結するようになったので大変便利になった。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/12/zabbix_jp_6/">第6回 ZABBIX-JP勉強会で発表してきた #zabbix_jp</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-12T16:54:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>@ike_daiさん、登壇できる機会を頂きありがとうございました。</p>
+
+<h2>発表資料</h2>
+
+<script async class="speakerdeck-embed" data-id="275e46e0a43b013120041af8c79ec55f" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+
+
+<h2>参考URL</h2>
+
+<h4>ZABBIXでメトリクス監視の話</h4>
+
+<iframe src="http://www.slideshare.net/slideshow/embed_code/13345536" width="597" height="486" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+
+
+<p> <div style="margin-bottom:5px"> <strong> <a href="https://www.slideshare.net/kenjiskywalkerslide/zabbix-13345536" title="ZABBIXでメトリクス監視の話" target="_blank">ZABBIXでメトリクス監視の話</a> </strong> from <strong><a href="http://www.slideshare.net/kenjiskywalkerslide" target="_blank">kenjiskywalkerslide</a></strong> </div></p>
+
+<h3>Zabbixでメトリクス監視する - kenjiskywalker&rsquo;s diary</h3>
+
+<p><a href="http://kenjiskywalker.hatenablog.com/entry/20120510/1336623133">http://kenjiskywalker.hatenablog.com/entry/20120510/1336623133</a></p>
+
+<h3>Zabbix::Senriganをつくりました - さよならインターネット</h3>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/10/17/senrigan/">http://blog.kenjiskywalker.org/blog/2013/10/17/senrigan/</a></p>
+
+<h3>Zabbix::Senriganをつくった話をします</h3>
+
+<p><a href="https://gist.github.com/kenjiskywalker/7703670">https://gist.github.com/kenjiskywalker/7703670</a></p>
+
+<p>結構プルダウン地獄に対する共感があってみんなそうなのか〜って思いました。<br/>
+しかし2.4ですべて解決しそうなのでいよいよ最強になりそうですね。</p>
+
+<p>zenbutsuさんのSerfの話は今インフラ周りで流行っているイミュータブルやら<br/>
+ディスポーザブルやらの監視においても優位に働くのではないでしょうか。</p>
+
+<blockquote class="twitter-tweet" lang="en"><p>ZABBIX、やはり超古代兵器だ&#8230; <a href="https://twitter.com/search?q=%23zabbix_jp&amp;src=hash">#zabbix_jp</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/454897033132777472">April 12, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>2014年もメトリクス＋アラートの最高システムは<br/>
+ZABBIXで決まりっぽいですね。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/04/01/fluentd-buffer-forward/">Flunetd、forward先がダメだった時にforward元である程度ログを担保したい</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-01T13:18:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>fluentdのbufferとforwardについて調べたのでメモ。</p>
+
+<blockquote><p>fluentd v0.10.45</p></blockquote>
+
+<h2>追記( 04/02 00:27)</h2>
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> flushしようとしてできなかったbufferにもlimitまで溜まるから、1kbのbufferが128個で限界にはならないような気がしますが</p>&mdash; fujiwara (@fujiwara) <a href="https://twitter.com/fujiwara/statuses/451015148627456000">April 1, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/fujiwara">@fujiwara</a> 今手元で試したんですけどflush_interval関係なさそうですね。普通にflush_interval 1s buffer_chunk_limit 10とか指定してもそれ以上のbuffer保持してました</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/451018249442836483">April 1, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+<blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/tagomoris">@tagomoris</a> <a href="https://twitter.com/fujiwara">@fujiwara</a> なるほど〜！</p>&mdash; ブラッド・ピット (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/451019439786307585">April 1, 2014</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>とのことです。</p>
+
+<p>こちらも参照してください。</p>
+
+<p><a href="http://togetter.com/li/650177">fluentd の buffer あふれ改善議論 - togetter</a></p>
+
+<p><code>flush_interval</code>はあくまでflushするだけであって<br/>
+貯まる分は</p>
+
+<p><code>buffer_chunk_limit x buffer_queue_limit</code></p>
+
+<p>が影響する。ということですね。</p>
+
+<p>update( 04/02 11:40 )</p>
+
+<h2>参考</h2>
+
+<p><a href="http://docs.fluentd.org/en/articles/buffer-plugin-overview">fluentd - Buffer Plugin Overview</a><br/>
+<a href="http://d.hatena.ne.jp/tagomoris/20130123/1358929254">tagomorisのメモ置き場 - FluentdでバッファつきOutputPluginを使うときのデフォルト値</a></p>
+
+<h3>構成</h3>
+
+<ul>
+<li>各ホストから集約サーバへ<code>foward</code>している</li>
+<li>集約サーバはログを受け取ってゴニョゴニョしている</li>
+</ul>
+
+
+<h3>Buffer</h3>
+
+<p><a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/buffer.rb#L116">BasicBuffer</a><br/>
+<a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/plugin/buf_file.rb#L76">FileBuffer</a><br/>
+<a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/plugin/buf_memory.rb#L67">MemoryBuffer</a></p>
+
+<h4>buffer_chunk_limit</h4>
+
+<p>FileBuffer = デフォルト(8MB)<br/>
+MemoryBuffer = デフォルト(8MB)</p>
+
+<h4>buffer_queue_limit</h4>
+
+<p>FileBuffer = デフォルト(256)<br/>
+MemoryBuffer = <a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/plugin/buf_memory.rb#L76">64</a></p>
+
+<h4>総バッファサイズ</h4>
+
+<ul>
+<li><p>FileBuffer<br/>
+= 8 * 256 = 2048(2GB)</p></li>
+<li><p>MemoryBuffer<br/>
+= 8 * 64 = 512(512MB)</p></li>
+</ul>
+
+
+<h4>flush_interval</h4>
+
+<p>flush_interval = デフォルト(<a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/output.rb#L175">60s</a>)</p>
+
+<h3>Bufferされる値を算出する</h3>
+
+<p><a href="http://docs.fluentd.org/en/articles/buffer-plugin-overview">fluentd - Buffer Plugin Overview</a></p>
+
+<blockquote><p>When the top chunk exceeds the specified size or time limit<br/>
+(buffer_chunk_limit and flush_interval, respectively),<br/>
+a new empty chunk is pushed to the top of the queue.<br/>
+The bottom chunk is written out immediately when new chunk is pushed.</p></blockquote>
+
+<p>例えば</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;match **&gt;
+</span><span class='line'>  type forward
+</span><span class='line'>  flush_interval 1s
+</span><span class='line'>  buffer_queue_limit 128
+</span><span class='line'>  buffer_chunk_limit 1g
+</span><span class='line'>  &lt;server&gt;
+</span><span class='line'>    host localhost
+</span><span class='line'>    port 24225
+</span><span class='line'>  &lt;/server&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と設定していた場合、<code>buffer_queue_limit 1G</code>と<code>flush_interval 1s</code>の<br/>
+どちらかの閾値を超えた場合にflushされます。</p>
+
+<blockquote><p>If the bottom chunk write out fails,<br/>
+it will remain in the queue and Fluentd will<br/>
+retry after waiting several seconds (retry_wait).<br/>
+If the retry count exceeds the specified limit (retry_limit),<br/>
+the chunk is trashed. The retry wait time doubles each time<br/>
+(1.0sec, 2.0sec, 4.0sec, …).<br/>
+If the queue length exceeds the specified limit (buffer_queue_limit),<br/>
+new events are rejected.</p></blockquote>
+
+<p>例えば上記設定例で</p>
+
+<ul>
+<li><code>forward</code>先にデータが転送できなかった</li>
+<li>ログファイルは<code>1kB/sec</code>の書き込み</li>
+</ul>
+
+
+<p>である場合、<code>buffer_chunk_limit 1g</code>に達する前に<code>flush_interval 1s</code>に引っかかり<br/>
+<code>flush_interval 1s</code> x <code>buffer_queue_limit 128</code>(128kB)分のバッファを確保した後<br/>
+新しいqueueは受け付けられなくなるかと思いきや、flushはあくまでflushなので<br/>
+バッファする量は</p>
+
+<ul>
+<li>buffer_chunk_limit x buffer_queue_limit</li>
+</ul>
+
+
+<p>で決まるとのこと。</p>
+
+<p>forward時にログの転送元でどれだけのバッファを担保したいかは<br/>
+ログの流量と転送元と転送先のスペックによって変わるので<br/>
+みんなよしなにやっているのではないかと思います。</p>
+
+<h3>forward</h3>
+
+<p>結論から先に書いておくと</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;match **&gt;
+</span><span class='line'>  type forward
+</span><span class='line'>  hard_timeout 180s
+</span><span class='line'>  phi_threshold 100
+</span><span class='line'>  &lt;server&gt;
+</span><span class='line'>    host a
+</span><span class='line'>    port 24224
+</span><span class='line'>  &lt;/server&gt;
+</span><span class='line'>  &lt;server&gt;
+</span><span class='line'>    host un
+</span><span class='line'>    port 24224
+</span><span class='line'>    standby
+</span><span class='line'>  &lt;/server&gt;
+</span><span class='line'>  &lt;secondary&gt;
+</span><span class='line'>    type file
+</span><span class='line'>    path /var/log/fluent/forward-failed
+</span><span class='line'>  &lt;/secondary&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のような冗長構成にできるのは、forward先が<br/>
+いずれのサーバであっても同様の処理が行える時に限る。<br/>
+ということです。</p>
+
+<p>例えば<code>a</code>に障害があって<code>hard_timeout</code>で設定している<br/>
+180秒を超えた場合、転送先が<code>un</code>に変わります。<br/>
+しかし、結局<code>a</code>で処理していたログと<code>un</code>に流れたログを<br/>
+どこかでmergeしたりする必要があるのであれば、<br/>
+冗長構成を設定しない方が運用は楽かと。</p>
+
+<p>デフォルトの設定であれば</p>
+
+<ul>
+<li>retry_limit <a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/output.rb#L177">17</a></li>
+<li>retry_wait <a href="https://github.com/fluent/fluentd/blob/master/lib/fluent/output.rb#L178">1.0s</a></li>
+</ul>
+
+
+<p>となっており、最大<code>131072 sec</code>リトライしてくれます。<br/>
+ログの流量によってはその前に</p>
+
+<ul>
+<li><code>buffer_chunk_limit</code> x <code>buffer_queue_limit</code></li>
+</ul>
+
+
+<p>上記の閾値に引っかかる可能性がありますが、<br/>
+閾値に引っかかる前に<code>a</code>のサーバの状態を復活させた方が<br/>
+オペレーション的には楽だと思います。</p>
+
+<p>絶対ロストしてはいけないデータだから冗長構成は必須！！！<br/>
+という場合はそもそもfluentdの冗長構成の前にやることがあると思います。</p>
+
+<p>というようなことを書いたのですが、認識に誤りなどあれば<br/>
+ご指摘頂ければ幸いです。</p>
+
+<p><a href="http://togetter.com/li/650177">fluentd の buffer あふれ改善議論 - togetter</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/29/vyatta-pptp/">VyattaでVPN(PPTP)の設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T18:01:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>iOS用にPPTPで接続できるようにしたら便利だったので<br/>
+VyattaでVPN(PPTP)設定したメモ。</p>
+
+<p>参考：<a href="http://jedipunkz.github.io/blog/2012/06/13/vyatta-vpn/">Vyatta で構築する簡単 VPN サーバ</a></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ configure
+</span><span class='line'># set vpn pptp remote-access authentication local-users username ${USER} password ${PASSWORD}
+</span><span class='line'># set vpn pptp remote-access authentication mode local
+</span><span class='line'># set vpn pptp remote-access client-ip-pool start ${IP_START}
+</span><span class='line'># set vpn pptp remote-access client-ip-pool stop ${IP_END}
+</span><span class='line'># commit
+</span><span class='line'># save</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上です。市販のルータ使っていたらGUIで設定して<br/>
+反映する為にはルータの再起動が必要です。1分待って下さいとか<br/>
+なかなか渋いことになりますが、VyattaはCLIで設定すれば<br/>
+再起動など必要なく即反映されます。最高のユーザ体験です。</p>
+
+<p>もう市販のルータ使うことはないと思います。　</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/28/chef-ruby-block/">Chefのruby_blockを利用してファイル更新時に条件によってログを出力する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-28T01:59:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Chefには冪等性という特徴がありますが、実際の運用では<br/>
+ミドルウェアの設定の更新はしたいが、ミドルウェアの再起動までは<br/>
+自分の手で確認したい。という条件もあるかと思います。</p>
+
+<ul>
+<li>設定ファイルは常に更新しても良い</li>
+<li>設定ファイルが更新された時だけミドルウェアを起動したい</li>
+<li>設定ファイルが更新された時にミドルウェアが起動済みであればログに出力</li>
+</ul>
+
+
+<p>上記条件を満たすために実施した内容について共有します。</p>
+
+<ul>
+<li>chef/site-cookbooks/apache/recipes/default.rb</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>template "/etc/httpd/conf/httpd.conf" do
+</span><span class='line'>  source "httpd.conf.erb"
+</span><span class='line'>  owner  "www"
+</span><span class='line'>  mode   0644
+</span><span class='line'>  notifies :run, "ruby_block[warn]", :immediately
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>ruby_block "warn" do
+</span><span class='line'>  block do
+</span><span class='line'>
+</span><span class='line'>    # httpdが起動中であればログ出力
+</span><span class='line'>    unless `pgrep httpd` == ""
+</span><span class='line'>      print &lt;&lt;"EOS"
+</span><span class='line'>
+</span><span class='line'>\e[33m===================================================================
+</span><span class='line'>recipe:apache
+</span><span class='line'>
+</span><span class='line'>apacheが起動中です。
+</span><span class='line'>新しい設定を反映させるためにはapahceを再起動してください。
+</span><span class='line'>===================================================================\e[0m
+</span><span class='line'>EOS
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>  action :nothing
+</span><span class='line'>  notifies :start, "service[httpd]"
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>service "httpd" do
+</span><span class='line'>  action :enable
+</span><span class='line'>end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li><code>/etc/httpd/conf/httpd.conf</code> が更新される</li>
+<li><code>notifies :run, "ruby_block[warn]"</code>で<code>ruby_block</code>を実行</li>
+<li><code>ruby_block</code>内でミドルウェアが起動中かどうかRubyのコードで条件分岐</li>
+<li>起動中であればログを出力</li>
+<li><code>ruby_block</code>で<code>notifies :start, "service[httpd]"</code>を実行、ミドルウェアの起動を行う</li>
+</ol>
+
+
+<p><code>ruby_block</code>は実行順序が最後になるというChefの設計上、<br/>
+<code>notifies :start, "service[httpd]"</code>という方法を選択しました。</p>
+
+<p>もう少しマシな方法があれば是非とも教えてください。<br/>
+Chefは何か込み入ったことをしようとすると色々と工夫しないといけないのが難点ですね。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

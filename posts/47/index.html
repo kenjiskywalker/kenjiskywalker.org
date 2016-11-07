@@ -1,0 +1,1089 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="毎号、木造千手観音立像が1体付属。
+湛慶をはじめ慶派、院派、円派など、観音像を極限まで再現。 創刊号は本尊千手観音像から
+(このシリーズは1002回で完成します(講堂含む)) みたいなものが発売されたら、それを作り上げていくこと自体が仏教観あるし &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/47/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/25/deagostini-33/">ディアゴスティーニ社から「週間 蓮華王院本堂(三十三間堂)」が創刊されたら</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-25T14:17:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>毎号、木造千手観音立像が1体付属。<br/>
+湛慶をはじめ慶派、院派、円派など、観音像を極限まで再現。</p>
+
+<p>創刊号は本尊千手観音像から<br/>
+(このシリーズは1002回で完成します(講堂含む))</p>
+
+<p>みたいなものが発売されたら、それを作り上げていくこと自体が仏教観あるし<br/>
+多分一個人愛読してる人とか手を出さざるを得ない状況なのは待ちがないので<br/>
+本当に創刊されたらどうしよう&hellip;って今から悩んでいます。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/24/redis-sentiel-howto/">Redis Sentinelを動かしてみた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-24T16:13:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>以前、<a href="http://blog.kenjiskywalker.org/blog/2013/01/15/redis-sentinel/">Redis Sentinelを試す</a>というエントリーを書きましたが<br/>
+もう少し入り込んで検証してみた。</p>
+
+<p>殴り書きの域を出ていないので適時アップデートしていきたい。</p>
+
+<h2>検証環境</h2>
+
+<ul>
+<li>DATE: 2013/01/25</li>
+<li>CentOS 6.3</li>
+<li>Redis 2.6.9(remi)</li>
+</ul>
+
+
+<h2>ドキュメント</h2>
+
+<p><a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a></p>
+
+<p>こちらを参考に行います。</p>
+
+<h2>Sentinelの設定、および起動方法</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /usr/local/bin/redis-server /etc/sentinel.conf --sentinel
+</span><span class='line'>[28498] 25 Jan 01:28:24.447 * Max number of open files set to 10032
+</span><span class='line'>                _._                                                  
+</span><span class='line'>           _.-``__ ''-._                                             
+</span><span class='line'>      _.-``    `.  `_.  ''-._           Redis 2.6.9 (00000000/0) 64 bit
+</span><span class='line'>  .-`` .-```.  ```\/    _.,_ ''-._                                   
+</span><span class='line'> (    '      ,       .-`  | `,    )     Running in sentinel mode
+</span><span class='line'> |`-._`-...-` __...-.``-._|'` _.-'|     Port: 26379
+</span><span class='line'> |    `-._   `._    /     _.-'    |     PID: 28498
+</span><span class='line'>  `-._    `-._  `-./  _.-'    _.-'                                   
+</span><span class='line'> |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+</span><span class='line'> |    `-._`-._        _.-'_.-'    |           http://redis.io        
+</span><span class='line'>  `-._    `-._`-.__.-'_.-'    _.-'                                   
+</span><span class='line'> |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+</span><span class='line'> |    `-._`-._        _.-'_.-'    |                                  
+</span><span class='line'>  `-._    `-._`-.__.-'_.-'    _.-'                                   
+</span><span class='line'>      `-._    `-.__.-'    _.-'                                       
+</span><span class='line'>          `-._        _.-'                                           
+</span><span class='line'>              `-.__.-'                                               
+</span><span class='line'>
+</span><span class='line'>[28498] 25 Jan 01:28:24.451 * +slave slave 192.168.2.102:6379 192.168.2.102 6379 @ mymaster 192.168.2.101 6379
+</span><span class='line'>[28498] 25 Jan 01:28:25.358 * +sentinel sentinel 192.168.2.101:26379 192.168.2.101 26379 @ mymaster 192.168.2.101 6379</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じで起動します。</p>
+
+<h4>設定ファイル</h4>
+
+<p>参考: <a href="http://download.redis.io/redis-stable/sentinel.conf">http://download.redis.io/redis-stable/sentinel.conf</a></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sentinel monitor mymaster 127.0.0.1 6379 2
+</span><span class='line'>sentinel down-after-milliseconds mymaster 60000
+</span><span class='line'>sentinel failover-timeout mymaster 900000
+</span><span class='line'>sentinel can-failover mymaster yes
+</span><span class='line'>sentinel parallel-syncs mymaster 1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>オフィシャルの設定ファイルを参考に。</p>
+
+<h4>設定の意味</h4>
+
+<ul>
+<li><code>sentinel monitor &lt;master-name&gt; &lt;ip&gt; &lt;redis-port&gt; &lt;quorum&gt;</code></li>
+</ul>
+
+
+<p>この<code>&lt;quorum&gt;</code>は<em>Redis-Sentinelの数</em>を指します。<br/>
+Redis-Sentinelは、他のRedis-Sentinelが接続してきた場合に<br/>
+相互に理解する働きがあります。<br/>
+この機能によって<em>Split-brain-syndrome</em>を防ぐことが可能です。</p>
+
+<h4>Redisのレプリケーションが正常に行えている状態</h4>
+
+<p><img src="https://dl.dropbox.com/u/5390179/Redis1.png" alt="正常" /></p>
+
+<h4>Redisのレプリケーションの回線に障害が発生した場合</h4>
+
+<p><img src="https://dl.dropbox.com/u/5390179/Redis2.png" alt="突然の" /></p>
+
+<p>上記のように、レプリケーションの経路に異常が発生した場合<br/>
+<em>Split-brain-syndrome</em>が起こり</p>
+
+<p><img src="https://dl.dropbox.com/u/5390179/Redis3.png" alt="スプリットブレイン" /></p>
+
+<p>レプリケーション情報は保てなくなり、お互いがMasterと認識してしまう問題があります。</p>
+
+<p>上記のような状況を避ける為に<code>&lt;quorum&gt;</code>の設定があります。<br/>
+このquorumの値は、<strong><em>監視しているRedis-Sentinelの数</em></strong>を表しています。</p>
+
+<p>上記のようにレプリケーションの経路に異常があった場合であっても<br/>
+<code>&lt;quorum&gt;</code>で設定した数のSentinelが異常を検知して初めてフェイルオーバーが始まります。<br/>
+SentinelはSentinel同士で理解し合う機能が搭載されているんですね。<br/>
+人間にもそんな機能があったら争いとかなくなりますかね。</p>
+
+<h4>Redis-Sentinelの連絡が行えなくなり、Split-brain-syndromeは起こらない</h4>
+
+<p><img src="https://dl.dropbox.com/u/5390179/Redis4.png" alt="スプリットブレイン" /></p>
+
+<p>ということで、<code>&lt;quorum&gt;</code>を2台以上設定することで、<br/>
+予期しないフェイルオーバーを予防することが可能です。</p>
+
+<ul>
+<li><code>sentinel down-after-milliseconds mymaster 60000</code></li>
+</ul>
+
+
+<p>SentinelがDOWNを検知してからのフェイルオーバーを始めるまでのアイドル時間。</p>
+
+<blockquote><p>DOWNと認める条件は<a href="http://redis.io/topics/sentinel">ドキュメント</a>を参照。<br/>
+<em>ODOWN</em>と<em>SDOWN</em>についてももう少し書きたい。</p></blockquote>
+
+<p>検証時では <em>5000milliseconds</em> ぐらいが問題なく動作した。<br/>
+スペックや環境によってはもっとストイックな設定が可能。</p>
+
+<p>なお、実際にMasterが切り替わるまで <em>5~15秒</em> の間でランダムな待ち時間が発生する。</p>
+
+<blockquote><p>Sentinel Rule #14: A Sentinel detects a failover as an Observer
+(that is, the Sentinel just follows the failover generating the appropriate events in the log file and Pub/Sub interface,
+ but without actively reconfiguring instances) if the following conditions are true at the same time: * There is no failover already in progress.
+* A slave instance of the monitored master turned into a master.
+However the failover will NOT be sensed as started if the slave instance turns into a master and at the same time the runid has changed from the previous one.
+This means the instance turned into a master because of a restart, and is not a valid condition to consider it a slave election.</p>
+
+<p>Sentinel Rule #15: A Sentinel starting a failover as leader does not immediately starts it.
+It enters a state called wait-start, that lasts a random amount of time between 5 seconds and 15 seconds.
+During this time Sentinel Rule #14 still applies: if a valid slave promotion is detected the failover as leader is aborted and the failover as observer is detected.</p></blockquote>
+
+<p>詳細は<a href="http://redis.io/topics/sentinel">ドキュメント</a>の <em>Sentinel Rule #14,#15</em> を参照。</p>
+
+<p>なので、フェイルオーバーが開始されるタイミングは<br/>
+ <strong><em>down-after-milliseconds + 5~15秒</em></strong> の時間になります。</p>
+
+<ul>
+<li><code>sentinel failover-timeout mymaster 900000</code></li>
+</ul>
+
+
+<p>フェイルオーバーを開始してから、レスポンスが返ってくるまでの<br/>
+待ち時間。詳細はやはりドキュメントを読んでほしい。</p>
+
+<blockquote><p>検証時に &ldquo;10 milliseconds&rdquo; などストイックな設定を行なってみたが
+タイムアウトに引っかかり、レプリケーションが開始することはなかった&hellip;
+こちらもやはり &ldquo;5000 milliseconds&rdquo; ぐらいが安全であった</p></blockquote>
+
+<ul>
+<li><code>sentinel can-failover mymaster yes</code></li>
+</ul>
+
+
+<p><em>mymaster</em>のダウン時に、フェイルオーバーを実行するか否かの設定。</p>
+
+<ul>
+<li><code>sentinel parallel-syncs mymaster 1</code></li>
+</ul>
+
+
+<p>フェイルオーバーが実行された後、新しいマスターを<br/>
+使用するように並列で再構成することができるスレーブの数の指定。</p>
+
+<p>Slaveサーバが多く、この設定数が低いほど、<br/>
+フェイルオーバーの処理に時間がかかるとのこと。<br/>
+(未検証)</p>
+
+<h2>おまけ：レプリケーションの構築手順</h2>
+
+<h3>Slave(192.168.2.102)</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ echo "slaveof 192.168.2.101 6379" | redis-cli -h 192.168.2.102
+</span><span class='line'>OK
+</span><span class='line'>$
+</span><span class='line'>$ redis-cli -h 192.168.2.102 info | grep -E 'mas|sla'
+</span><span class='line'>role:slave
+</span><span class='line'>master_host:192.168.2.101
+</span><span class='line'>master_port:6379
+</span><span class='line'>master_link_status:up
+</span><span class='line'>master_last_io_seconds_ago:5
+</span><span class='line'>master_sync_in_progress:0
+</span><span class='line'>slave_priority:100
+</span><span class='line'>slave_read_only:1
+</span><span class='line'>connected_slaves:0
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Master(192.168.2.101)</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ redis-cli -h 192.168.2.101 info | grep -E 'mas|sla'
+</span><span class='line'>role:master
+</span><span class='line'>connected_slaves:1
+</span><span class='line'>slave0:192.168.2.102,6379,online
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>レプリケーションの情報</h3>
+
+<ul>
+<li><p><code>master_host:192.168.2.101</code><br/>
+MasterのIPアドレス情報</p></li>
+<li><p><code>master_port:6379</code><br/>
+MasterのPort番号情報</p></li>
+<li><p><code>master_link_status:up</code><br/>
+Masterの状態の情報</p></li>
+<li><p><code>master_last_io_seconds_ago</code><br/>
+Slaveは10秒間隔でMasterへ<em>PING</em>を送信している。<br/>
+その&#8221;正常な&#8221;データを受信してからの経過時間の情報</p></li>
+</ul>
+
+
+<p><code>monitor</code>コマンドで確認することができる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ redis-cli -h 192.168.2.102 monitor
+</span><span class='line'>OK
+</span><span class='line'>1359037270.075903 [0 192.168.2.101:6379] "PING"
+</span><span class='line'>1359037280.274001 [0 192.168.2.101:6379] "PING"
+</span><span class='line'>1359037290.464774 [0 192.168.2.101:6379] "PING"</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>master_sync_in_progress</code><br/>
+Masterからデータを受信状況(SYNC)の情報<br/>
+SYNC中であれば <em>1</em> のフラグが立ち、状況の詳細が表示される。</li>
+</ul>
+
+
+<blockquote><p>詳細はこちら : <a href="http://redis.io/commands/info">INFO / Redis</a></p></blockquote>
+
+<h4>Masterが落ちていた場合の状態</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>master_link_status:down
+</span><span class='line'>master_last_io_seconds_ago:-1
+</span><span class='line'>master_sync_in_progress:0
+</span><span class='line'>master_link_down_since_seconds:N</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>PING</em>の間隔が10秒間隔なので、疎通チェックも10秒間隔かと思うが<br/>
+そうではない(もう少し調べる)。</p>
+
+<h2>おまけのおまけ</h2>
+
+<h4>SlaveのSlaveも設定可能</h4>
+
+<p><code>101.slave(Master) &lt;= 102.6379(Slave) &lt;= 102.6380(Slave)</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ redis-cli -h 192.168.2.102 info | grep -E 'mas|sla'
+</span><span class='line'>role:slave
+</span><span class='line'>master_host:192.168.2.101
+</span><span class='line'>master_port:6379
+</span><span class='line'>master_link_status:up
+</span><span class='line'>master_last_io_seconds_ago:7
+</span><span class='line'>master_sync_in_progress:0
+</span><span class='line'>slave_priority:100
+</span><span class='line'>slave_read_only:1
+</span><span class='line'>connected_slaves:1
+</span><span class='line'>slave0:192.168.2.102,6380,online
+</span><span class='line'>$</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p>また、MasterとSlaveの接続が切れた場合も<br/>
+Slave &lt;=> Slaveの同期は停止する。(検証済み)</p></blockquote>
+
+<p>master_last_io_seconds_ago が Sentinel立ち上げる事に間隔が短かくなる<br/>
+3台上げたらほとんど1秒間隔になった。</p>
+
+<h2>ということで</h2>
+
+<p>Sentinel、よく考えられているなという印象です。<br/>
+以上、この情報が何かのお役に立てれば幸いです。</p>
+
+<blockquote><p>This HOWTO is a work in progress, more information will be added in the near future.</p></blockquote>
+
+<p><a href="https://github.com/antirez/redis-doc/blob/master/topics/sentinel.md">https://github.com/antirez/redis-doc/blob/master/topics/sentinel.md</a></p>
+
+<p>ということで、活発的に開発が行われているので<br/>
+適時チェックするのが良さそうですね。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/23/postfix-header_checks/">Postfixのheader_checksでの否定の条件について</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-23T20:52:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.postfix.org/header_checks.5.html">header_checks - Postfix built-in content inspection</a><br/>
+<a href="http://www.postfix.org/regexp_table.5.html">regexp_table - format of Postfix regular expression tables</a></p>
+
+<p><code>header_checks</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>!/^(To|From):.*@example\.com*/ REJECT</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とすれば、対象の<em>example.com</em>のドメイン意外受け付けなくて<br/>
+ライフチェンジングなのでは！！！！！！！！<br/>
+と思ったのですが、header_checksの仕様上<br/>
+ヘッダ全てに対してではなく、1行毎にルールを適用するため<br/>
+例えば、ヘッダの1行目が</p>
+
+<p><code>Delivered-To: foo@example.com</code></p>
+
+<p>である場合、<strong><em>マッチしない</em></strong>と認識されてREJECTされます。</p>
+
+<p>この意味がわからなくてずっと悩んでいました。</p>
+
+<p>メールの破棄の処理をheader_checksの例外処理を利用して行うのは<br/>
+とてもむずかしいので、素直にSpamAssasinやprocmailなどを利用しましょう！</p>
+
+<p>というお話でした。</p>
+
+<p>(;´д｀)ﾄﾎﾎ…</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/20/fluentd-plugin-create-newbie/">fluentdのプラグインを書く練習をする為にsecureログをparseしてZabbixで値が取得できるようにしてみた(設定編)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-20T18:56:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://github.com/kenjiskywalker/fluent-plugin-securelog-parser">https://github.com/kenjiskywalker/fluent-plugin-securelog-parser</a></p>
+
+<pre>
+   ,j;;;;;j,. ---一､ ｀   ―--‐､_ l;;;;;;  
+  ｛;;;;;;ゝ T辷iﾌ i      f'辷jァ   !i;;;;;    全く触ったことがなくてもpluginを書いたらfluentdがわかる  
+   ヾ;;;ﾊ        ﾉ              .::!lﾘ;;rﾞ  
+     `Z;i      〈.,_..,.            ﾉ;;;;;;;;>    そんなふうに考えていた時期が  
+     ,;ぇﾊ、  ､_,.ｰ-､_',.      ,ｆﾞ: Y;;f.      俺にもありました  
+     ~''戈ヽ    ｀二´      r'´:::.  `!  
+</pre>
+
+
+<p>最初Postfixのmaillogつくってやろうかなんて<br/>
+思っていたりした時期もオレにはありました。</p>
+
+<p>しかしログが多様すぎるので、ちょっとこれ最初にやるには敷居高いなー<br/>
+と思い、だからってあんまり理にかなわないことをしても意味ないな<br/>
+ということで、<code>/var/log/secure</code>のログを指定した文字列の出現具合を<br/>
+Zabbixで取得したら面白いかなというアイデアが思いついたので<br/>
+取り敢えずコードは汚いにしろ、動くまで書いてみたメモです。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/01/20/fluentd-plugin-create-newbiee/">プラグイン作成編はこちらから</a></p>
+
+<h2>テスト環境</h2>
+
+<p><code>/etc/fluent-agent-lite.conf</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/fluent-agent-lite.conf 
+</span><span class='line'>TAG_PREFIX=""
+</span><span class='line'>LOGS=$(cat &lt;&lt;"EOF"
+</span><span class='line'>secure                   /var/log/secure
+</span><span class='line'>EOF
+</span><span class='line'>)
+</span><span class='line'>PRIMARY_SERVER="0.0.0.0:24224"</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/etc/td-agent/td-agent.conf</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;source&gt;
+</span><span class='line'>  type forward
+</span><span class='line'>  port 24224
+</span><span class='line'>&lt;/source&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match secure&gt;
+</span><span class='line'>  type securelog-parser
+</span><span class='line'>  tag  seclog.local
+</span><span class='line'>&lt;/match&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match seclog.*&gt;
+</span><span class='line'>  type copy
+</span><span class='line'>   &lt;store&gt;
+</span><span class='line'>    type datacounter
+</span><span class='line'>    count_key message
+</span><span class='line'>    aggregate all
+</span><span class='line'>    tag check.seclog
+</span><span class='line'>    pattern1 acce Accepted
+</span><span class='line'>    pattern2 fail failure
+</span><span class='line'>    pattern3 inva Invalid
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>   type file
+</span><span class='line'>   path /tmp/hoge
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>&lt;/match&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match check.**&gt;
+</span><span class='line'>  type copy
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>    type file
+</span><span class='line'>    path /var/log/td-agent/check_seclog
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>    type             zabbix
+</span><span class='line'>    zabbix_server    192.0.2.2
+</span><span class='line'>    host             watashi
+</span><span class='line'>    name_key_pattern (fail|acce|inva)_count
+</span><span class='line'>    add_key_prefix   securelog
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>環境および設定内容の解説</h2>
+
+<h2><code>fluent-agent-lite</code></h2>
+
+<p><code>in_tail</code>で見に行くとパーミッションが足りないとのことなので<br/>
+fluent-agent-liteを噛ましました。</p>
+
+<p>localhostに転送するので
+<code>PRIMARY_SERVER="0.0.0.0:24224"</code>として自分自身へ転送。</p>
+
+<h2><code>td-agent</code></h2>
+
+<p><code>fluent-agent-lite</code>から値を取得。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;source&gt;
+</span><span class='line'>  type forward
+</span><span class='line'>  port 24224
+</span><span class='line'>&lt;/source&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>自作pluginを通す</h3>
+
+<p><code>fluent-agent-lite</code>で付与した<code>secure</code>のタグをmatchさせて<br/>
+自作したテスト用のpluginへ渡します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;match secure&gt;
+</span><span class='line'>  type securelog-parser
+</span><span class='line'>  tag  seclog.local
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>fluent-plugin-datacounterを通す</h3>
+
+<p><code>seclog.*</code>にmatchさせ</p>
+
+<p>もりす先生の<a href="https://github.com/tagomoris/fluent-plugin-datacounter">fluent-plugin-datacounter</a>を利用し<br/>
+それぞれ確認したいログのpatternを登録します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;match seclog.*&gt;
+</span><span class='line'>  type copy
+</span><span class='line'>   &lt;store&gt;
+</span><span class='line'>    type datacounter
+</span><span class='line'>    count_key message
+</span><span class='line'>    aggregate all
+</span><span class='line'>    tag check.seclog
+</span><span class='line'>    pattern1 acce Accepted
+</span><span class='line'>    pattern2 fail failure
+</span><span class='line'>    pattern3 inva Invalid
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>   type file
+</span><span class='line'>   path /tmp/hoge
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p><code>pattern1 acce Accepted</code><br/>
+接続が許可されたログ(Acceptedという文字列を含んだログ)を<br/>
+<em>pattern1</em>として<em>acce</em>というprefixで渡します。</p></li>
+<li><p><code>pattern2 fail failure</code><br/>
+接続に失敗したログ(failureという文字列を含んだログ)を<br/>
+<em>pattern2</em>として<em>fail</em>というprefixで渡します。</p></li>
+<li><p><code>pattern3 inva Invalid</code><br/>
+無効な接続のログ(Invalidという文字列を含んだログ)を<br/>
+<em>pattern3</em>として<em>inva</em>というprefixで渡します。</p></li>
+</ul>
+
+
+<p>また、デバッグの為に、<code>/tmp/hoge</code>ファイルへ<br/>
+現時点での状態をファイル出力しておきます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>2013-01-20T18:12:24+09:00       seclog.local    {"message":"Accepted publickey for hogehoge from 192.0.2.100 port 64884 ssh2"}
+</span><span class='line'>2013-01-20T18:12:24+09:00       seclog.local    {"message":"pam_unix(sshd:session): session opened for user hogehoge by (uid=0)"}
+</span><span class='line'>2013-01-20T18:12:28+09:00       seclog.local    {"message":"Received disconnect from 192.0.2.100: 11: disconnected by user"}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上記のような内容で、出力されています。<br/>
+この時点で期待した内容のログ出力がされていない場合は<br/>
+どこかに誤りがあるので、修正していく流れになります。</p>
+
+<h3>fluent-plugin-zabbixへデータを渡す</h3>
+
+<p>fujiwaraさん作成の<a href="https://github.com/fujiwara/fluent-plugin-zabbix">fluent-plugin-zabbix</a>を利用し、Zabbixへデータを渡します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;match check.**&gt;
+</span><span class='line'>  type copy
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>    type file
+</span><span class='line'>    path /var/log/td-agent/check_seclog
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>  &lt;store&gt;
+</span><span class='line'>    type             zabbix
+</span><span class='line'>    zabbix_server    192.0.2.2
+</span><span class='line'>    host             watashi
+</span><span class='line'>    name_key_pattern (fail|acce|inva)_count
+</span><span class='line'>    add_key_prefix   securelog
+</span><span class='line'>  &lt;/store&gt;
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/tmp/hoge</code>へのデバッグ出力と同様に<br/>
+<em>fluent-plugin-datacounter</em>を通したログを<br/>
+<code>/var/log/td-agent/check_seclog</code>へ出力しておきます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  &lt;store&gt;
+</span><span class='line'>    type file
+</span><span class='line'>    path /var/log/td-agent/check_seclog
+</span><span class='line'>  &lt;/store&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こちらも、値が正常に取得されているかを確認します。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>2013-01-20T18:09:56+09:00       check.seclog    {"unmatched_count":4,"unmatched_rate":0.06,"unmatched_percentage":66.66666666666667,"acce_count":0,"acce_rate":0.0,"acce_percentage":0.0,"fail_count":0,"fail_rate":0.0,"fail_percentage":0.0,"inva_count":2,"inva_rate":0.03,"inva_percentage":33.333333333333336}
+</span><span class='line'>2013-01-20T18:10:56+09:00       check.seclog    {"unmatched_count":0,"unmatched_rate":0.0,"acce_count":0,"acce_rate":0.0,"fail_count":0,"fail_rate":0.0,"inva_count":0,"inva_rate":0.0}
+</span><span class='line'>2013-01-20T18:11:56+09:00       check.seclog    {"unmatched_count":0,"unmatched_rate":0.0,"acce_count":0,"acce_rate":0.0,"fail_count":0,"fail_rate":0.0,"inva_count":0,"inva_rate":0.0}
+</span><span class='line'>2013-01-20T18:12:56+09:00       check.seclog    {"unmatched_count":14,"unmatched_rate":0.23,"unmatched_percentage":73.6842105263158,"acce_count":4,"acce_rate":0.06,"acce_percentage":21.05263157894737,"fail_count":0,"fail_rate":0.0,"fail_percentage":0.0,"inva_count":1,"inva_rate":0.01,"inva_percentage":5.2631578947368425}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p><code>zabbix_server    192.0.2.2</code>
+zabbixサーバのIPアドレスを指定します。</p></li>
+<li><p><code>host             watashi</code>
+データ送り元のホスト名を指定します。</p></li>
+<li><p><code>name_key_pattern (fail|acce|inva)_count</code><br/>
+<em>name_key_pattern (fail|acce|inva)_count</em>の設定と<br/>
+<em>add_key_prefix   securelog</em>の設定は</p></li>
+</ul>
+
+
+<p><a href="https://dl.dropbox.com/u/5390179/6c2da543eb8312cd496ef8f75fb8d83d.png"><img src="https://dl.dropbox.com/u/5390179/6c2da543eb8312cd496ef8f75fb8d83d.png" alt="zabbix" /></a></p>
+
+<p>Zabbixで、itemを上記設定のように作成し<br/>
+trapperのデータとしてZabbixが受け取れる為に設定します。</p>
+
+<h3>Zabbixでグラフ化</h3>
+
+<p>Zabbix上で上手く値が取得できていれば</p>
+
+<p><a href="https://dl.dropbox.com/u/5390179/107d6802dbac9f28c4b78819242d3018.png"><img src="https://dl.dropbox.com/u/5390179/107d6802dbac9f28c4b78819242d3018.png" alt="zabbix" /></a></p>
+
+<p>このようにグラフに値が出力され、期待通りの動作をすることが確認できました。</p>
+
+<p>awesome fluentd!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/20/fluentd-plugin-create-newbiee/">fluentdのプラグインを書く練習をする為にsecureログをparseしてZabbixで値が取得できるようにしてみた(作成編)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-20T17:03:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://github.com/kenjiskywalker/fluent-plugin-securelog-parser">https://github.com/kenjiskywalker/fluent-plugin-securelog-parser</a></p>
+
+<pre>
+   ,j;;;;;j,. ---一､ ｀   ―--‐､_ l;;;;;;  
+  ｛;;;;;;ゝ T辷iﾌ i      f'辷jァ   !i;;;;;    全く触ったことがなくてもpluginを書いたらfluentdがわかる  
+   ヾ;;;ﾊ        ﾉ              .::!lﾘ;;rﾞ  
+     `Z;i      〈.,_..,.            ﾉ;;;;;;;;>    そんなふうに考えていた時期が  
+     ,;ぇﾊ、  ､_,.ｰ-､_',.      ,ｆﾞ: Y;;f.      俺にもありました  
+     ~''戈ヽ    ｀二´      r'´:::.  `!  
+</pre>
+
+
+<p>最初Postfixのmaillogつくってやろうかなんて<br/>
+思っていたりした時期もオレにはありました。</p>
+
+<p>しかしログが多様すぎるので、ちょっとこれ最初にやるには敷居高いなー<br/>
+と思い、だからってあんまり理にかなわないことをしても意味ないな<br/>
+ということで、<code>/var/log/secure</code>のログを指定した文字列の出現具合を<br/>
+Zabbixで取得したら面白いかなというアイデアが思いついたので<br/>
+取り敢えずコードは汚いにしろ、動くまで書いてみたメモです。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/01/20/fluentd-plugin-create-newbie/">設定編はこちら</a></p>
+
+<h1>作成編</h1>
+
+<p>事前にtestが通るまでのものは<br/>
+<a href="http://blog.kenjiskywalker.org:8080/blog/2013/01/05/fluent-pluing/">超初級！Fluentdのプラグインを書きたくなった時の下地づくり</a>にて作成しています。</p>
+
+<p>本来はもっとスマートな作り方があるのでしょうが、<br/>
+私は基本的にこの流れで行いました。</p>
+
+<ul>
+<li>内容を更新する度にrake testでtestが通ることを確認する</li>
+<li>変数の状況を<code>p hoge</code>で毎回確認する</li>
+</ul>
+
+
+<p>この2つの繰り返しでした。</p>
+
+<h3>参考</h3>
+
+<ul>
+<li><a href="http://gihyo.jp/magazine/SD/archive/2012/201206">@repeatedlyさんのプラグイン作成の記事 / Software Design 2012年6月号</a></li>
+<li><a href="http://docs.fluentd.org/articles/plugin-development">Writing plugins / fluentd</a></li>
+<li><a href="http://d.hatena.ne.jp/mikeda/20120704/1341363870">検証中のtd-agent（fluentd）の設定とか負荷とか / IT 東京 楽しいと思うこと</a></li>
+<li><a href="http://d.hatena.ne.jp/erukiti/20120205/1328452455">fluentdのプラグインは簡単に作成できる / ぽにくすじゃないだいありー</a></li>
+<li><a href="http://fluentd.org/plugin/">Fluentd plugins</a></li>
+</ul>
+
+
+<p>基本はりぴーさんの記事を参考に、取り敢えず片っ端からpluginのソースを読んでいけば<br/>
+センスの良い人ならその場で書けそうなものですが、いかんせん素人なので<br/>
+試行錯誤しながら書いて行きました。</p>
+
+<p>取り敢えず動いたレベルですが、何かの参考になればと思います。</p>
+
+<p><a href="https://github.com/kenjiskywalker/fluent-plugin-securelog-parser">https://github.com/kenjiskywalker/fluent-plugin-securelog-parser</a></p>
+
+<p>また、ソースを見て頂く通り、何かのログのパーサを書こうと思えば<br/>
+<em>regexp</em>と<em>time_format</em>さえどうにかなれば、<br/>
+プラグインの種類にもよりますが、いくらでも加工することが可能です。<br/>
+fluentd、素晴らしいですね。</p>
+
+<blockquote><p><em>tag</em>、<em>es</em>、<em>chain</em>の中身などを<em>.each</em>などで分解していき<br/>
+testを実行した際に(<em>test_emit</em>)で<br/>
+プラグイン内部の確認したい変数の中身を<code>p hoge</code>する。</p></blockquote>
+
+<p>この繰り返していってという感じです。<br/>
+ソースファイルのコメントアウト部は<br/>
+コードを記述していた際には常に表示させていたものです。</p>
+
+<p>サーバ上での動作のテストは<br/>
+<code>out_securelog_parser.rb</code>ファイルを<code>/etc/td-agent/plugin/</code>へ配置することで<br/>
+プラグインとして認識してくれます。素晴らしいですね。</p>
+
+<p>ログが出るのを待つのは大変なので</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo '{"message":"Jan 17 02:47:59 hostname sshd[10654]: test"}' | /usr/lib64/fluent/ruby/bin/fluent-cat secure</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と、<code>fluent-cat</code>コマンドを実行して、確認したい<em>tag</em>を指定することで<br/>
+プラグインの確認を行うことが可能です。</p>
+
+<p>ちゃんとテストを書いていないあｗ、中身はまだまだ改善の余地があるわでアレですが<br/>
+Rubyもよくに書けず、fluentdを運用した経験もあまりない人間が<br/>
+稚拙ではありますが、最低限動作するところまでは書くことができました。</p>
+
+<p>ハイユーザーから、エントリーユーザまで利用でき、<br/>
+かつ、簡単なログパーサから、各種メトリクス生成などのプラグインが<br/>
+容易に作成することができるfluentdは、やはりこれからのオペレーションの<br/>
+情報取得ツールとして、無くてはならないものになっていくんだろうな。<br/>
+という印象を受けました。</p>
+
+<p>awesome fluentd!</p>
+
+<p>続きは<a href="http://blog.kenjiskywalker.org/blog/2013/01/20/fluentd-plugin-create-newbie/">設定編</a>で</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

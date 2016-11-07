@@ -1,0 +1,871 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="sshを利用していると招かれざる客の来訪が多い。
+また、サーバに不必要にログインしている関係者がいないか
+把握しつづけるのも難しい。 今回はfluentdを利用して簡単にログイン周りの通知をSlackに流してみる。 準備 /var/log/secureはパーミッションが厳しいので
+y- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/10/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/12/login-notification/">Fluentdを利用してsshログインを通知する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-12T22:53:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>sshを利用していると招かれざる客の来訪が多い。<br/>
+また、サーバに不必要にログインしている関係者がいないか<br/>
+把握しつづけるのも難しい。</p>
+
+<p>今回はfluentdを利用して簡単にログイン周りの通知をSlackに流してみる。</p>
+
+<h2>準備</h2>
+
+<p><code>/var/log/secure</code>はパーミッションが厳しいので<br/>
+y-kenさんのブログを参考にパーミッションを変更する必要があります。</p>
+
+<ul>
+<li><a href="http://y-ken.hatenablog.com/entry/fluentd-syslog-permission">Fluentdでsyslogを取り込むための権限設定（CentOS 5&amp;6両対応） - Y-Ken Studio</a></li>
+</ul>
+
+
+<p>SlackのAPIがバージョンアップしてリアルタイム性を持つようになった。</p>
+
+<ul>
+<li><a href="http://slackhq.com/post/104688116560/rtm-api">A new Slack API: The inevitable rise of the bots Bots</a></li>
+</ul>
+
+
+<p>個人的にはリアルタイム性よりも<br/>
+private roomでもhubotが利用できるようになったのいうのがアツい。<br/>
+これで色々遊べるようになる。</p>
+
+<ul>
+<li><a href="https://github.com/sowawa/fluent-plugin-slack">fluent-plugin-slack</a></li>
+</ul>
+
+
+<p>手元で<code>endpoint</code>を変更して動くようになった。みんな普通に動いているのかな</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>private
+</span><span class='line'>def endpoint
+</span><span class='line'>  # URI.parse "https://#{@team}.slack.com/services/hooks/incoming-webhook?token=#{@api_key}"
+</span><span class='line'>  URI.parse "https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Real Time Messagingを利用するためには</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>https://slack.com/api/chat.postMessage?token=xoxp-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXX-XXXXXX&channel=XXXXXXXXX&text=XXXXX&username=XXXXX'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のようにリクエストを送る必要がある。<br/>
+時間があればpull requestしたい。(あと20分で書き終えなければ&hellip;)</p>
+
+<p><a href="https://api.slack.com/methods/chat.postMessage">chat.postMessage - slack API</a></p>
+
+<h2>2014/12/16 追記</h2>
+
+<p>sowawaさんにmergeして頂いた。感謝</p>
+
+<h2>設定</h2>
+
+<ul>
+<li>/etc/td-agent/td-agent.conf</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;source&gt;
+</span><span class='line'>  type tail
+</span><span class='line'>  path /var/log/secure
+</span><span class='line'>  format syslog
+</span><span class='line'>  tag secure_log
+</span><span class='line'>  pos_file /var/log/td-agent/syslog_secure.pos
+</span><span class='line'>&lt;/source&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match secure_log.**&gt;
+</span><span class='line'>  type grep
+</span><span class='line'>  input_key message
+</span><span class='line'>  regexp Accepted|failure|Invalid
+</span><span class='line'>  add_tag_prefix greped
+</span><span class='line'>&lt;/match&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;match greped.**&gt;
+</span><span class='line'>  type buffered_slack
+</span><span class='line'>  rtm true
+</span><span class='line'>  token API_KEY
+</span><span class='line'>  team TEAMNAME
+</span><span class='line'>  channel %23general # You should use %23 in return for #
+</span><span class='line'>  username fluentd
+</span><span class='line'>  color danger
+</span><span class='line'>  icon_emoji :shit:
+</span><span class='line'>  buffer_path /var/log/td-agent/buffer/
+</span><span class='line'>  flush_interval 5s
+</span><span class='line'>&lt;/match&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じで<code>Accepted</code>、<code>failure</code>、<code>Invalid</code>の文字列を<br/>
+sonotsさんがつくった<a href="https://github.com/sonots/fluent-plugin-grep">fluent-plugin-grep</a>を利用して抽出。</p>
+
+<p>そうすると</p>
+
+<p><img src="http://i.gyazo.com/00260a2b25dfbfb9b55f00eb1b20ca05.png" alt="" /></p>
+
+<p>こんな感じで通知されてくる。セキュリティを気にする環境では<br/>
+このような設定を入れておくと良いのではないでしょうか。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/08/koukoku/">不快な広告と不快ではない広告</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-08T21:17:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>雑記</h2>
+
+<p>youtubeもtwitterの広告も、ただ間に挟んでいるだけで<br/>
+普通に不快な印象しかない。不快ではない広告などこの世にあるのか<br/>
+って考えたらその広告自体が面白いとか興味があるとかの場合は<br/>
+不快ではなかったりする。受け取り手次第な感じもする。</p>
+
+<p>私はサッカーが好きで、いろんなサッカーの話を聞くのが好きなのだが<br/>
+南米のサッカー中継のラジオで、得点が入ると、<br/>
+ゴールに絡めて広告してくるらしい話が好きだ。どんな感じかというと</p>
+
+<p>ゴールゴルゴルゴルゴール！まるで◯◯社のスプライトのような爽快感！みたいな感じで<br/>
+若干無理があるだろうっていう感じでこじつけるらしい。</p>
+
+<p>こういうアイデアのある話は好きだ。<br/>
+優秀な人がたくさん在籍しているんだろうし、<br/>
+もうちょっと変わった広告の仕方はないのだろうか</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/07/201411-book/">2014/11読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-07T05:21:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>なんかもうちょっと読んでた気がする&hellip;</p>
+
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年11月 (1作品)</div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00OZY4G6G" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51mueCl2g9L._SL75_.jpg" width="58" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00OZY4G6G" target="_blank">& Premium (アンド プレミアム) 2015年 1月号</a><br />読了日：11月24日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/07/jyoen/">俺の子連れおすすめスポット - 新宿御苑</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-07T01:49:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.adventar.org/calendars/681">俺の子連れおすすめスポット Advent Calendar 2014</a></p>
+
+<p><a href="http://www.env.go.jp/garden/shinjukugyoen/">http://www.env.go.jp/garden/shinjukugyoen/</a></p>
+
+<p>新宿御苑をおすすめします。</p>
+
+<ul>
+<li>大人（15歳以上）200円　小・中学生50円　幼児無料で安い</li>
+<li>新宿駅から歩いていける</li>
+<li>無茶苦茶土地が広い</li>
+<li>少しオフロードだけどベビーカーでも道が広くてそこそこ整備してあるので余裕で動ける</li>
+<li>お弁当持って芝生に寝っ転がって空眺めたりできるので最高</li>
+<li>比較的空いているので代々木公園みたいな渋滞は起きない</li>
+<li>ペットやお酒、ラジコンや遊び道具の持ち込みが禁止なので平和</li>
+</ul>
+
+
+<p>ということで新宿御苑、お散歩やピクニックにおすすめです。</p>
+
+<blockquote><p>駐車場もあるんですね。初めて知った</p></blockquote>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/12/02/capistrano3-rails4-unicorn/">capistrano3を利用してRails4をdeployしunicornを使う</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-12-02T23:30:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>Rails v4.1.2<br/>
+capistrano v3.3.3</p></blockquote>
+
+<h2>TL;DR</h2>
+
+<p>cap3でrails4のデプロイとbundle install<br/>
+unicornの操作をできるようにするまでのメモ</p>
+
+<h3>手元のマシンでcap3をインストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ gem install capistrano</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Railsアプリケーションのあるパスに移動</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd app_name</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>cap install</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cap install
+</span><span class='line'>mkdir -p config/deploy
+</span><span class='line'>create config/deploy.rb
+</span><span class='line'>create config/deploy/staging.rb
+</span><span class='line'>create config/deploy/production.rb
+</span><span class='line'>mkdir -p lib/capistrano/tasks
+</span><span class='line'>create Capfile
+</span><span class='line'>Capified
+</span><span class='line'>$ </span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>app_name/config</code>配下にdeploy用の各種設定テンプレートが格納され、<br/>
+独自rake taskを格納する<code>app_name/lib/capistrano/tasks/</code>ディレクトリが作成され、<br/>
+capistrano用の設定ファイル?であるCapfileのひな形が作成される.</p>
+
+<h2>deployの設定</h2>
+
+<h4>config/deploy.rb</h4>
+
+<p>汎用的な設定はここに書くのかな</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>lock '3.3.3'
+</span><span class='line'>
+</span><span class='line'># 自分のアプリケーション名
+</span><span class='line'>set :application, 'app_name'
+</span><span class='line'>
+</span><span class='line'># 自分のリポジトリ名.capistranoはrsyncではなくgit pullする
+</span><span class='line'>set :repo_url, 'git@github.com:kenjiskywalker/app_name.git'
+</span><span class='line'>
+</span><span class='line'># デプロイ先
+</span><span class='line'>set :deploy_to, '/home/foo/app_name'
+</span><span class='line'>
+</span><span class='line'># cap stage unicorn:start などの実行対象の role . デフォルトは app
+</span><span class='line'>set :unicorn_roles, :all
+</span><span class='line'>
+</span><span class='line'>set :ssh_options, {
+</span><span class='line'>
+</span><span class='line'># ここのオプションは ssh_config に記載されていれば不要
+</span><span class='line'># port: 2222,
+</span><span class='line'># keys: [File.expand_path('~/.ssh/hoge.key')],
+</span><span class='line'>
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'># ここは cap install するとコメントアウトで入るのでそのコメントアウトを解除
+</span><span class='line'>set :linked_dirs, fetch(:linked_dirs, []).push('bin', 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system')</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>config/deploy/stage.rb</h3>
+
+<p>汎用的な設定はdeploy.rbに書き、stage毎の設定はstage.rbに書くのかな</p>
+
+<ul>
+<li>config/deploy/development.rb</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># RAILS_ENV の指定
+</span><span class='line'>set :rails_env, 'development'
+</span><span class='line'>
+</span><span class='line'># unicorn で利用する RACK_ENV の指定
+</span><span class='line'>set :unicorn_rack_env, 'development'
+</span><span class='line'>
+</span><span class='line'># ここの user も ssh_config に記載されていれば不要
+</span><span class='line'>server 'dev-web1', user: 'foo', roles: %w{web}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>config/deploy/staging.rb</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># RAILS_ENV の指定
+</span><span class='line'>set :rails_env, 'staging'
+</span><span class='line'>
+</span><span class='line'># unicorn で利用する RACK_ENV の指定
+</span><span class='line'>set :unicorn_rack_env, 'staging'
+</span><span class='line'>
+</span><span class='line'># ここの user も ssh_config に記載されていれば不要
+</span><span class='line'>server 'stg-web1', user: 'foo', roles: %w{web}</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>config/deploy/production.rb</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># RAILS_ENV の指定
+</span><span class='line'>set :rails_env, 'production'
+</span><span class='line'>
+</span><span class='line'># unicorn で利用する RACK_ENV の指定
+</span><span class='line'>set :unicorn_rack_env, 'production'
+</span><span class='line'>
+</span><span class='line'># ここの user も ssh_config に記載されていれば不要
+</span><span class='line'>server 'web1', user: 'foo', roles: %w{web}</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Gemfile</h3>
+
+<p>capistranoで利用するgemを追加</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>group :development, :staging, :production do
+</span><span class='line'>  gem 'capistrano'
+</span><span class='line'>  gem 'capistrano-rails'
+</span><span class='line'>  gem 'capistrano-rbenv'
+</span><span class='line'>  gem 'capistrano-bundler'
+</span><span class='line'>  gem 'capistrano3-unicorn'
+</span><span class='line'>  gem 'unicorn'
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Capfile</h3>
+
+<p>consoleとbundlerとunicornを有効化</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># Load DSL and Setup Up Stages
+</span><span class='line'>require 'capistrano/setup'
+</span><span class='line'>
+</span><span class='line'># Includes default deployment tasks
+</span><span class='line'>require 'capistrano/deploy'
+</span><span class='line'>require 'capistrano/console' # cap stage console とかやると便利
+</span><span class='line'>
+</span><span class='line'># Includes tasks from other gems included in your Gemfile
+</span><span class='line'>#
+</span><span class='line'># For documentation on these, see for example:
+</span><span class='line'>#
+</span><span class='line'>#   https://github.com/capistrano/rvm
+</span><span class='line'>#   https://github.com/capistrano/rbenv
+</span><span class='line'>#   https://github.com/capistrano/chruby
+</span><span class='line'>#   https://github.com/capistrano/bundler
+</span><span class='line'>#   https://github.com/capistrano/rails
+</span><span class='line'>#
+</span><span class='line'># require 'capistrano/rvm'
+</span><span class='line'># require 'capistrano/rbenv'
+</span><span class='line'># require 'capistrano/chruby'
+</span><span class='line'>require 'capistrano/bundler' # deploy:updated の前に bundle install してくれる
+</span><span class='line'>require 'capistrano3/unicorn' # cap3で unicorn を操作できるようにしてくれる
+</span><span class='line'># require 'capistrano/rails/assets'
+</span><span class='line'># require 'capistrano/rails/migrations'
+</span><span class='line'>
+</span><span class='line'># Loads custom tasks from `lib/capistrano/tasks' if you have any defined.
+</span><span class='line'>Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>config/unicorn/stage.rb</h3>
+
+<p><a href="https://github.com/tablexi/capistrano3-unicorn/blob/master/lib/capistrano3/tasks/unicorn.rake#L4">:unicorn_config_path</a> を参考にすると<br/>
+<code>config/unicorn.rb</code>ではなく<code>config/unicorn/satge.rb</code>を記載する</p>
+
+<p>unicorn 設定例 : <a href="https://github.com/tablexi/capistrano3-unicorn/blob/master/examples/unicorn.rb">example.rb</a></p>
+
+<p>上記設定例を参考に設定.取り敢えず変更箇所は<code>app_path</code>ぐらい</p>
+
+<ul>
+<li>config/unicorn/stage.rb</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># paths
+</span><span class='line'>app_path = "/home/foo/app_name"
+</span><span class='line'>working_directory "#{app_path}/current"
+</span><span class='line'>pid               "#{app_path}/current/tmp/pids/unicorn.pid"
+</span><span class='line'>
+</span><span class='line'># listen
+</span><span class='line'>listen "/tmp/hoge-api.socket", :backlog =&gt; 64
+</span><span class='line'>
+</span><span class='line'># logging
+</span><span class='line'>stderr_path "log/unicorn.stderr.log"
+</span><span class='line'>stdout_path "log/unicorn.stdout.log"
+</span><span class='line'>
+</span><span class='line'># workers
+</span><span class='line'>worker_processes 3
+</span><span class='line'>
+</span><span class='line'># use correct Gemfile on restarts
+</span><span class='line'>before_exec do |server|
+</span><span class='line'>  ENV['BUNDLE_GEMFILE'] = "#{app_path}/current/Gemfile"
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'># preload
+</span><span class='line'>preload_app true
+</span><span class='line'>
+</span><span class='line'>before_fork do |server, worker|
+</span><span class='line'>  # the following is highly recomended for Rails + "preload_app true"
+</span><span class='line'>  # as there's no need for the master process to hold a connection
+</span><span class='line'>  if defined?(ActiveRecord::Base)
+</span><span class='line'>    ActiveRecord::Base.connection.disconnect!
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  # Before forking, kill the master process that belongs to the .oldbin PID.
+</span><span class='line'>  # This enables 0 downtime deploys.
+</span><span class='line'>  old_pid = "#{server.config[:pid]}.oldbin"
+</span><span class='line'>  if File.exists?(old_pid) && server.pid != old_pid
+</span><span class='line'>    begin
+</span><span class='line'>      Process.kill("QUIT", File.read(old_pid).to_i)
+</span><span class='line'>    rescue Errno::ENOENT, Errno::ESRCH
+</span><span class='line'>      # someone else did our job for us
+</span><span class='line'>    end
+</span><span class='line'>  end
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>after_fork do |server, worker|
+</span><span class='line'>  if defined?(ActiveRecord::Base)
+</span><span class='line'>    ActiveRecord::Base.establish_connection
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>動作チェック</h2>
+
+<h3>deploy</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle exec cap development deploy:check
+</span><span class='line'>$ bundle exec cap development deploy
+</span><span class='line'>$ bundle exec cap staging deploy
+</span><span class='line'>$ bundle exec cap production deploy</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>unicorn</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle exec cap development unicorn:start
+</span><span class='line'>$ bundle exec cap development unicorn:legacy_restart
+</span><span class='line'>$ bundle exec cap development unicorn:stop</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>学び</h3>
+
+<p>rsyncではなくgit pullなので混乱することがある.<br/>
+currentやrelease, sharedなど見たらわかる面白構造.<br/>
+当たり前だけど上手くいかない時は手を動かすよりドキュメントとコードを読んだ方が早い.</p>
+
+<p>以上簡単なメモです.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+---
+layout: post
+title: "音楽"
+published: true
+date: "2015-04-25T02:37:00+09:00"
+comments: true
+
+
+---
+
+- [Solo - Nils Frahm](https://bleep.com/release/59602-nils-frahm-solo)
+- [I Remember - Bvdub](https://bleep.com/release/32180-bvdub-i-remember)
+- [Mars Is A Very Bad Place For Love - The Breathing Effect](https://bleep.com/search/query?q=The+Breathing+Effect)

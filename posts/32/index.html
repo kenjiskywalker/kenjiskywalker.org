@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="書き方あってるのか微妙なのでGoに明るい方のご指摘をお待ちしております。 Goでpit使えないのかなって@soh335さんに聞いたらtype氏のリポジトリ見ろ
+って言われて見に行ったらあった。@typester++ pitDomainで設定されているdomainとpasswordを取得 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/32/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/10/value-domain-update-go/">Goでvalue Domainのアップデートスクリプトかいた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-10T15:28:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>書き方あってるのか微妙なのでGoに明るい方のご指摘をお待ちしております。</p>
+
+<div><script src='https://gist.github.com/6914101.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>Goでpit使えないのかなって@soh335さんに聞いたらtype氏のリポジトリ見ろ<br/>
+って言われて見に行ったらあった。@typester++</p>
+
+<ol>
+<li><code>pitDomain</code>で設定されている<code>domain</code>と<code>password</code>を取得</li>
+<li><code>records</code>で現在のIPアドレスに変更したいレコードリストを入れる</li>
+<li>temple-kun.appspot.comで現在のIPを取得</li>
+<li>現在のIPとレコードに設定されているIPが違ったら更新、同じであればスルー</li>
+</ol>
+
+
+<p>という感じです。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/07/isucon2013/">#isucon 2013 予選1日目に参加しました</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-07T09:55:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://isucon.net/">isucon 2013</a>の1日目に参加しました。<br/>
+@fujiwaraさん、@acidlemonさんありがとうございました。<br/>
+本戦の問題作成頑張ってくださいね(・ω&lt;)</p>
+
+<p>細かいことは<a href="http://soh335.hatenablog.com/entry/2013/10/06/230741">isucon3 の予選に参加しました #isucon - @soh335 memo</a>に書いてあります。<br/>
+大切なことは<a href="http://hisaichi5518.hatenablog.jp/entry/2013/10/07/094347">#isucon の予選に参加してきた。 - パルカワ2</a>に書いてあります。</p>
+
+<p>補足としては、ひさいち君は335さんがあれ〜〜〜〜〜？？？なんで〜〜〜〜？？？<br/>
+って言い出したらコード見てこれがこうじゃない？？？って言って、<br/>
+あ〜〜〜〜〜〜〜〜〜！！！っていう<br/>
+デバッグ職人の役割とアプリケーションの細かい修正とかをやってもらってました。<br/>
+漫画読んでたのは残り時間2時間残して、5位以内当確間違いないでしょ〜みたいな<br/>
+奢りの象徴でした。</p>
+
+<p>残り2時間ぐらいやることなくなったのは、<br/>
+workload数を昔のISUCONのレギュレーションと勘違いして<br/>
+時間内の最高スコアが実スコアなのに、最後に運営側で回したスコアがそれだろ。<br/>
+って335さんと勘違いしてworkload 1しばりやってたからでした。<br/>
+これはひさいちが遅刻してこなければ免れたかもしれません。</p>
+
+<p>開始からいきなり忙しいぶってたり、攻殻機動隊のサントラをかけろ！！！<br/>
+gitの設定より先にそれやれ、gitはオレがやるから！！！な！！<br/>
+テンションあげてこ！！！？？とかやらずに<br/>
+開始と同時に、良い茶葉が入りましたので、<br/>
+ハーブティーでも飲みませんか？ぐらいの心の余裕が必要でした。</p>
+
+<p>それと、ベンチマーク走らせる度に <br/>
+「カムカムカムカム〜〜〜〜〜〜〜〜〜！！！！」「ノオ〜〜〜〜〜〜〜〜〜！！！！」<br/>
+「ワイワイワイワイワイエラー！！！」<br/>
+「きっとベンチマーク遅くなると思うけどやらせてくれッッ！！！！」<br/>
+「ヒュ〜〜〜〜〜〜！！！キマったぜ！！！」みたいに<br/>
+やたらテンションが高かったのも反省点でした。</p>
+
+<p>自分がやったことは<br/>
+1- nginx化はボトルネックわかってからやろう！って言ってたのに<br/>
+nginx化してもらわないとわからないみたいな<br/>
+当たり屋みたなこと言われて渋々ボトルネック探す前にnginx化し、<br/>
+ログフォーマットはLTSVを利用し、必要最低限のログだけ出すようにし、<br/>
+閲覧性を向上させていました。</p>
+
+<p>2- MySQLは、結局見ませんでしたが<br/>
+取り敢えずクエリを全部吐くようにしてログに出しておきました。</p>
+
+<p>3- ボトルネック探しはdstatとiotopでCPUとI/O周りを確認していました。<br/>
+一番効果があったのはDBIx::SunnyがどこのコードがそのSQL吐いてるのか<br/>
+クエリに出してくれるので、そこひたすら眺め<br/>
+335さんとこうした方が良い、ああした方が良い。って話していました。<br/>
+実装は全部335さんに任せていました。</p>
+
+<p>SQLで重い処理はRedisに持って行きました。<br/>
+Redis、長期的に運用すること考えない場合こんなに楽なのか〜って震えました。</p>
+
+<p>4- 335さんがRedisの実装書いてる時はチラチラコード読んで、データの中身確認して</p>
+
+<blockquote class="twitter-tweet"><p>こそ泥みたいなチューニングしてる <a href="https://twitter.com/search?q=%23isucon&amp;src=hash">#isucon</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/386401079199399936">October 5, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>こんな感じのことをしていました。</p>
+
+<p>残り2時間ぐらいになってくると、innodb_buffer_pool_size上げるだけ上げたので<br/>
+ほとんどのデータがメモリに載り、Disk Readなどほとんどなくなり<br/>
+サーバの資源がだいぶ余る感じになってきて、nginxの受け口増やしたりアプリの起動数<br/>
+増やしたりしても変わらなくなってきてて、これはベンチマークツールの限界だな(笑)<br/>
+などとフラグを立てることに集中していました。</p>
+
+<blockquote class="twitter-tweet"><p><a href="https://twitter.com/search?q=%23isucon&amp;src=hash">#isucon</a> 予選中間発表続き &#10;6. 335&#10;7. isuco&#10;8. 代々木の緑色の会社&#10;9. └(&#39;-&#39;└)&#10;10. Noder&#10;&#10;1位のスコアは14926.8点です</p>&mdash; 941 (@941) <a href="https://twitter.com/941/statuses/386386639297069056">October 5, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>この時の計測時点で8000とかで3位ぐらいには入れるな。みたな感じだったのですが<br/>
+ここからみなさん怒涛のスコアアップがはじまり、五桁台が当たり前になり</p>
+
+<p>エッエッ？？？？って完全にパニックに陥って、5位もあやしくなってきて<br/>
+「なにこれ？？？何が起こってるんです？？？」<br/>
+「5位以内じゃなきゃ死んだも同然だ！！！」<br/>
+「ディスクリードだ！！！ディスクリードさえなくせばええんや！！！」<br/>
+「もう温泉に行こう！！！」と完全に冷静さを失い、<br/>
+時間から逆算しても抜本的な対策もできなくなり</p>
+
+<p>残り1時間ぐらいはiptablesオフったりtcp_tw_recycle設定したり<br/>
+skip_innodb_doublewriteの設定いじったりして、微妙にスコア伸びましたが、<br/>
+全然5桁行く感じではなくて、時間ももうなくて<br/>
+もうダメだ！！！温泉行こう！！！温泉！！！な！！！みたいな感じになっていました。</p>
+
+<p>結果敵に</p>
+
+<blockquote class="twitter-tweet"><p>こそ泥みたいなチューニングで5位以内確定できるかと思ってたら無理っぽい <a href="https://twitter.com/search?q=%23isucon&amp;src=hash">#isucon</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/386405476218314752">October 5, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>こうなりました。</p>
+
+<p>同じ会社という利点を利用して</p>
+
+<blockquote class="twitter-tweet"><p>チーム335、社内IRCでめっちゃつっかかってる <a href="https://twitter.com/search?q=%23isucon&amp;src=hash">#isucon</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/386422737968705536">October 5, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>こんな感じでworkloadの文章がわかりづらいとつっかかっていました。<br/>
+どうしようもないですね。結果敵にNoderと50ms or die.チームもworkload 1縛りで<br/>
+我々より上位にランクインしているので、小物感が増しただけでした。</p>
+
+<p>本戦に出られたら、落ち着いて全体の実装全体確認して<br/>
+対応の方向性決めてから手を動かすようにしたいと思います。</p>
+
+<p>とても楽しかったです。<br/>
+ありがとうございました。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/06/tanjyobi/">誕生日とウィッシュリスト</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-06T00:44:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><img src="https://dl.dropboxusercontent.com/u/5390179/birthday.jpg" alt="https://dl.dropboxusercontent.com/u/5390179/birthday.jpg" /></p>
+
+<p>誕生日です〜とか言って<a href="http://www.amazon.co.jp/registry/wishlist/2YLD8BNL4W5NT/ref=cm_sw_r_tw_ws_Hqdusb1ZKHAET">ウィッシュリスト</a>のURL送りまくってたら<br/>
+@hsbtさん、@soh335さん、@hisaichi5518くん、@Keita_Shiyaくんから誕生日プレゼント頂きました。<br/>
+ありがとうございます！</p>
+
+<p>勉強します！</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/26/yapcasia2013/">YAPC::Asia Tokyo 2013に遊びに行ってきました</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-26T23:26:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="http://yapcasia.org/2013/">http://yapcasia.org/2013/</a></h2>
+
+<p>前夜祭から３日間参加しました。<br/>
+今回は発表者の人たちの年齢も若く、大変刺激的でした。<br/>
+このような有意義な場を設けて頂き有難うございました。<br/>
+また、参加するにあたり、業務として参加することを許している会社にも<br/>
+合わせて感謝します。</p>
+
+<p>今回会場でお話させてもらったエンジニアの人たちはみな<br/>
+24歳〜26歳の方々ばかりで、年齢とは関係なしに第一線で活躍されていて<br/>
+私の目には、ただただ輝いて見えました。</p>
+
+<p>私は前職がライブドア関係ということもあり、現LINE社の方々にはよくして頂き<br/>
+面白法人の方々には、当たり前のようにオープンソースの活動をされている姿に<br/>
+刺激を与えてもらい、決して初心者扱いせず、一流のエンジニアとして<br/>
+プログラミングを教えて頂きました。</p>
+
+<p>学生時代は、オープンソースはインターネットの向こう側の話で<br/>
+情報系の専門学校を出たものの、プログラミングは一切せず、最近までは<br/>
+特に何をするでもなく面白おかしく生きていました。</p>
+
+<p>現在の私の環境も、最初は社内SEということで適当に仕事しようと思っていたら<br/>
+インターネットの向こう側のfujiwaraさんと同じ仕事をすることとなり、<br/>
+必死でプログラミングやサーバサイドの勉強をしたりと、<br/>
+意図せず竹槍一本でインターネットの最前線にいます。</p>
+
+<p>当たり前のことですが、最前線で活躍されているエンジニアの方々は日々誰よりも勉強をし<br/>
+日常の改善を行い、オープンソースにコミットする形で切磋琢磨されています。</p>
+
+<p>最近は私もプログラミングやサーバサイド、ウェッブサービスの勉強をしはじめ、<br/>
+色々なコミュニティの会にお声がけして頂く機会ももらえ、<br/>
+その度に、エッ？もっとバリバリやってきたのかと思ったら案外初心者なんですね！<br/>
+ってリアクションされています。</p>
+
+<p>その期待を良い意味で裏切れるよう、また、オープンソースのコミュニティの方々に<br/>
+もっとしっかりしろ！もっとできるだろ！さっさとこっちに来いよ！と<br/>
+激励のお言葉を頂いたりして、絶対全員ぶっ潰す。と内心思いながら<br/>
+たまに背伸びして会話に参加しては、何言っちゃってんのコイツ？？？というように<br/>
+空気を乱しつつ、精進している毎日でございます。</p>
+
+<p>私自身、既に30歳を過ぎ、エンジニアは30歳までに自分の基礎を築き<br/>
+そこからはどれだけその基礎に新しいものを乗せられるかだ。みたいな話を聞く度に<br/>
+基礎なんかねーよ、優秀な新卒氏らにいびられながら精一杯やるしかねーんだよクソが。<br/>
+と管を巻く毎日でございます。</p>
+
+<p>環境に活かされている。多分それはすたじおさんぐらいしか理解者がいないのですが<br/>
+環境によって活かされていて、結果的に一流のエンジニアの方々と面識があるだけで<br/>
+何かすごいコミットをしてきているわけではありません。</p>
+
+<p>それでも、つたないことでも良いから何かを発信して、誰かの琴線に触れたり<br/>
+どこにでもあるような基礎的な話でも、この話が役に立ったといってもらえる瞬間はあります。</p>
+
+<p>コミュニティの場で、スーパーなエンジニアの方に気軽に声をかけることよりも、<br/>
+声をかけるきっかけをつくることが大事なんじゃないのかなと<br/>
+最近は思うようになりました。</p>
+
+<p>2日目に、諸事情があってウロウロしていたらmizzyさんに声をかけて頂き<br/>
+serverspecのステッカーを貰いました。</p>
+
+<iframe src="//instagram.com/p/edwTJepqky/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p></p>
+
+<p>ついでに<a href="http://blog.kenjiskywalker.org/blog/2013/09/20/serverspec-with-cron/">本番環境でのserverspecの運用方法</a>の話もしました。<br/>
+そしたらひろせおじさんがやってきて、ドラクエ氏が<br/>
+買ってきたばかりのiPhone5sを見せびらかしていて、<br/>
+いつの間にかスーパーなおじさんだらけでした。</p>
+
+<p>つらつら書きましたが、どうしようもないことでも発信したり<br/>
+発表したりすると、色んな人たちと話すきっかけができておすすめです。</p>
+
+<p>地域でやってるPerlのコミュニティ、<a href="http://atnd.org/events/43853">Hachioji.pm</a>や<a href="http://atnd.org/events/43990">Chiba.pm</a>はとてもフランクな場で<br/>
+Perlじゃないことを話している人も多いので、何かを発表してみる<br/>
+というチャレンジをするのに最適な環境だと思います。</p>
+
+<p>やらないことや、冷めること、諦めることに理由を付けるのは簡単なので、<br/>
+何も持てるものはなくても現状に抗ってみるってことが大切なのかな、<br/>
+と思う今日このごろです。</p>
+
+<h4>前夜祭</h4>
+
+<iframe src="//instagram.com/p/ecPGhlpqhm/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p></p>
+
+<blockquote><p>らすた麺、麺硬め、ライス小</p></blockquote>
+
+<h4>1日目</h4>
+
+<iframe src="//instagram.com/p/ejvn-KJqsO/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<blockquote><p>pushし損ない。<br/>
+ラーメン、ノリまし、麺硬め、ライス中</p></blockquote>
+
+<h4>2日目</h4>
+
+<iframe src="//instagram.com/p/ehP9bQJquo/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<blockquote><p>ラーメン、ノリまし、麺硬め、油少なめ、ライス中</p></blockquote>
+
+<p>そろそろ塩分の摂取量とか考えよう。</p>
+
+<iframe class="embed-preview" src="http://gifboom.com/x/1c9c1116/embed_content" width="480" height="360" frameborder="0" scrolling="no"></iframe>
+
+
+<script async src="http://medias.gifboom.com/static/embed.1.js" charset="utf-8"></script>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/25/fluent-plugin-cloudwatch-1-2-4/">Fluent-plugin-cloudwatch 1.2.4 Release</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-25T23:06:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3><a href="https://rubygems.org/gems/fluent-plugin-cloudwatch">https://rubygems.org/gems/fluent-plugin-cloudwatch</a></h3>
+
+<p>リリースしました。<br/>
+CloudWatchのAPIが、値なしでレスポンス返してくることはよくあったのですが、<br/>
+リクエストに対してレスポンスが取得できずに詰まってしまう現象があり、<br/>
+その解決策としてtimeoutを追加しました。<br/>
+同現象でお悩みの方はバージョンアップをお願いいたします。</p>
+
+<blockquote><p>本件でアドバイスを頂いたfujiwaraさん有難うございます。</p></blockquote>
+
+<p>また、td-agentの<code>version 1.1.17</code>から正式に<code>configtest</code>が導入され<br/>
+設定に誤りがあった場合、エラー内容が出力され、<br/>
+<code>reload</code>、および<code>restart</code>が走らないようになっています。</p>
+
+<p>この変更により、運用中の設定ファイルの更新作業も楽しく行えるかと思います。</p>
+
+<p>合わせてアップデートをおすすめいたします。<br/>
+@repeatedly++</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

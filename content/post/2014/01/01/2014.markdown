@@ -1,0 +1,14 @@
+---
+layout: post
+title: "あけましておめでとうございます"
+published: true
+date: "2014-01-01T02:13:00+09:00"
+comments: true
+
+
+---
+
+![https://dl.dropboxusercontent.com/u/5390179/2014.jpg](https://dl.dropboxusercontent.com/u/5390179/2014.jpg)  
+  
+今年もよろしくお願いします。
+

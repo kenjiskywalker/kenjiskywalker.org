@@ -1,0 +1,929 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="こんな感じでイケました。 参考： - Ruby の HTTP クライアントライブラリ Faraday が便利そう / mitukiii gist - Zabbix APIを使って値を取ってみる / ike-daiの日記 アクセストークンは、ike-daiさんのブログを参考にcurlコマンドで取得し &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/49/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/07/faraday-ruby-zabbix-api/">Faradayを利用してRubyでZabbix APIを叩く #zabbix_jp</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-07T19:26:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>こんな感じでイケました。</p>
+
+<div><script src='https://gist.github.com/4473915.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>参考：<br/>
+ - <a href="https://gist.github.com/2775321">Ruby の HTTP クライアントライブラリ Faraday が便利そう / mitukiii gist</a><br/>
+ - <a href="http://d.hatena.ne.jp/ike-dai/20110418/1303129550">Zabbix APIを使って値を取ってみる / ike-daiの日記</a></p>
+
+<p>アクセストークンは、ike-daiさんのブログを参考に<code>curl</code>コマンドで取得し、<br/>
+取得したアクセストークンを<code>auth</code>に入れています。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/07/zabbix-min/">Zabbixで5分間閾値以下だったらアラート</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-07T10:53:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>({HostName:net.if.out[eth0,bytes].max(#10)}&lt;50K)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とかで設定すると、アイテムが30秒間隔の場合<br/>
+<code>30sec * 10 = 300sec</code>の間の最大値が全て<code>50Kbps以下</code>であれば<br/>
+トリガーを発動する。みたいな設定ができる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>({HostName:net.if.out[eth0,bytes].max(300)}&lt;50K)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こっちの方がシンプルでわかりやすいかもしれない。</p>
+
+<p>@fujiwara++<br/>
+@qryuu++</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/05/unagi/">ウナギ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-05T11:39:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>淡水魚と海水魚と川と海の境目について考えていた。</p>
+
+<p><a href="http://upload.wikimedia.org/wikipedia/commons/1/19/Eel-life-circle1.svg"><img src="http://upload.wikimedia.org/wikipedia/commons/1/19/Eel-life-circle1.svg" alt="wikipedia" /></a></p>
+
+<blockquote><p>ウナギ科魚類がなぜこれほど長距離に及ぶ回遊をするのか、何を目印として元の産卵場所へたどりつくのか、確かなことはわかってない</p></blockquote>
+
+<p>かっこいい。</p>
+
+<blockquote><p>雌の性成熟は遅い（4–13年、高緯度地帯では6–43年）</p></blockquote>
+
+<p>43歳のウナギ、かっこいい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/05/fluent-pluing/">超初級！Fluentdのプラグインを書きたくなった時の下地づくり</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-05T00:52:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>fluentdをまともに動かしたことないけど<br/>
+プラグイン書いたらわかるのでは！！？<br/>
+と思い立って取り敢えず下地だけつくったのでメモ。</p>
+
+<h4>参考</h4>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/tagomoris/20120221/1329815126">fluentdのためのプラグインをイチから書く手順(bundler版) / tagomorisのメモ置き場</a></li>
+<li><a href="http://docs.fluentd.org/articles/plugin-development">Writing plugins / fluentd</a></li>
+<li><a href="https://github.com/fujiwara/fluent-plugin-imkayac">fluent-plugin-imkayac / fujiwara</a></li>
+<li><a href="https://github.com/studio3104/fluent-plugin-r18">fluent-plugin-r18 / studio3104</a></li>
+</ul>
+
+
+<p>基本はもりす先生の手順にそって行えば問題なし。<br/>
+参考にオフィシャルのドキュメントと<br/>
+@fujiwaraさんのシンプルなプラグイン<br/>
+@studio3104さんの下地を見ながら書くとなおよし。</p>
+
+<p>また、rake testまで通したものを</p>
+
+<p><a href="https://github.com/kenjiskywalker/fluent-plugin-hoge">https://github.com/kenjiskywalker/fluent-plugin-hoge</a></p>
+
+<p>こちらに上げておきました。ここから遊んでみても良いのではないかと思います。</p>
+
+<h3>作成手順</h3>
+
+<h4>bunldeで作成</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ bundle gem fluent-plugin-hoge
+</span><span class='line'>$ cd fluent-plugin-hoge/
+</span><span class='line'>$ mkdir -p lib/fluent/plugin
+</span><span class='line'>$ mv lib/fluent-plugin-hoge.rb lib/fluent/plugin/out_hoge.rb
+</span><span class='line'>$ rm lib/fluent-plugin-hoge/version.rb
+</span><span class='line'>$ rmdir lib/fluent-plugin-hoge
+</span><span class='line'>$ mkdir -p test/plugin
+</span><span class='line'>$ touch test/plugin/test_out_hoge.rb</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>gemspecファイルの修正</h4>
+
+<p><code>fluent-plugin-hoge.gemspec</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># -*- encoding: utf-8 -*-
+</span><span class='line'>lib = File.expand_path('../lib', __FILE__)
+</span><span class='line'>$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+</span><span class='line'>
+</span><span class='line'>Gem::Specification.new do |gem|
+</span><span class='line'>  gem.name          = "fluent-plugin-hoge"
+</span><span class='line'>  gem.version       = "0.0.1"
+</span><span class='line'>  gem.authors       = ["kenjiskywalker"]
+</span><span class='line'>  gem.email         = ["git@kenjiskywalker.org"]
+</span><span class='line'>  gem.description   = %q{TODO: Write a gem description}
+</span><span class='line'>  gem.summary       = %q{TODO: Write a gem summary}
+</span><span class='line'>  gem.homepage      = ""
+</span><span class='line'>
+</span><span class='line'>  gem.files         = `git ls-files`.split($/)
+</span><span class='line'>  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+</span><span class='line'>  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+</span><span class='line'>  gem.require_paths = ["lib"]
+</span><span class='line'>  gem.add_development_dependency "fluentd"
+</span><span class='line'>  gem.add_runtime_dependency "fluentd"
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p>version周りの設定の変更とfluentdの依存周りの設定の追加</p>
+
+<h4>out_hoge.rbの作成</h4>
+
+<p><code>fluent-plugin-hoge/lib/fluent/plugin/out_hoge.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>class Fluent::HogeOutput &lt; Fluent::BufferedOutput
+</span><span class='line'>  Fluent::Plugin.register_output('hoge', self)
+</span><span class='line'>
+</span><span class='line'>  include Fluent::SetTagKeyMixin
+</span><span class='line'>  config_set_default :include_tag_key, false
+</span><span class='line'>
+</span><span class='line'>  include Fluent::SetTimeKeyMixin
+</span><span class='line'>  config_set_default :include_time_key, true
+</span><span class='line'>
+</span><span class='line'>  # config_param :hoge, :string, :default =&gt; 'hoge'
+</span><span class='line'>
+</span><span class='line'>  def initialize
+</span><span class='line'>    super
+</span><span class='line'>    # require 'hogepos'
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def configure(conf)
+</span><span class='line'>    super
+</span><span class='line'>    # @path = conf['path']
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def start
+</span><span class='line'>    super
+</span><span class='line'>    # init
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def shutdown
+</span><span class='line'>    super
+</span><span class='line'>    # destroy
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def format(tag, time, record)
+</span><span class='line'>    [tag, time, record].to_msgpack
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def write(chunk)
+</span><span class='line'>    records = []
+</span><span class='line'>    chunk.msgpack_each { |record|
+</span><span class='line'>      # records &lt;&lt; record
+</span><span class='line'>    }
+</span><span class='line'>    # write records
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>test周りの設定</h4>
+
+<p><code>fluent-plugin-hoge/test/helper.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'rubygems'
+</span><span class='line'>require 'bundler'
+</span><span class='line'>begin
+</span><span class='line'>  Bundler.setup(:default, :development)
+</span><span class='line'>rescue Bundler::BundlerError =&gt; e
+</span><span class='line'>  $stderr.puts e.message
+</span><span class='line'>  $stderr.puts "Run `bundle install` to install missing gems"
+</span><span class='line'>  exit e.status_code
+</span><span class='line'>end
+</span><span class='line'>require 'test/unit'
+</span><span class='line'>
+</span><span class='line'>$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+</span><span class='line'>$LOAD_PATH.unshift(File.dirname(__FILE__))
+</span><span class='line'>require 'fluent/test'
+</span><span class='line'>unless ENV.has_key?('VERBOSE')
+</span><span class='line'>  nulllogger = Object.new
+</span><span class='line'>  nulllogger.instance_eval {|obj|
+</span><span class='line'>    def method_missing(method, *args)
+</span><span class='line'>      # pass
+</span><span class='line'>    end
+</span><span class='line'>  }
+</span><span class='line'>  $log = nulllogger
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>require 'fluent/plugin/out_hoge'
+</span><span class='line'>
+</span><span class='line'>class Test::Unit::TestCase
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>fluent-plugin-hoge/test/plugin/test_out_hoge.rb</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>require 'helper'
+</span><span class='line'># require 'time'
+</span><span class='line'>
+</span><span class='line'>class HogeOutputTest &lt; Test::Unit::TestCase
+</span><span class='line'>  # TMP_DIR = File.dirname(__FILE__) + "/../tmp"
+</span><span class='line'>
+</span><span class='line'>  def setup
+</span><span class='line'>    Fluent::Test.setup
+</span><span class='line'>    # FileUtils.rm_rf(TMP_DIR)
+</span><span class='line'>    # FileUtils.mkdir_p(TMP_DIR)
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  CONFIG = %[
+</span><span class='line'>  ]
+</span><span class='line'>  # CONFIG = %[
+</span><span class='line'>  #   path #{TMP_DIR}/out_file_test
+</span><span class='line'>  #   compress gz
+</span><span class='line'>  #   utc
+</span><span class='line'>  # ]
+</span><span class='line'>
+</span><span class='line'>  def create_driver(conf = CONFIG)
+</span><span class='line'>    Fluent::Test::BufferedOutputTestDriver.new(Fluent::HogeOutput).configure(conf)
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def test_configure
+</span><span class='line'>    #### set configurations
+</span><span class='line'>    # d = create_driver %[
+</span><span class='line'>    #   path test_path
+</span><span class='line'>    #   compress gz
+</span><span class='line'>    # ]
+</span><span class='line'>    #### check configurations
+</span><span class='line'>    # assert_equal 'test_path', d.instance.path
+</span><span class='line'>    # assert_equal :gz, d.instance.compress
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def test_format
+</span><span class='line'>    d = create_driver
+</span><span class='line'>
+</span><span class='line'>    # time = Time.parse("2011-01-02 13:14:15 UTC").to_i
+</span><span class='line'>    # d.emit({"a"=&gt;1}, time)
+</span><span class='line'>    # d.emit({"a"=&gt;2}, time)
+</span><span class='line'>
+</span><span class='line'>    # d.expect_format %[2011-01-02T13:14:15Z\ttest\t{"a":1}\n]
+</span><span class='line'>    # d.expect_format %[2011-01-02T13:14:15Z\ttest\t{"a":2}\n]
+</span><span class='line'>
+</span><span class='line'>    # d.run
+</span><span class='line'>  end
+</span><span class='line'>
+</span><span class='line'>  def test_write
+</span><span class='line'>    d = create_driver
+</span><span class='line'>
+</span><span class='line'>    # time = Time.parse("2011-01-02 13:14:15 UTC").to_i
+</span><span class='line'>    # d.emit({"a"=&gt;1}, time)
+</span><span class='line'>    # d.emit({"a"=&gt;2}, time)
+</span><span class='line'>
+</span><span class='line'>    # ### FileOutput#write returns path
+</span><span class='line'>    # path = d.run
+</span><span class='line'>    # expect_path = "#{TMP_DIR}/out_file_test._0.log.gz"
+</span><span class='line'>    # assert_equal expect_path, path
+</span><span class='line'>
+</span><span class='line'>    # data = Zlib::GzipReader.open(expect_path) {|f| f.read }
+</span><span class='line'>    # assert_equal %[2011-01-02T13:14:15Z\ttest\t{"a":1}\n] +
+</span><span class='line'>    #                 %[2011-01-02T13:14:15Z\ttest\t{"a":2}\n],
+</span><span class='line'>    #              data
+</span><span class='line'>  end
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Rakefileの設定</h4>
+
+<p><code>Rakefile</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/env rake
+</span><span class='line'>require "bundler/gem_tasks"
+</span><span class='line'>require "rake/testtask"
+</span><span class='line'>
+</span><span class='line'>Rake::TestTask.new(:test) do |test|
+</span><span class='line'>  test.libs &lt;&lt; 'lib' &lt;&lt; 'test'
+</span><span class='line'>  test.pattern = 'test/**/test_*.rb'
+</span><span class='line'>  test.verbose = true
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>task :default =&gt; :test</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>rake testの実行</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rake test
+</span><span class='line'># Running tests:
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>Finished tests in 0.065174s, 46.0306 tests/s, 0.0000 assertions/s.
+</span><span class='line'>
+</span><span class='line'>3 tests, 0 assertions, 0 failures, 0 errors, 0 skips</span></code></pre></td></tr></table></div></figure>
+
+
+<p>うおおおおおおおおお！！！自分で何も書いてないけどテストが通った喜びッッ！！！</p>
+
+<p>ということで、ここからつくりあげていく感じになるでしょうか。<br/>
+当初、何もわかっていない状態で<em>fluent-plugin-postfix-logger</em>などと<br/>
+ドヤ顔でつくりはじめたのですが、ファイルの関係性とか全く理解していない状態で<br/>
+ややこしいファイル名にすると間違っている箇所が特定しづらいので<br/>
+最初は<em>fluent-plugin-hoge</em>などと作成して、最低限自分が確認したい状態まで<br/>
+持っていった上で確認していくのがいいという、初心者っぽい気付きがありました。</p>
+
+<p>初心者ながら地道にやっていきたいということで超初級の恥ずかしいメモを<br/>
+アップしました。誤りなどありましたら教えてくださいませ！</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/03/zabbix/">Zabbix v2.0.4 + Nginx v1.0.15 Installed</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-03T15:38:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>nginxでZabbix2.0.4をインストールしたのでメモ。</p>
+
+<h2>環境</h2>
+
+<ul>
+<li>nginx v1.0.15</li>
+<li>zabbix v2.0.4</li>
+<li>MySQL - 5.5.28</li>
+<li>CentOS 6.3</li>
+</ul>
+
+
+<h3>Zabbixをyumでインストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ yum install zabbix20-server-mysql.x86_64
+</span><span class='line'>$ yum install zabbix20-2.0.4-1.el6.x86_64
+</span><span class='line'>$ yum install zabbix20-server-mysql-2.0.4-1.el6.x86_64
+</span><span class='line'>$ yum install zabbix20-server-2.0.4-1.el6.x86_64</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Zabbix用のデータベースを用意</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ mysql
+</span><span class='line'>&gt; grant all privileges on zabbix.* to zabbix@localhost identified by '********';
+</span><span class='line'>&gt; create database zabbix character set utf8;</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Zabbixのデータをさきほど作成したデータベースに装入</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd /usr/share/zabbix-mysql/
+</span><span class='line'>$ mysql -uzabbix -p zabbix  &lt; schema.sql
+</span><span class='line'>$ mysql -uzabbix -p zabbix  &lt; images.sql 
+</span><span class='line'>$ mysql -uzabbix -p zabbix  &lt; data.sql</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/etc/zabbix_server.conf</code>に
+<em>DBPassword</em>を記述。<br/>
+デフォルトで書き込み権限ないの意識高い。</p>
+
+<h3>Zabbix Serverを起動</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/zabbix-server start
+</span><span class='line'>tail /var/log/zabbix/zabbix_server.log</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>nginxとphp-fpmのインストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ yum install --enablerepo=remi nginx php php-fpm php-devel \  
+</span><span class='line'>php-cli php-xml php-mysql php-mbstring php-gd</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>WebUIのファイルがないことに気付きzabbix2&ndash;webをインストール</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ yum install --enablerepo=remi zabbix20-web.noarch</span></code></pre></td></tr></table></div></figure>
+
+
+<p>nginxのデフォルトルートにシンボリックリンク</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ln -s /usr/share/zabbix /usr/share/nginx/html/zabbix</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/etc/nginx/conf.d/zabbix.conf</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>server {
+</span><span class='line'>    listen 80;
+</span><span class='line'>    server_name home.kenjiskywalker.org;
+</span><span class='line'>    index index.html;
+</span><span class='line'>    access_log /var/log/nginx/zabbix/access_log main;
+</span><span class='line'>    error_log  /var/log/nginx/zabbix/error_log  error;
+</span><span class='line'>
+</span><span class='line'>    location /zabbix {
+</span><span class='line'>        index index.php;
+</span><span class='line'>    }
+</span><span class='line'>
+</span><span class='line'>    location ~ \.php$ {
+</span><span class='line'>        fastcgi_pass 127.0.0.1:9000;
+</span><span class='line'>        fastcgi_index index.php;
+</span><span class='line'>        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+</span><span class='line'>        include fastcgi_params;
+</span><span class='line'>    }
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p><em>/var/log/nginx/zabbix/</em>ディレクトリは自分で掘る</p>
+
+<p><code>/etc/php.ini</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[Date]
+</span><span class='line'>; Defines the default timezone used by the date functions
+</span><span class='line'>; http://php.net/date.timezone
+</span><span class='line'>; date.timezone = 
+</span><span class='line'>date.timezone = Asia/Tokyo
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>; 追記
+</span><span class='line'>post_max_size = 32M
+</span><span class='line'>max_execution_time = 300
+</span><span class='line'>max_input_time = 300</span></code></pre></td></tr></table></div></figure>
+
+
+<p>timezoneの設定はphp-fpmをstop/startしないと反映されなかった。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ /etc/init.d/nginx start
+</span><span class='line'>$ /etc/init.d/php-fpm start</span></code></pre></td></tr></table></div></figure>
+
+
+<p>あとは<code>http://domain/zabbix/</code>にアクセスすれば閲覧できるはず。
+ログイン確認後はすみやかにパスワードを変更してとりあえずは完了。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,598 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="メモリの相性とか都市伝説だと思っていたけど
+元同僚のミャンマー人の人からもらった新品のADATAのメモリ
+差し込むとうんともすんとも言わなくなった。 メモリほしいなー程度だったんだけど
+そのもらった4GB x2が動かなかったおかげで
+今刺さってるCFDのメモリ4GB x2と全く同じもの買った。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/36/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/21/memory/">メモリの相性</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-21T21:06:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>メモリの相性とか都市伝説だと思っていたけど<br/>
+元同僚のミャンマー人の人からもらった新品のADATAのメモリ<br/>
+差し込むとうんともすんとも言わなくなった。</p>
+
+<p>メモリほしいなー程度だったんだけど<br/>
+そのもらった4GB x2が動かなかったおかげで<br/>
+今刺さってるCFDのメモリ4GB x2と全く同じもの買った。</p>
+
+<p>これで認識しなかったら泣いちゃう。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/20/ebs-terminate-remove/">EC2をTerminateした時にEBSも削除してほしい</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-20T19:35:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote class="twitter-tweet"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> DeleteOnTerminationをTrueにすると、Instance がTerminationしたときに一緒に消え去ってくれますよー</p>&mdash; con_mame (@con_mame) <a href="https://twitter.com/con_mame/statuses/369439049037017089">August 19, 2013</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p></p>
+
+<p>AWSで悩みがあったら大体@con_mameさんが解決してくれるんだ。<br/>
+お会いしたらbeerをおごりたい。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/08/14/aws-vpc-autoscaling/">先日のAuto Scalingの検証時</a>に、インスタンスがTerminateされても<br/>
+利用されたEBSがうんちみたいに残ってしまうことがあった。</p>
+
+<p>残したくない場合は、AMI作成時に</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/ami_create.png" alt="https://dl.dropboxusercontent.com/u/5390179/ami_create.png" /></p>
+
+<p>上記のように<code>DeleteOnTermination</code>を有効化すれば良い。<br/>
+Auto Scalingで<code>DeleteOnTermination</code>を有効化したAMIを指定すれば<br/>
+EC2のインスタンスがTerminateされた時に、同時にEBSボリュームも削除してくれる。</p>
+
+<p>便利だ。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/18/mini-keyboad/">便利キーボード情報です</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-18T19:41:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>外出時、iPad miniとかで対応する必要がある場合</p>
+
+<p><a href="http://www.amazon.co.jp/gp/product/B005LKIR72/ref=as_li_qf_sp_asin_il?ie=UTF8&camp=247&creative=1211&creativeASIN=B005LKIR72&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B005LKIR72&Format=_SL160_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B005LKIR72" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p>これあればまず困らない。</p>
+
+<p>サーバで軽く作業したい場合</p>
+
+<p><a href="http://www.amazon.co.jp/gp/product/B004CR61QY/ref=as_li_qf_sp_asin_il?ie=UTF8&camp=247&creative=1211&creativeASIN=B004CR61QY&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B004CR61QY&Format=_SL160_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B004CR61QY" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p>これがあればマウスとかいらないのでまず困らない。</p>
+
+<p>おすすめの品です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/18/emperor/">「終戦のエンペラー」みた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-18T19:26:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.emperor-movie.jp/">http://www.emperor-movie.jp/</a></p>
+
+<p>面白かった。アヤのところいらないだろって思ったら<br/>
+<a href="http://www.emperor-movie.jp/production.html">おじいちゃんが&#8221;情熱的な愛のエピソードがあるといいね&#8221;ってと言って</a><br/>
+ってあったから、それは仕方ないなって思った。</p>
+
+<p><a href="http://ja.wikipedia.org/wiki/%E5%AE%AE%E5%9F%8E%E4%BA%8B%E4%BB%B6">宮城事件</a>とか知らない人多いと思うし<br/>
+一度「<a href="https://itunes.apple.com/jp/movie/ri-bennoichiban-zhangi-ri/id531114508">日本のいちばん長い日</a>」見ておくと良いと思う。<br/>
+当時の狂気な感じが伝わってくる凄みのある映画だ。</p>
+
+<p>あと多分、現代の日本人の家行ってもああいう感じでお茶出てこないと思う。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/14/aws-vpc-autoscaling/">AWSのVPCでAuto Scalingを試した記録</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-14T17:41:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1><a href="http://aws.amazon.com/jp/autoscaling/">Auto Scaling</a></h1>
+
+<p>ELBにぶら下がっているVPC内のEC2のインスタンスのCPU使用率が<br/>
+n%以上になったらインスタンス増やして負荷を分散する。</p>
+
+<p>普段AWSはGUIでしか操作していない為<br/>
+GUIが用意されていないAuto Scaling(以後:AS)を使うのは不安だった。<br/>
+全体像が掴めればそんなに困ることはない感じだ。</p>
+
+<p>大抵AWSの設定でハマるのはregionの指定のところだろう。<br/>
+これはマニュアルやコマンドのhelpはregionの省略を止めるべきだと思う。</p>
+
+<h1>設定する必要のある項目</h1>
+
+<h3>LaunchConfig</h3>
+
+<ol>
+<li>起動するAMIの指定</li>
+<li>そのAMIを利用して起動するインスタンスタイプの指定</li>
+<li>適応するセキュリティグループ名(VPCに適用するセキュリティグループ名)</li>
+<li>対象のリージョン</li>
+</ol>
+
+
+<h3>AutoScalingGroup</h3>
+
+<ol>
+<li>ぶら下がるELBの指定</li>
+<li>立ち上がった後のインスタンスの状態の確認方法(今回はELB)</li>
+<li>HelthCheckが走るまで待機する時間
+
+<blockquote><p>これを60秒とか短めに設定するとインスタンスが立ち上がる前にチェックが走って<br/>
+間に合わなくてターミネイトされて起動してターミネイトされてという地獄みたいな状態になった</p></blockquote></li>
+<li>立ち上げるインスタンスを配置する予定のアベイラビリティゾーン</li>
+<li>Auto Scalingで立ち上げる最小インスタンス</li>
+<li>Auto Scalingで立ち上げる最大インスタンス</li>
+<li>立ち上げるVPCのサブネット</li>
+<li>対象のリージョン</li>
+</ol>
+
+
+<h3>ScalingPolicyを設定する</h3>
+
+<blockquote><p>これはスケールアウト(インスタンス増加)とスケールイン(インスタンス減少)<br/>
+の2つのパターンを作成する</p></blockquote>
+
+<ol>
+<li>何台増加(減少)させるかの指定</li>
+<li>typeがよくわからない</li>
+<li>次にスケールするまでの待機時間(cooldown)</li>
+<li>対象のリージョン</li>
+</ol>
+
+
+<h3>CloudWatch</h3>
+
+<ol>
+<li>アラートの設定</li>
+</ol>
+
+
+<blockquote><p>CPUUtilization が n分間 m% の使用率以上(以下)であったらアラートを発行<br/>
+という設定を行う。このアラートがスケールアウト(スケールイン)のトリガーとなる</p></blockquote>
+
+<h1>設定していく</h1>
+
+<h3>LaunchConfig</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># 作成
+</span><span class='line'>$ as-create-launch-config ExampleLaunchSetting --image-id ami-XXXXXXXX --instance-type m1.small --region ap-northeast-1 --group sg-XXXXXXXX
+</span><span class='line'>
+</span><span class='line'># 削除
+</span><span class='line'>$ as-delete-launch-config ExampleLaunchSetting --region ap-northeast-1
+</span><span class='line'>
+</span><span class='line'># 確認
+</span><span class='line'>$ as-describe-launch-configs --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>--image-id</code> ASで利用するAMI</li>
+<li><code>--instance-type</code> ASで起動するEC2のインスタンスサイズ</li>
+<li><code>--group</code> 起動するインスタンスに適用するSecurityGroup</li>
+</ul>
+
+
+<h1>AutoScalingGroup</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># 作成
+</span><span class='line'>$ as-create-auto-scaling-group ExampleScaleOutGroup --launch-configuration ExampleLaunchSetting --load-balancers example-vpc-elb --health-check-type ELB  --grace-period 300 --availability-zones ap-northeast-1b,ap-northeast-1c --min-size 1 --max-size 2 --desired-capacity 1 --vpc-zone-identifier subnet-XXXXXXXb,subnet-XXXXXXXc --region ap-northeast-1
+</span><span class='line'>
+</span><span class='line'># 削除
+</span><span class='line'>$ as-delete-auto-scaling-group ExampleScaleOutGroup (--force-delete) --region ap-northeast-1
+</span><span class='line'>
+</span><span class='line'># 確認
+</span><span class='line'>$ as-describe-auto-scaling-groups --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>--launch-configuration</code> 上記で作成した起動設定</li>
+<li><code>--load-balancers</code> ELB配下にぶら下げるので対象のELBを指定</li>
+<li><code>--health-check-type</code> ELB以外のチェック方法調べてない</li>
+<li><code>--grace-period</code> ヘルスチェックをはじめるまでの時間
+
+<blockquote><p>これを60秒とか短めに設定するとインスタンスが立ち上がる前にチェックが走って
+ターミネイトされて起動してターミネイトされてという地獄みたいな状態になった</p></blockquote></li>
+<li><code>--availability-zones</code> ASで起動させるインスタンスを置くAZを指定(複数可)</li>
+<li><code>--min-size</code> ASの最小インスタンス数</li>
+<li><code>--max-size</code> ASの最大インスタンス数</li>
+<li><code>--desired-capacity</code> よくわかってない</li>
+<li><code>--vpc-zone-identifier</code> VPCにアサインされているサブネットの指定(複数可)</li>
+</ul>
+
+
+<p>この時点で設定に問題がなければインスタンスが起動してくる。<br/>
+インスタンスが起動しない、もしくは起動した後すぐにTerminateされるとしたら<br/>
+設定に誤りがあるか、<code>--grace-period</code>の閾値が厳しいのかのどちらかだろう。</p>
+
+<h2>Auto Scaleの状態の確認</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ as-describe-scaling-activities --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>このコマンドで設定したASの状態が理解できる。<br/>
+いわばASの動作ログというところだ。<br/>
+AutoScalingGroupでVPCの設定が足りなかったのに気付けた。</p>
+
+<blockquote><p>ACTIVITY  XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX  2013-08-13T10:56:45Z  ExampleScaleOutGroup  Failed  VPC security groups may not be used for a non-VPC launch. Launching EC2 instance failed.<br/>
+こんな感じのエラーが出てた</p></blockquote>
+
+<h2>Auto Scaleによって立ち上がったインスタンスの状態の確認</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ as-describe-auto-scaling-instances --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>ASの最大インスタンス数と最小インスタンス数の変更</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ as-update-auto-scaling-group --min-size 2 --max-size 4 --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<p>オンラインでカジュアルに変更できる</p>
+
+<h3>ScalingPolicy</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># 作成
+</span><span class='line'>$ as-put-scaling-policy ScaleUpPolicy   --auto-scaling-group ExampleScaleOutGroup --adjustment=1  --type ChangeInCapacity --cooldown 300 --region ap-northeast-1 
+</span><span class='line'>$ as-put-scaling-policy ScaleDownPolicy --auto-scaling-group ExampleScaleOutGroup --adjustment=-1 --type ChangeInCapacity --cooldown 300 --region ap-northeast-1
+</span><span class='line'>
+</span><span class='line'># ScalingPolicyの確認
+</span><span class='line'>$ as-describe-policies  --region ap-northeast-1</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>--auto-scaling-group</code> AutoScalingGroupの指定</li>
+<li><code>--adjustment</code> トリガーにかかった際に増やす(減らす)数</li>
+<li><code>--type</code> 調べていない</li>
+<li><code>--cooldown</code> トリガーにかかった際に、連続してインスタンスの増減が発生しないように<br/>
+アイドル(クールダウン)の時間を設ける。</li>
+</ul>
+
+
+<h1>CloudWatchの設定</h1>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/AS1.png" alt="https://dl.dropboxusercontent.com/u/5390179/AS1.png" /></p>
+
+<p><code>Create Alarm</code> => <code>EC2 Aggregated by Auto Scaling Group</code> => AutoScalingGroupの選択<br/>
+今回はトリガー対象が<code>CPUUtilization</code>なのでそれを選択</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/AS2.png" alt="https://dl.dropboxusercontent.com/u/5390179/AS2.png" /></p>
+
+<p>名前をつける。<br/>
+<code>何分間の間 + CPU使用率が + n%以上(以下)</code>だったら<br/>
+という閾値を設定。画像は５分間の間CPU使用率が50%以上であれば。という設定</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/AS3.png" alt="https://dl.dropboxusercontent.com/u/5390179/AS3.png" /></p>
+
+<p>最後にその閾値に引っかかったら、<code>AutoScalingGroup</code>の<code>ScalingPolicy</code>を選択して<br/>
+インスタンスの増減を行う。インスタンスの増減が行われたら通知もしてほしいので、<br/>
+合わせて通知の設定も行った方がいいでしょう。</p>
+
+<h1>まとめ</h1>
+
+<ol>
+<li>ASのグループのCPU使用率が5分間50%以上を継続していた場合はインスタンスをひとつ増やす</li>
+<li>更に継続して10分間CPU使用率が50%以上を継続していた場合はインスタンスをひとつ増やす</li>
+<li>CPU使用率が5分間20%以下を継続していた場合はインスタンスをひとつ減らす</li>
+<li>CPU使用率が10分間20%以下を継続していた場合はインスタンスをひとつ減らす</li>
+</ol>
+
+
+<p>という設定を行い、期待した動作を確認することができた。</p>
+
+<p>CPUの負荷を与えるには<code>stress</code>コマンドを利用すると便利だ。</p>
+
+<p>以上、検証結果をまとめてはみたものの、やはり色々と設定箇所が多いので<br/>
+取っ付きづらい印象はあると思う。</p>
+
+<h2>全体を理解する</h2>
+
+<ul>
+<li><p>LaunchConfig<br/>
+起動するインスタンスの設定</p></li>
+<li><p>AutoScalingGroup<br/>
+インスタンスの増減や対象のELB、VPCなど<br/>
+インスタンスの環境の設定。
+<code>LaunchConfig</code>を参照する。</p></li>
+<li><p>ScalingPolicy<br/>
+インスタンスを何台増やす、減らすなど
+インスタンスを操作するのかを設定。
+<code>AutoScalingGroup</code>を参照する。</p></li>
+<li><p>CloudWatch<br/>
+Alarmに<code>ScalingPolicy</code>を設定することで<br/>
+AutoScalingGroupのメトリクス内容を見て<br/>
+<code>ScalingPolicy</code>を発動させる。</p></li>
+</ul>
+
+
+<p>上記のような関係性を理解して検証をすると<br/>
+全体像を把握しやすくなるのではないでしょうか。</p>
+
+<p>取り敢えずのメモとして、また、これからAutoScalingを試す人向けに<br/>
+多少力添えできればと思い書いてみました。</p>
+
+<p>熟練者様のご指摘お待ちしております。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

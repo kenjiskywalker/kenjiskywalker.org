@@ -1,0 +1,543 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="みんなこういうのはどういう対応しているんだろう @kenjiskywalker PEERDNS=noを/etc/sysconfig/network-scripts/ifcfg-ethXに書くとか&mdash; TSUNEMATSU Shinya (@tnmt) February 7, 2015 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/8/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/07/update-resolv-conf/">起動時にresolv.confが何者かに上書きされた時に更に上書きをする戦い</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-07T17:41:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><blockquote><p>みんなこういうのはどういう対応しているんだろう</p></blockquote>
+
+<blockquote class="twitter-tweet" data-conversation="none" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> PEERDNS=noを/etc/sysconfig/network-scripts/ifcfg-ethXに書くとか</p>&mdash; TSUNEMATSU Shinya (@tnmt) <a href="https://twitter.com/tnmt/status/564019209189851136">February 7, 2015</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>常松先生が一瞬で解決方法を教えてくれました。<br/>
+ありがとうございます！</p>
+
+<h2>resolv.confが圧倒的暴力によって上書きされる場合</h2>
+
+<p>対応として<code>resolv-update</code>みたいな雑なサービス定義をして、サーバ起動時に実行させるようにした。<br/>
+ポイントはcloud-initとかそれ系のヤツが実行される前に上書いてもその後に上書きされるのでタイミングが大切。</p>
+
+<p>ここの</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># chkconfig: 2345 49 49</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>49 49</code>の最初の数字が起動時に実行される順番で、後ろの数字が終了時に実行される順番。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ chkconfig --add resolv-update</span></code></pre></td></tr></table></div></figure>
+
+
+<p>とすることで自動に実行されるようになる。</p>
+
+<p>runlevel 3のものを確認したければ<code>/etc/rc3.d/</code>とか見ればわかる。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/bin/sh
+</span><span class='line'>#
+</span><span class='line'># resolv-update
+</span><span class='line'># create by kenjiskywalker
+</span><span class='line'>#
+</span><span class='line'># chkconfig: 2345 49 49
+</span><span class='line'># description: resolv-update
+</span><span class='line'>
+</span><span class='line'>lock_file="/var/lock/subsys/resolv-update"
+</span><span class='line'>redis_port="6379"
+</span><span class='line'>
+</span><span class='line'>start()
+</span><span class='line'>{
+</span><span class='line'>    # lock_fileを生成しないとshutdownの時に実行されない
+</span><span class='line'>    touch ${lock_file}
+</span><span class='line'>
+</span><span class='line'>    # 圧倒的暴力によってresolv.confが上書きされていたら更に上書きする
+</span><span class='line'>    if [[ -z "`grep 'nameserver 127.0.0.1' /etc/resolv.conf`" ]]
+</span><span class='line'>    then
+</span><span class='line'>        sed -i '1s/^/nameserver 127.0.0.1\n/' /etc/resolv.conf
+</span><span class='line'>    fi
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>stop()
+</span><span class='line'>{
+</span><span class='line'>    # lock_fileの削除
+</span><span class='line'>    rm -r ${lock_file}
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>case "$1" in
+</span><span class='line'>    start)
+</span><span class='line'>        start
+</span><span class='line'>    ;;
+</span><span class='line'>    stop)
+</span><span class='line'>        stop
+</span><span class='line'>    ;;
+</span><span class='line'>    *)
+</span><span class='line'>        echo "Usage: $0 {start|stop}"
+</span><span class='line'>    ;;
+</span><span class='line'>esac
+</span><span class='line'>
+</span><span class='line'>exit 0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Systemd？はて？</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/02/01/201501-book/">2015/1読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-02-01T15:32:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>太平記が面白かった.</p>
+
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2015年01月 (8作品)</div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3R6Q3Y" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51zPI%2B%2Bq2%2BL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3R6Q3Y" target="_blank">私本太平記 12 湊川帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：01月02日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00G3R8G78" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51Ep36mVdtL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00G3R8G78" target="_blank">私本太平記 13 黒白帖</a><br /><a href="http://booklog.jp/author/%E5%90%89%E5%B7%9D%E8%8B%B1%E6%B2%BB" target="_blank">吉川英治</a><br />読了日：01月03日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00MUN15IQ" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51X5dD2wvLL._SL75_.jpg" width="52" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00MUN15IQ" target="_blank">超高速勉強法</a><br /><a href="http://booklog.jp/author/%E6%A4%8B%E6%9C%A8%E4%BF%AE%E4%B8%89" target="_blank">椋木修三</a><br />読了日：01月03日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00L0WYS50" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41XI1PP4cHL._SL75_.jpg" width="52" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00L0WYS50" target="_blank">相手をイラつかせない怒らせない話し方と聞き方のルール</a><br /><a href="http://booklog.jp/author/%E7%AB%B9%E5%86%85%E5%B9%B8%E5%AD%90" target="_blank">竹内幸子</a><br />読了日：01月10日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4873117097" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51P6qVOPALL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4873117097" target="_blank">Serverspec</a><br /><a href="http://booklog.jp/author/%E5%AE%AE%E4%B8%8B%E5%89%9B%E8%BC%94" target="_blank">宮下剛輔</a><br />読了日：01月11日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00MTL340G" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51-lWx66ITL._SL75_.jpg" width="48" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00MTL340G" target="_blank">イシューからはじめよ ― 知的生産の「シンプルな本質」</a><br /><a href="http://booklog.jp/author/%E5%AE%89%E5%AE%85%E5%92%8C%E4%BA%BA" target="_blank">安宅和人</a><br />読了日：01月12日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4063884163" target="_blank"><img src="http://ecx.images-amazon.com/images/I/615G5PMrhkL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4063884163" target="_blank">GIANT KILLING(34) (モーニング KC)</a><br /><a href="http://booklog.jp/author/%E3%83%84%E3%82%B8%E3%83%88%E3%83%A2" target="_blank">ツジトモ</a><br />読了日：01月25日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B00LNBVVX0" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41%2BjUZcmLmL._SL75_.jpg" width="51" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B00LNBVVX0" target="_blank">35歳から「一生、負けない」生き方</a><br /><a href="http://booklog.jp/author/%E7%AB%B9%E7%94%B0%E9%99%BD%E4%B8%80" target="_blank">竹田陽一</a><br />読了日：01月29日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/21/trailokyavijaya/">「降三世明王」について</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-21T00:30:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/gp/product/B009NOI46Q/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B009NOI46Q&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B009NOI46Q&Format=_SL250_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B009NOI46Q" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p>降三世明王が好きなのでそのことについて書く。</p>
+
+<p>降三世明王、仏像のつくりはヒンドゥー教と仏教の争いみたいな感じで<br/>
+シヴァ神を踏みつけていてあんまりよろしくはない。</p>
+
+<p>三世は過去現在未来という意味が強く、受け取り側次第でいかようにも取れる。<br/>
+天下布武の天下は全国なのか近畿だけなのかみたいな感じで。</p>
+
+<p>それはそれとして、降三世明王のある側面では「人間の三毒を取り除く」という意味合いがある。<br/>
+三毒とは「貪・瞋・痴」、貪り、怒り、愚痴を吐くことだ。</p>
+
+<p>人間のできていない自分はこの三毒にすぐにハマる。<br/>
+特に対人間となるとすぐに怒ったり愚痴ったりする。</p>
+
+<p>そういう時に降三世明王を自分の中に入れ<br/>
+衆生や世界、宇宙を感じることを思い出して、<br/>
+今という瞬間と、自分という我執を俯瞰できたら良いなといつも思う。</p>
+
+<p>降三世明王、身につまされる神様だ。</p>
+
+<p>minibutsu、Yahoo!ショッピングでは買えるっぽい。<br/>
+<a href="http://store.shopping.yahoo.co.jp/minibutsu/18.html">http://store.shopping.yahoo.co.jp/minibutsu/18.html</a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/12/issue-book/">「イシューからはじめよ」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-12T01:49:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/%E3%82%A4%E3%82%B7%E3%83%A5%E3%83%BC%E3%81%8B%E3%82%89%E3%81%AF%E3%81%98%E3%82%81%E3%82%88-%E2%80%95-%E7%9F%A5%E7%9A%84%E7%94%9F%E7%94%A3%E3%81%AE%E3%80%8C%E3%82%B7%E3%83%B3%E3%83%97%E3%83%AB%E3%81%AA%E6%9C%AC%E8%B3%AA%E3%80%8D-%E5%AE%89%E5%AE%85%E5%92%8C%E4%BA%BA-ebook/dp/B00MTL340G%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00MTL340G" target="_blank" title="イシューからはじめよ ― 知的生産の「シンプルな本質」"><img src="http://ecx.images-amazon.com/images/I/51-lWx66ITL.jpg" width="317" height="500" alt="イシューからはじめよ ― 知的生産の「シンプルな本質」" /></a></p>
+
+<p>MTGとか方法が目的になりがちになる。<br/>
+ゴールを意識して、そのゴールを達成する為に何をすべきかを常に意識する必要がある。<br/>
+実作業においても、目的があって、その目的を達成する為に色々な作業が発生して<br/>
+余計なことに時間がかかったりする。綺麗にしたり冗長性をなくしたりとか<br/>
+そういうことに時間を使いがちだけど、まずはゴール(目的)を持ってそれを達成して<br/>
+次に品質を上げることに注力しないと何時までたっても終わらない。</p>
+
+<p>自分の仕事の進め方で悪いところがまさにそれで、取り敢えず手を動かして<br/>
+動くことをゴールとして、品質についてはまた次の機会へ。とすることが<br/>
+今の自分の課題だと認識している。</p>
+
+<p>だからといってメンテナンスのしづらいものでも良いかというとそうではなく<br/>
+次への段階を踏みやすいように足あとと次への段階は明示的にしておくことが大切だと思う。</p>
+
+<p>とにかく常に物事に対してのゴールと、そのゴールを達成する為に必要な作業を<br/>
+計画的に、スピード感を持って仕事に取り組んでいきたいと改めて思った。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/11/serverspec-book/">「Serverspec」本を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-01-11T23:44:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>執筆者のmizzyさんからご恵贈頂きました！ありがとうございます！</p>
+
+<ul>
+<li><a href="http://www.oreilly.co.jp/books/9784873117096/">Serverspec - O&#8217;Reilly Japan</a></li>
+<li><a href="http://mizzy.org/blog/2014/12/25/1/">「Serverspec」という本が出ます - mizzy.org</a></li>
+</ul>
+
+
+<p><a href="http://www.amazon.co.jp/Serverspec-%E5%AE%AE%E4%B8%8B-%E5%89%9B%E8%BC%94/dp/4873117097%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4873117097" target="_blank" title="Serverspec"><img src="http://ecx.images-amazon.com/images/I/51P6qVOPALL.jpg" width="354" height="500" alt="Serverspec" /></a></p>
+
+<h2>書籍について</h2>
+
+<p>最近はソフトウェアの本はあまり読まなくて、<br/>
+オフィシャルサイトのドキュメントを読むように心がけている(一次情報大切)ので<br/>
+そのために技術書を購入することはなくなっていた。まずは手を動かすことが大切だろうと。</p>
+
+<p>mizzyさんには日頃から良くして頂いているけど、業務で普通にServerspec使ってるし<br/>
+ただのマニュアル網羅しているだけだったら買わなくてもいいかな。と考えていました。</p>
+
+<p>第4章を読んで反省した。めちゃくちゃ有意義だった。<br/>
+というか全体的にソフトウェアをつくる上での考え方みたいな普段なかなか聞くことのできない<br/>
+背景を書籍を通じて理解できてとても有意義だった。</p>
+
+<h2>初めての人は？</h2>
+
+<p>第2、第3章を読んで付録Aを見ながら手を動かせばすぐに動かせる。<br/>
+Serverspecの素敵なところは、とてもシンプルに、簡単に動かせるところなので<br/>
+よくわからんけどいっちょやってみるか〜で、30分もかからないで動かせると思う。</p>
+
+<h2>状態を担保する存在の必要性</h2>
+
+<p>イミュータブルやディスポーザブルな世界になったらServerspecは不要になるとかはあまり思わない。<br/>
+設定が実現されたかどうかはプロビジョニングツールでは担保できないから<br/>
+最終的に自動的にサーバが構築されたとしても、そのことを保証するためのツールは<br/>
+何かしら必要だと思う。<br/>
+実際にAWSでオートスケールでインスタンスを立ち上げていた時は<br/>
+最終的にそのインスタンスが期待した状態にあるかどうかをServerspecで確認し<br/>
+それを元に負荷分散に追加するようにしていた。</p>
+
+<h2>Specinfraについて</h2>
+
+<p>Serverspecが素晴らしいのはもう既に有名なんだけど<br/>
+その中で使われているSpecinfraがめちゃめちゃ便利で、Chefでいう<br/>
+ohaiのようなものなんだけど、OS毎の環境差分を抽象化してくれるので<br/>
+itamaeのような使い方は本当に上手だと思う。</p>
+
+<p>capistranoのsskitをSpecinfraに切り替えるとかしたら楽しそうではある。</p>
+
+<p>Serverspecという名前の本だけれど、それ以上にソフトウェアをつくる上での哲学や<br/>
+どのようにして運用するか、何を守り、何を捨てるか、どこへ向かうのかなど<br/>
+インターネットに関わって仕事をしている人ならば誰しもが楽しめる本だと思う。</p>
+
+<h2>最後に</h2>
+
+<p>この本を読ませて頂いて、インターネットの仕事をしていてよかったな〜と<br/>
+改めて思った。mizzyさんありがとうございます。<br/>
+Asuraっていうコードネームめちゃめちゃ好きでした。</p>
+
+<p>この本はまた何回か読み直したい本だ。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

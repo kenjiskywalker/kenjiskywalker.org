@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="AV無理っていうアダルトビデオのシリーズものの題名に似てるとおもった。
+">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/35/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/31/pacificrim/">パシフィック・リム観た</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-31T11:54:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>AV無理っていうアダルトビデオのシリーズものの題名に似てるとおもった。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/31/plenv-chef-cookbook/">Plenvとperl-buildを走らせるchefのcookbookを書いた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-31T03:03:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>perl-buildまでやるやつ書いた。</p>
+
+<p>参考元：<a href="http://hirobanex.net/article/2013/06/1372382206">plenvによるPerl環境を構築するchefのオレオレサンプルレシピ - hirobanex.net</a></p>
+
+<p><a href="https://github.com/kenjiskywalker/mychefrepo/tree/master/site-cookbooks/plenv">https://github.com/kenjiskywalker/mychefrepo/tree/master/site-cookbooks/plenv</a></p>
+
+<p>これでchef使って一撃でPerlの環境用意できます。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/27/eip-set-autoscaling-vpc/">AWSのAutoScalingで立ち上がってきたVPC内のEC2インスタンスに強制的にEIPを付与する</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-27T23:50:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>前提条件</h2>
+
+<ul>
+<li>グローバルにアクセスできる管理サーバが一台ある</li>
+<li>対象のVPCにアサイン可能なEIPがある(AssociateされていないEIPがある)</li>
+</ul>
+
+
+<p>という前提条件が成立していれば、管理サーバで</p>
+
+<div><script src='https://gist.github.com/6354555.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p>このようなスクリプトを</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>*/1 * * * * root /root/set_eip.sh 2&gt; /dev/null</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と噛ましておけば、EIPが付与されていないインスタンスを発見し次第<br/>
+強制的にEIPをアサインすることができます。</p>
+
+<p><code>2&gt; /dev/null</code>とかやってるとイスが飛んできそうなものですが<br/>
+1分毎に実行していると、内部DNS結構頻繁に取りこぼしたりするので闇に葬りました。<br/>
+成功した場合は<code>ADDRESS    i-XXXXXXXX eipalloc-XXXXXXXX   eipassoc-XXXXXXXX</code><br/>
+という内容のメールがとんできて、お、アサインされたのか。と気付けます。</p>
+
+<p>CloudWatchのAutoScaling発動トリガーで何かしらの通知設定をされているかと思うので<br/>
+まずその通知でAutoScalingの発火を確認し、<br/>
+上記EIPアサイン通知でインスタンスの起動を確認。のようなこともできます。</p>
+
+<p><a href="http://aws.typepad.com/aws_japan/2013/08/additional-ip-address-flexibility-in-the-virtual-private-cloud.html">【AWS発表】 VPC内のパブリックIPアドレスの取い扱いがより柔軟に</a></p>
+
+<p>ということを頑張らなくてもそのうち上記Public IPがAutoScalingにも対応すると思う。</p>
+
+<p>ところで<code>EIP</code>と<code>Public IP</code>の違いって何なんですかね？</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/27/github-issue-irc/">GitHubのIRC Hookの設定</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-27T18:43:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://soh335.hatenablog.com/entry/2013/07/10/100354">github の irc hook に幾つかの event type が追加されました - @soh335 memo</a><br/>
+<a href="http://blog.glidenote.com/blog/2013/07/18/github-irc-hooks-event-type/">GitHubのissueやpull reqにcommentが付いたらIRC Hoooks経由で通知されるように設定した - Glide Note</a></p>
+
+<p><code>pull_request_review_comment</code>を追加しても来ないなーって思ってたら<br/>
+<code>commit_comment</code>を有効にしないとダメだった。</p>
+
+<p>各位注意されたし</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/22/github-drinkup-yokohama/">GitHub Yokohama Drinkupに遊びに行ってきた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-22T23:17:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://github.com/blog/1599-cedec-yokohama-drinkup">GitHub Yokohama Drinkup</a></h2>
+
+<p>@soh335と、@handlenameと行ってきた。<br/>
+お店の前でモジモジしてたらお店の人に中どうぞ。って言われて<br/>
+中入ってモジモジしてたら写真の真ん中で座ってる人にヤア！って声かけられて<br/>
+@soh335がbeer!って言って、どうぞどうぞ。って言ってくれた。<br/>
+さて、どうするかな。って見回してたら@sora_h君と思われる人物に<br/>
+ワッペン付けないと無料にならないよ。って教えてもらって<br/>
+ありがとう！って言ってビール飲んだりサーモンとかパエリアくったりした。</p>
+
+<p>GitHub社の人たくさん来てたのに<br/>
+あんまり人いなくてもったいなかった。<br/>
+もったいなかったって言っても<br/>
+内輪とグリーの人とかと話してただけで<br/>
+GitHub社の人と話さなかった。<br/>
+英語で話せるようになった方が良いなって思った。</p>
+
+<p>話せる話せないじゃなくて話すか話なさないかだけど。<br/>
+ギットハブいつも使ってるよ、ありがとう。<br/>
+今日は🍻ごちそうになるね！ぐらいのことは言いたいもんスね。</p>
+
+<iframe src="//instagram.com/p/dUQryxpqnF/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p></p>
+
+<p>I really enjoyed the beer!<br/>
+Thank you GitHub!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

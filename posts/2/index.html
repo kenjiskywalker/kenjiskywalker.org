@@ -1,0 +1,483 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="AWS CodeDeploy Adds Push Notification Support ということで、これができるまではひたすらstate毎にslackに通知していたけど
+failしたらfailしたよって通知するようにした。 流れ的にはこう 1
+CodeDeploy fail -&gt; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-03-14T11:03:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="https://aws.amazon.com/jp/about-aws/whats-new/2016/02/aws-codedeploy-adds-push-notification-support/">AWS CodeDeploy Adds Push Notification Support</a></p>
+
+<p>ということで、これができるまではひたすらstate毎にslackに通知していたけど<br/>
+failしたらfailしたよって通知するようにした。</p>
+
+<p>流れ的にはこう</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CodeDeploy fail -&gt; AWS SNS -&gt; AWS Lambda -&gt; Slack</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>やり方</h2>
+
+<h3>AWS SNSで受け口をつくる</h3>
+
+<p>CodeDeployがfailした歳に利用するSNSを用意する</p>
+
+<ul>
+<li>NotifyCodeDeployErrorToSlack</li>
+</ul>
+
+
+<p>みたいな感じで。開発環境やステージングなどでslackの通知グループが別れる場合は<br/>
+都度SNSをつくっているんだけど、これもっと良いやり方ないのかな？</p>
+
+<h3>CodeDeployのtriggerに先ほどつくったSNSを設定する</h3>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployTrigger.png" alt="https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployTrigger.png" /></p>
+
+<p>fail以外にもステータスがあるのでそこでhookかけても良いですね。<br/>
+自分のところはstate毎に通知させているので一旦この形です。</p>
+
+<h3>AWS LambdaでSlackへの通知を行う</h3>
+
+<ul>
+<li>NotifyCodeDeployErrorToSlackFunction</li>
+</ul>
+
+
+<p>とか適当な名前でfunctionをつくる</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='js'><span class='line'><span class="c1">// Ref: https://gist.github.com/vgeshel/1dba698aed9e8b39a464</span>
+</span><span class='line'><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Loading function&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// to get the slack hook url, go into slack admin and create a new &quot;Incoming Webhook&quot; integration</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">slack_url</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">region</span> <span class="o">=</span> <span class="s1">&#39;ap-northeast-1&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">codedeploy_url</span> <span class="o">=</span> <span class="s1">&#39;https://&#39;</span> <span class="o">+</span> <span class="nx">region</span> <span class="o">+</span> <span class="s1">&#39;.console.aws.amazon.com/codedeploy/home?region=&#39;</span> <span class="o">+</span> <span class="nx">region</span> <span class="o">+</span> <span class="s1">&#39;#/deployments/&#39;</span>
+</span><span class='line'><span class="kr">const</span> <span class="nx">slack_req_opts</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">slack_url</span><span class="p">);</span>
+</span><span class='line'><span class="nx">slack_req_opts</span><span class="p">.</span><span class="nx">method</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="nx">slack_req_opts</span><span class="p">.</span><span class="nx">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">exports</span><span class="p">.</span><span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Records</span> <span class="o">||</span> <span class="p">[]).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">rec</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nx">rec</span><span class="p">.</span><span class="nx">Sns</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">req</span> <span class="o">=</span> <span class="nx">https</span><span class="p">.</span><span class="nx">request</span><span class="p">(</span><span class="nx">slack_req_opts</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">===</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">context</span><span class="p">.</span><span class="nx">succeed</span><span class="p">(</span><span class="s1">&#39;posted to slack&#39;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>          <span class="nx">context</span><span class="p">.</span><span class="nx">fail</span><span class="p">(</span><span class="s1">&#39;status code: &#39;</span> <span class="o">+</span> <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">req</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;problem with request: &#39;</span> <span class="o">+</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">context</span><span class="p">.</span><span class="nx">fail</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">message</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">rec</span><span class="p">.</span><span class="nx">Sns</span><span class="p">.</span><span class="nx">Message</span><span class="p">);</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="nx">str</span> <span class="o">=</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="s1">&#39;Application: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">.</span><span class="nx">applicationName</span> <span class="o">+</span> <span class="s1">&#39; deploymentGroupName: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">.</span><span class="nx">deploymentGroupName</span> <span class="o">+</span> <span class="s1">&#39; deploymentId: &#39;</span> <span class="o">+</span> <span class="nx">message</span><span class="p">.</span><span class="nx">deploymentId</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nx">codedeploy_url</span> <span class="o">+</span> <span class="nx">message</span><span class="p">.</span><span class="nx">deploymentId</span><span class="p">;</span>
+</span><span class='line'>      <span class="nx">req</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="nx">text</span><span class="o">:</span> <span class="nx">str</span><span class="p">}));</span> <span class="c1">// for testing: , channel: &#39;@vadim&#39;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nx">req</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>slack_url</code>に自前のIncoming Webhookを入れる</p>
+
+<h2>通知される</h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployError.png" alt="" /></p>
+
+<p>ご覧のとおりFail時に通知され、かつURLをクリックしたらCodeDeployのエラー画面にとべて便利なので<br/>
+ご利用ください。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-02-25T14:18:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>以上です。(どこかドキュメント落ちてるかな)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-21T17:37:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>これやで</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ rm -rf  /opt/codedeploy-agent/deployment-root/deployment-instructions/*</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-19T11:24:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>自分用メモ</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='rb'><span class='line'><span class="c1">#!/usr/bin/env ruby</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">loadbalancers</span> <span class="o">=</span> <span class="sb">`aws elb describe-load-balancers | jq &#39;.[][][&quot;LoadBalancerName&quot;]&#39; -r `</span>
+</span><span class='line'><span class="n">alert_sns</span> <span class="o">=</span> <span class="s2">&quot;SNS&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">loadbalancers</span><span class="o">.</span><span class="n">each_line</span> <span class="k">do</span> <span class="o">|</span><span class="n">lb</span><span class="o">|</span>
+</span><span class='line'>  <span class="n">lb</span><span class="o">.</span><span class="n">chomp!</span>
+</span><span class='line'>  <span class="nb">p</span> <span class="n">lb</span>
+</span><span class='line'><span class="sb">`aws cloudwatch put-metric-alarm --alarm-name &quot;</span><span class="si">#{</span><span class="n">lb</span><span class="si">}</span><span class="sb"> UnHealthyHostCountUp&quot; --alarm-description &quot;</span><span class="si">#{</span><span class="n">lb</span><span class="si">}</span><span class="sb"> ELB UnHealthyHostCountUp&quot; \</span>
+</span><span class='line'><span class="sb">  --actions-enabled \</span>
+</span><span class='line'><span class="sb">  --ok-actions </span><span class="si">#{</span><span class="n">alert_sns</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">  --alarm-actions </span><span class="si">#{</span><span class="n">alert_sns</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">  --insufficient-data-actions </span><span class="si">#{</span><span class="n">alert_sns</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">  --metric-name &quot;UnHealthyHostCount&quot; \</span>
+</span><span class='line'><span class="sb">  --namespace AWS/ELB \</span>
+</span><span class='line'><span class="sb">  --statistic Maximum\</span>
+</span><span class='line'><span class="sb">  --dimensions Name=LoadBalancerName,Value=</span><span class="si">#{</span><span class="n">lb</span><span class="si">}</span><span class="sb"> \</span>
+</span><span class='line'><span class="sb">  --period 60 \</span>
+</span><span class='line'><span class="sb">  --evaluation-periods 5 \</span>
+</span><span class='line'><span class="sb">  --threshold 1 \</span>
+</span><span class='line'><span class="sb">  --comparison-operator GreaterThanOrEqualToThreshold`</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2016-01-10T00:11:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>iPhone水没した。人生で二度目だ。トイレで諸所の動作をする時はスマホいじくるのやめよう。<br/>
+高校サッカーの準決勝を見に行った。高校サッカー、本当に面白い。</p>
+
+<p>東福岡の藤川虎太朗くんがとても良かった。<br/>
+国学院久我山の澁谷雅也くんと名倉巧くんがとても魅力的だった。</p>
+
+<p>神谷くんは我らが湘南ベルマーレに来てくれるのでこれからが楽しみだ。<br/>
+見終わった後はおじさんたちで赤羽の町で飲み歩いた。話題は最初から最後まで最低だったが良い夜だった。<br/>
+ただ、iPhoneはこわれたままなので明日修理屋持って行ってみようと思う。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

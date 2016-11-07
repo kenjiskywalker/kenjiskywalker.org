@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="http://temple-kun.appspot.com/ IPアドレス返すだけのヤツ。 元ネタはこれ。
+http://ifconfig.me/ 本家のifconfig.meはUserAgent見て返す値変えてるんだけど取り敢えず。 手順は
+the Go Getting Started &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/34/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/18/temple-kun/">Golang on GAE で軽いものを取り敢えずつくる</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-18T22:16:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="http://temple-kun.appspot.com/">http://temple-kun.appspot.com/</a></h2>
+
+<p>IPアドレス返すだけのヤツ。</p>
+
+<p>元ネタはこれ。<br/>
+<a href="http://ifconfig.me/">http://ifconfig.me/</a></p>
+
+<p>本家のifconfig.meはUserAgent見て返す値変えてるんだけど取り敢えず。</p>
+
+<p>手順は<br/>
+<a href="https://developers.google.com/appengine/docs/go/gettingstarted/introduction">the Go Getting Started Guide / google app engine</a></p>
+
+<p>ファイルのアップロード自体は<br/>
+<a href="https://developers.google.com/appengine/docs/python/tools/uploadinganapp?hl=ja">Python アプリケーションのアップロード、ダウンロード、管理 / Google App Engine</a><br/>
+に書いてあるように<code>appcfg.py update myapp/</code>でイケる。</p>
+
+<p>gitでもdeployできるけど<br/>
+<a href="https://developers.google.com/appengine/docs/push-to-deploy">Using Git and Push-to-Deploy / Google App Engine</a></p>
+
+<p><code>Request failed because the app binary was missing. This can generally be fixed by redeploying your app.</code></p>
+
+<p>というようにエラーになってしまって上手く行かなかった。<br/>
+やり方が悪いのだと思う。この辺は改めて調べたい。</p>
+
+<div><script src='https://gist.github.com/6609648.js?file=address-check.go'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+
+
+<div><script src='https://gist.github.com/6609648.js?file=local-address-check.go'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+<p><code>fprintf</code>とか<code>println</code>とか10年ぶりぐらいに見た。<br/>
+プログラミング初心者だけどすぐ動いてくれるので面白かった。</p>
+
+<p>ドキュメントもシンプルに載ってて簡単に試せて有り難い。</p>
+
+<p><a href="http://golang.org/pkg/net/http/">http://golang.org/pkg/net/http/</a></p>
+
+<p>プログラミング面白いのでちまちま色々つくって行くの楽しい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/13/the-unix-philosophy/">「UNIXという考え方」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-13T00:02:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/gp/product/4274064069/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=4274064069&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=4274064069&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=4274064069" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<p><a href="http://soh335.hatenablog.com/entry/2013/09/01/151758">UNIXという考え方―その設計思想と哲学 / @soh335 memo</a></p>
+
+<p>面白くないだろうなと思って読んだけど面白かった。<br/>
+ただ時代背景をちゃんと理解しないと何言ってんだオッサンみたいになる。</p>
+
+<p>移植性の話でシェルスクリプトが礼賛されてるけど<br/>
+今だとクロスコンパイルの効くgolangが良いと思う。</p>
+
+<p>UNIXというか、Linuxを使ってると、入力コマンドをたった1byte間違えただけで<br/>
+OSが吹っ飛んだり、ちょっと間違えた時に昔の状態に戻れないの<br/>
+もしかしたら何十年後かにはそんなこともあったね。みたいな話になってるかもしれない。</p>
+
+<p>コマンドの成否をOSがフォローするよりも、バージョン管理システムみたいに<br/>
+そのコマンドによってファイルシステム上のファイルに変更があった場合、<br/>
+コマンド実行以前の状態に戻す。みたいなのできたら最高だと思う。</p>
+
+<p>シェルスクリプト、とても便利で<code>system()</code>とか<code>echo ~</code>のように<br/>
+外部コマンド呼び出さなくても良いのが利点だけど、<br/>
+テストするのに毎回<code>echo "command"</code>みたいにprint debugぐらいしかできなくて<br/>
+石器時代の代物にはかわりないと思う。</p>
+
+<p>けど、その辺はわりかしどうでもよくてこの本の面白かったところは他にあった。</p>
+
+<h3>スモール・イズ・ビューティフル</h3>
+
+<p>プログラミング初心者なので、ゴリっとしたでかいコード見ると<br/>
+おお、すげぇ。。。って思うけど、実際は目的に対して少ないコードが良いし<br/>
+行き着く先は無刀の境地みたいに、1行もコード書かないで目的が達成されるのが最高で<br/>
+プログラムを書く場合に、量は少なくシンプルに、読んでわかりやすいコードを目標にすべきなんだ。</p>
+
+<h3>ひとつのプログラムにはひとつのことだけさせる</h3>
+
+<p>ひとつのメソッドで色んな機能盛り込まない的な話だ。</p>
+
+<h3>できるだけ早く試作を作成する</h3>
+
+<p>アジャイルだ。</p>
+
+<h3>ソフトウェアの梃子を使う</h3>
+
+<p>先人が書いたコード、拝借できるものは拝借した方が効率が良いって話だ。</p>
+
+<h3>対話的プログラムの危険性</h3>
+
+<p>おしゃべりなプログラムは例外発生させた時にわけわからん動作したりするから<br/>
+最低限の機能にすべきって話だ。</p>
+
+<h2>感想</h2>
+
+<p>色々面白いところはあったけど、lsのコマンドオプションの多さの問題点や、<br/>
+100％を完成としないで90%で完成とした方が良いみたいなことは昔から言われていたんだ。<br/>
+っていうことを知れて面白かった。</p>
+
+<p>本書の中の抜粋なんだけど「人月の神話」に<br/>
+<em>「開発プロジェクトがある程度進行した段階でプログラマを追加投入すると、完成は早まらずむしろ遅れる」</em><br/>
+っていうことが書いてあるらしく、電車の中で笑ってしまった。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/12/manofsteal/">「マン・オブ・スティール」見た</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-12T09:21:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>クリストファー・ノーラン関わってるなら<br/>
+ダークナイトっぽい仕上がりだろヒャッホー！！！って見に行ったけど<br/>
+痛快アクション映画だった。</p>
+
+<p>多分何割か帰りに消化不良でダークナイト借りてると思う。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/10/vyatta-ubuntu/">自宅ルータをVyattaにして快適になった</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-10T23:39:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>市販のルータ兼無線アクセスポイント君が<br/>
+2日に1回再起動しないとAirPlayできなくなってしまったので<br/>
+この際自宅のネットワーク環境を一新すべく<br/>
+Vyattaを導入した。その際のメモ。</p>
+
+<h4>参考URL</h4>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/mikeda/20120331/1333172105">自宅ルータをVyattaに移行しました - IT 東京 楽しいと思うこと</a></li>
+<li><a href="http://www.vyatta.com//sites/vyatta.com/files/pdfs/Vyatta_QuickStart_R6.1_v02_1.pdf">Vyatta_QuickStart_R6.1_v02_1.pdf</a></li>
+</ul>
+
+
+<h2>環境</h2>
+
+<ul>
+<li>Ubuntu: 12.04.3 LTS (KVM HOST)</li>
+<li>Vyatta: VC6.6R1</li>
+</ul>
+
+
+<h2>ネットワーク</h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/Network_diagram.png" alt="https://dl.dropboxusercontent.com/u/5390179/Network_diagram.png" /></p>
+
+<h2>買ったもの</h2>
+
+<p>追加NIC用に「Intel Gigabit CT Desktop Adapter EXPI9301CT」<br/>
+<a href="http://www.amazon.co.jp/gp/product/B001CXWWBE/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B001CXWWBE&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B001CXWWBE&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B001CXWWBE" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<hr />
+
+<p>無線LAN用に「PLANEX FFP-PKA04D」<br/>
+<a href="http://www.amazon.co.jp/gp/product/B005GHZ1GU/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B005GHZ1GU&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B005GHZ1GU&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B005GHZ1GU" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<hr />
+
+<p>スイッチは前職で頂いた8ポートのスイッチングハブを利用</p>
+
+<h1>構築</h1>
+
+<h3>ブリッジのインタフェースを２つつくる</h3>
+
+<ul>
+<li>eth0 Internal</li>
+<li>eth1 External</li>
+</ul>
+
+
+<h3>/etc/network/interfaces</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>auto lo
+</span><span class='line'>iface lo inet loopback
+</span><span class='line'>
+</span><span class='line'>iface eth0 inet manual
+</span><span class='line'>iface eth1 inet manual
+</span><span class='line'>
+</span><span class='line'>auto br0
+</span><span class='line'>iface br0 inet static
+</span><span class='line'>        address 192.168.0.3
+</span><span class='line'>        network 192.168.0.0
+</span><span class='line'>        netmask 255.255.255.0
+</span><span class='line'>        broadcast 192.168.0.255
+</span><span class='line'>        gateway 192.168.0.1
+</span><span class='line'>        bridge_ports eth0
+</span><span class='line'>        bridge_stp off
+</span><span class='line'>        bridge_fd 0
+</span><span class='line'>        bridge_maxwait 0
+</span><span class='line'>        dns-nameservers 192.168.0.1
+</span><span class='line'>
+</span><span class='line'>auto br1
+</span><span class='line'>iface br1 inet static
+</span><span class='line'>        address 0.0.0.0
+</span><span class='line'>        bridge_ports eth1
+</span><span class='line'>        bridge_stp off
+</span><span class='line'>        bridge_fd 0
+</span><span class='line'>        bridge_maxwait 0</span></code></pre></td></tr></table></div></figure>
+
+
+<p>気が付いたらvnetがアサインされていた。
+ここらへんまだ理解していない。</p>
+
+<h3>brctl show</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bridge name     bridge id               STP enabled     interfaces
+</span><span class='line'>br0             8000.20cf30ea8178       no              eth0
+</span><span class='line'>br0             8000.XXXXXXXXXXXX       no              eth0
+</span><span class='line'>                                                        vnet0
+</span><span class='line'>                                                        vnet1
+</span><span class='line'>                                                        vnet2
+</span><span class='line'>br1             8000.XXXXXXXXXXXX       no              eth1
+</span><span class='line'>                                                        vnet3
+</span><span class='line'>lxcbr0          8000.000000000000       no</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>VyattaのISOファイルを落としてくる</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ curl -O http://www.vyatta.com/downloads/vc6.6/vyatta-livecd_VC6.6R1_amd64.iso</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Vyatta用のディスクイメージを作成する</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ qemu-img create -f raw /var/lib/libvirt/images/vyatta01-2G.img 2G</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>KVMでインストールする</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ virt-install  --connect qemu:///system  \
+</span><span class='line'>--name vyatta01 \
+</span><span class='line'>--ram 512  \
+</span><span class='line'>--vcpus=1  \
+</span><span class='line'>--disk path=/var/lib/libvirt/images/vyatta01-2G.img \
+</span><span class='line'>--nographics  \
+</span><span class='line'>--network=bridge:br0 --network=bridge:br1 \
+</span><span class='line'>--cdrom=/tmp/vyatta-livecd_VC6.6R1_amd64.iso</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Install Default setting</p>
+
+<ul>
+<li>login: vyatta</li>
+<li>Password: vyatta</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>
+</span><span class='line'>$ virsh console Vyatta01
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>boot:
+</span><span class='line'>
+</span><span class='line'>Welcome to Vyatta - vyatta ttyS0
+</span><span class='line'>
+</span><span class='line'>vyatta login: vyatta
+</span><span class='line'>Password:
+</span><span class='line'>Linux vyatta 3.3.8-1-amd64-vyatta #1 SMP Wed Mar 13 10:35:28 PDT 2013 x86_64
+</span><span class='line'>Welcome to Vyatta.
+</span><span class='line'>This system is open-source software. The exact distribution terms for
+</span><span class='line'>each module comprising the full system are described in the individual
+</span><span class='line'>files in /usr/share/doc/*/copyright.
+</span><span class='line'>
+</span><span class='line'>vyatta@vyatta:~$ install image
+</span><span class='line'>Welcome to the Vyatta install program.  This script
+</span><span class='line'>will walk you through the process of installing the
+</span><span class='line'>Vyatta image to a local hard drive.
+</span><span class='line'>Would you like to continue? (Yes/No) [Yes]:
+</span><span class='line'>Probing drives: OK
+</span><span class='line'>Looking for pre-existing RAID groups...none found.
+</span><span class='line'>The Vyatta image will require a minimum 1000MB root.
+</span><span class='line'>Would you like me to try to partition a drive automatically
+</span><span class='line'>or would you rather partition it manually with parted?  If
+</span><span class='line'>you have already setup your partitions, you may skip this step
+</span><span class='line'>
+</span><span class='line'>Partition (Auto/Parted/Skip) [Auto]:</span></code></pre></td></tr></table></div></figure>
+
+
+<p>のようにインストールがはじまります。<br/>
+基本的にチュートリアルに乗って行けば問題ないかと。</p>
+
+<p>新しいパスワードを設定して、再起動</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>This will destroy all data on /dev/sda.
+</span><span class='line'>Continue? (Yes/No) [No]: yes
+</span><span class='line'>
+</span><span class='line'>Enter password for administrator account
+</span><span class='line'>Enter vyatta password:
+</span><span class='line'>Retype vyatta password:</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>vyatta@vyatta:~$ reboot now</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>vyattaの設定</h2>
+
+<p>Vyattaは他のネットワーク機器と同じように<br/>
+<code>set</code>, <code>show</code>, <code>delete</code> で全て行うことができる。</p>
+
+<ul>
+<li>setで値を設定し</li>
+<li>showで確認</li>
+<li>間違っていればdeleteで削除</li>
+<li>テストを行い、問題がなければcommit</li>
+<li>永続的に設定を保持するためにsave</li>
+</ul>
+
+
+<p>という一連のサイクルで設定を行う。</p>
+
+<h3>Vyattaの内部IPを設定</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># set interfaces ethernet eth0 address 192.168.0.1/24</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>SSHの許可</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># set service ssh listen-address 192.168.0.1</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ISPと接続</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># set interfaces ethernet eth0 pppoe 0 user-id XXXXX@YYY.ZZZ
+</span><span class='line'># set interfaces ethernet eth0 pppoe 0 password XXXXX
+</span><span class='line'># set interfaces ethernet eth0 pppoe 0 default-route auto
+</span><span class='line'># commit
+</span><span class='line'># save</span></code></pre></td></tr></table></div></figure>
+
+
+<p>この時点で外部との接続が可能</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ ping 8.8.8.8 </span></code></pre></td></tr></table></div></figure>
+
+
+<p>などで pppoe0 => internet の疎通確認を行う</p>
+
+<h3>マスカレードの設定</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># set nat source rule 1 source address 192.168.0.0/24
+</span><span class='line'># set nat source rule 1 outbound-interface pppoe0
+</span><span class='line'># set nat source rule 1 translation address masquerade</span></code></pre></td></tr></table></div></figure>
+
+
+<p>試しにクライアントPCを</p>
+
+<ul>
+<li>IP: 192.168.0.100</li>
+<li>NETWORK: 255.255.255.0/24</li>
+<li>GATEWAY: 192.168.0.1</li>
+</ul>
+
+
+<p>と設定して、外部に疎通ができるか確認する。疎通ができればまずはOK。</p>
+
+<h3>SSHを許可する</h3>
+
+<p><code>ssh 192.168.0.1 -l vyatta</code> などとしてSSHで接続してみる</p>
+
+<h3>DHCPを振る</h3>
+
+<p>DHCPで192.168.0.200から192.168.0.250までの<br/>
+IPアドレスを割り振るように設定。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 start 192.168.0.200 stop 192.168.0.250
+</span><span class='line'># set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 default-router 192.168.0.1
+</span><span class='line'># set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 dns-server NTT DNS SERVER
+</span><span class='line'># set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 dns-server NTT DNS SERVER</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ここでハマったのが、PLANEXでもDHCPを振っていたせいで<br/>
+DHCPでIPを付与されたクライアントPCのGATEWAYが<br/>
+PLANEXを見に行ってしまっていていた。</p>
+
+<p>PLANEXの方のDHCP機能を無効化することで解決。<br/>
+しかし今度はPLANEXの方の管理画面に入れなくなってて放置してる。</p>
+
+<h3>Vyatta 6.6で画像が表示されない</h3>
+
+<p><a href="http://speed47.com/adiary/adiary.cgi/0145">Vyatta 6.6 画像が表示されない。 / 題名のないBlog（ｒｙ</a></p>
+
+<p>画像が永遠に読み込めない不具合があるので下記設定を導入</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set policy route PPPOE-IN rule 10 destination address 0.0.0.0/0
+</span><span class='line'>set policy route PPPOE-IN rule 10 protocol tcp
+</span><span class='line'>set policy route PPPOE-IN rule 10 tcp flags 'SYN,!ACK,!FIN,!RST'
+</span><span class='line'>set policy route PPPOE-IN rule 10 set tcp-mss 1360
+</span><span class='line'>
+</span><span class='line'>set interfaces ethernet eth0 policy route PPPOE-IN</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ポートフォワーディング</h3>
+
+<p>外部からアクセスできるようにフォワードする</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set nat destination rule 1000 inbound-interface pppoe0
+</span><span class='line'>set nat destination rule 1000 destination port 22
+</span><span class='line'>set nat destination rule 1000 protocol tcp
+</span><span class='line'>set nat destination rule 1000 translation port 22
+</span><span class='line'>set nat destination rule 1000 translation address 192.168.0.11</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>set nat destination rule 1001 inbound-interface pppoe0
+</span><span class='line'>set nat destination rule 1001 destination port 60000-61000
+</span><span class='line'>set nat destination rule 1001 protocol tcp_udp
+</span><span class='line'>set nat destination rule 1001 translation port 60000-61000
+</span><span class='line'>set nat destination rule 1001 translation address 192.168.0.12</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こんな感じでつらつらと設定していく</p>
+
+<h3>まとめ</h3>
+
+<p>ISPと接続してIPマスカレードができてDHCPが振れて<br/>
+ポートフォワーディングができるVyatta最高です。</p>
+
+<p>設定変更する度に回線切れて60秒待つとかいう苦行もなくなったし<br/>
+AirPlay毎日できて最高です。</p>
+
+<p>興味があれば、まずquick startのPDFだけでも見てみるといいかもです。<br/>
+@mikedaさんも書かれていますが、上記設定をするだけなら簡単にできます。</p>
+
+<p>よかったらお試しください。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/09/01/happyhackingkeyboard/">やり残しハッカソン#2 行って HappyHackingKeyboard買った</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-01T16:32:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>やり残しハッカソンがあったので鎌倉に行ってきた。<br/>
+８月の最後の日ということもあり、鎌倉へ向かう電車の中は<br/>
+ワイワイしていた。</p>
+
+<iframe src="//instagram.com/p/dqfnc0Jqv-/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p>灯りというお店、ひさいち君がアジフライ食べるって言ってて<br/>
+アジフライ最高だから最後まで迷ったけど唐揚げにした。<br/>
+唐揚げ、２ピースと３ピースがあって、３ピースいくと<br/>
+午後何もできなくなるぐらいの量なので、<br/>
+うぉオン 俺はまるで食べ盛りの男子高生だ。っていうテンションじゃないと<br/>
+なかなかチャレンジできない。味は最高。生姜が効いてて本当に最高。</p>
+
+<p>隣りのおばちゃんがホタテ丼食べてて、カーッ！って言ってた。<br/>
+鎌倉に行ったら是非食べてもらいたいお店だ。</p>
+
+<p>やり残しハッカソン、遂に禁断のRubyMotionをやるか！って思ったけど<br/>
+Vimだと補完があんまり上手くできなくて、Hello Motion!!って<br/>
+表示させて終わった。</p>
+
+<p>本当は<a href="https://github.com/kenjiskywalker/Mzcs">Mzcs</a>っていう<br/>
+ZABBIXに登録されているグラフを一覧で出すヤツの<br/>
+クソコードのリファクタリングしようと思ったんだけど<br/>
+自宅サーバをUbuntuに変えたおかげで色々入れなおしてたら終わった。</p>
+
+<p>KVMで立ち上げるまでは自分のブログとか参考にしてスラスラいけて<br/>
+昔のオレ最高〜って言ってたんだけどsshだけできなくて？？？ってなってた。<br/>
+原因は接続元のsshのポート変更していて、<br/>
+その変更したポートで接続しようとしていたのが原因だった。<br/>
+デバッグログを見るのサボると大抵こういうどうしようもないところで悩む。</p>
+
+<ul>
+<li>UbuntuでTimeMachineのバックアップ先にする</li>
+<li>Subsonicを使えるようにする</li>
+<li>AirVideoを使えるようにする</li>
+<li>UbuntuにKVM入れてCentOS動かしてサーバっぽいのはそいつにやらせる</li>
+<li>CentOSにZABBIXサーバ入れる</li>
+<li>Ubuntu - さくらVPS - CentOS(KVM) - Mac をVPNで繋ぐ</li>
+<li>さくらVPSをCentOSからZABBIXで監視する</li>
+<li>定期バックアップのリファクタリング</li>
+</ul>
+
+
+<p>とかは２日かかったけどできてよかった。<br/>
+結局Mzcsのリファクタリングできてない。<br/>
+そもそもMozcsと名前似てるから名前変えた方が良い。</p>
+
+<iframe src="//instagram.com/p/dtaBqYpqqY/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p>あとハッピーハッキングキーボードかった。<br/>
+元々ずっとRealForce使ってて、RealForce、すごすぎて<br/>
+サササ〜ってキーボードの上なぞるだけで入力できて<br/>
+最高だったんだけど、最近やたらtypoが多くなってきてて<br/>
+ドライビングアシストモードが効きすぎて運転が下手になる<br/>
+感覚が近いんだけど、ちょっとHHK試してみたくて買ってみた。</p>
+
+<p>買ってみたっていっても25kもしてめちゃくちゃ高いんだけど<br/>
+これで少しでも仕事とかtypo減るならと思ってる。<br/>
+RealForceとの違いは、１番大きいのは&#8220;`のキーが逆っていうところぐらいで<br/>
+矢印とかfnキー押しながらは多分すぐ慣れると思う。</p>
+
+<p>キーボード変えるとちょっと引越しっぽい感覚がして良い。</p>
+
+<iframe src="//instagram.com/p/drIpOQJqlV/embed/" width="612" height="710" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+
+
+<p>夕飯の海鳴も最高だった。鎌倉は最高だ。<br/>
+HHKでタイピングするの面白くて無駄に長文になった。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

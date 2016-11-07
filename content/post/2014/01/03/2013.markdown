@@ -1,0 +1,99 @@
+---
+layout: post
+title: "2013年の振り返り"
+published: true
+date: "2014-01-03T11:58:00+09:00"
+comments: true
+
+
+---
+
+去年の振り返り  
+
+## 発表したこと
+
+[#qpstudyと仏教とわたし](http://blog.kenjiskywalker.org/blog/2013/01/26/qpstudy-buddhism/)  
+mizzyさんと初めてガッツリ話すことができた。貴重な体験だった。  
+その後、カヤックの勉強会でhsbtさん、kentaroさんともお会いすることができて  
+本当に貴重だった。
+  
+[#monitoringcasual Vol3 に参加してきました](http://blog.kenjiskywalker.org/blog/2013/03/09/monitoringcasualvol3/)  
+fluentdのプラグインを2つつくったので発表してきた。
+
+[PerlCasual #5に参加してLTしてきた #perlcasual](http://blog.kenjiskywalker.org/blog/2013/03/30/perlcasual5/)  
+yusukebe氏にお声がけ頂き発表してきた。  
+もうちょっと技術寄りの内容を話したかった。まだまだだ。
+  
+[Chiba.pm #2に参加してきた #chibapm](http://blog.kenjiskywalker.org/blog/2013/03/30/chibapm2/)  
+愛するChiba.pmへの初参加だった。とても温かいバイブスが流れていた。  
+モズ君のエモいLTが見れてすごい！ってなってた。また参加したい。  
+  
+[#mysqlcasual vol.4 でカジュアルに発表してきました](http://blog.kenjiskywalker.org/blog/2013/04/18/mysqlcasual4/)  
+myfinder氏にお声がけ頂き発表してきた。  
+会場で一番MySQLのこと知らない感じだった。まだまだだ。
+
+[Service on AWS #jawsug yokohama](https://speakerdeck.com/kenjiskywalker/services-on-aws-number-jawsug-yokohama)  
+kuwa_tw氏とtmae氏にお声がけ頂き発表してきた。   
+いまいち刺さらなかった感じがするのでもうちょっと発表の仕方を考えた方がいいと感じた。
+
+[Monitoring Casual Talk in Kyoto 行ってきた #monitoringcasual](http://blog.kenjiskywalker.org/blog/2013/12/01/monitoringcasual-kyoto/)  
+京都最高だった。shiba_yu36君の家に泊まらせてもらってありがたかった。  
+布団がきちんと入らなかったの本当に申し訳なかった。  
+  
+[Fluentd Casual Talks #3 でChefの話をしてきました #fluentdcasual](http://blog.kenjiskywalker.org/blog/2013/12/14/fluentd-casual-3/)  
+fluentdが太ってきた時にどうしたか、みたいなハウツー共有したくて発表してきた。  
+20分ぐらいかかる内容を5分で話すのむずかしかった。  
+話し方についてもう少し工夫をする必要があるなって思った。  
+  
+発表するの、今でも緊張するけどそれでもやっぱり場数踏めばそこそこ慣れてくるもので  
+2013年も発表するのでいっぱいいっぱいだったけど、2014年はもう少しゆっくり話せるようにしたい。
+  
+## 去年のブログ一覧
+
+[http://blog.kenjiskywalker.org/blog/archives/](http://blog.kenjiskywalker.org/blog/archives/)  
+  
+AWS元年だった。やったことのないことをやらせて下さいって言って  
+やらせてもらえたから色々学べた。本当にありがたい限りだった。  
+やらせてもらえて学んだことはなるべくアウトプットしていった。
+
+[AWS費用試算例](http://blog.kenjiskywalker.org/blog/2013/11/07/example-aws-cost/)  
+  
+計算方法とかちゃんと理解していなかったのでこのエントリーを書くことで理解が深まった。  
+t1.microを利用していても転送量で金額がいかようにもなることが頭で理解できた。  
+  
+ChefとZabbixはだいぶ手に馴染むようになった。  
+細かいtipsなんかもちょくちょくアウトプットできた。  
+  
+オペミスし易い自分としては、オペミスが起こってもなるべく影響がない状態に持っていければ問題がなくて、若田光一さんがインタビューで「ミスは必ず起こる、そのミスをいかに最小限の影響で終わらすのが大切だ」という話をしていて  
+2014年はまさにそこに注力していきたいと考えている。  
+  
+設定のミスなどの気付きについては[serverspec](http://serverspec.org/)を利用するのが最高だ。感動した流れでpull-reqした。  
+[https://github.com/serverspec/serverspec/pull/63](https://github.com/serverspec/serverspec/pull/63)  
+[https://github.com/serverspec/serverspec/pull/64](https://github.com/serverspec/serverspec/pull/64)  
+きっと時間が経つにつれてどんどん恥ずかしくなっていくpull-reqだと思う。  
+エレガントなpull-reqを送れるように精進していこう。
+  
+Chefとserverspecを利用しているならこちらを参考にしてもらうと捗ると思う。  
+[Testing #chef Cookbook by #serverspec #devops](http://blog.kenjiskywalker.org/blog/2013/07/31/serverspec-attribute/)  
+つたない英語で件名にハッシュタグまで付けてみたけど  
+海外の人に全く刺さらなくて社会の厳しさを感じた瞬間だった。  
+  
+## つくったもの
+
+[fluent-plugin-cloudwatch](https://rubygems.org/gems/fluent-plugin-cloudwatch) # ほとんどyunomuさんがつくってくれたものを利用しただけ  
+[fluent-plugin-rds-slowlog](https://rubygems.org/gems/fluent-plugin-rds-slowlog)  
+[Golang on GAE で軽いものを取り敢えずつくる](http://blog.kenjiskywalker.org/blog/2013/09/18/temple-kun/)  
+[Goでvalue Domainのアップデートスクリプトかいた](http://blog.kenjiskywalker.org/blog/2013/10/10/value-domain-update-go/)  
+[Imayaro-bot](https://github.com/kenjiskywalker/imayaro-bot)  
+[IRCでお願いしたら分散図つくってくれるscatter_kunつくった](http://blog.kenjiskywalker.org/blog/2013/10/14/scatter_kun/)
+[earthquake.gemプラグイン３つ](http://blog.kenjiskywalker.org/blog/2013/07/10/hisaichi-tweet/)  
+[github_status_check.rb](https://gist.github.com/kenjiskywalker/8232758) # ikachan使ってる  
+[Zabbix::Senriganをつくりました](http://blog.kenjiskywalker.org/blog/2013/10/17/senrigan/)  
+  
+ほかにもちょくちょくあるけど、しょーもないものから日常の便利ツールまで微妙なのをつくった。  
+
+## 去年は  
+  
+すごい人たちとお会いするばかりだった。  
+今年は自分のちからで色々とやらなければならない状態に持っていったので  
+貢献して年収あげてきたい。おじさんズでがんばってこ！

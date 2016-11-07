@@ -1,0 +1,888 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="のではないかと思った。
+生きるのに必死だったらどうでもいいことに時間使ってる暇なんて一瞬もないはずなので。 気を引き締めて時間を使っていこう
+">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/5/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/07/30/virtual-enemy/">組織が鈍化したり硬直化していると無駄に仮想敵をつくってワイワイやりたがる</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-07-30T12:06:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>のではないかと思った。<br/>
+生きるのに必死だったらどうでもいいことに時間使ってる暇なんて一瞬もないはずなので。</p>
+
+<p>気を引き締めて時間を使っていこう</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/28/install-mysql-sandobx/">大変便利なMySQL::Sandboxのインストールメモ(GTID有効編)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-28T00:07:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>以前MySQLの師匠のyoku0825さんに教えてもらったMySQL::Sandboxが<br/>
+大変便利だったので改めてインストール方法をメモしておく</p>
+
+<p>参考URL</p>
+
+<ul>
+<li><a href="http://d.conma.me/entry/20100616/1276683437">MySQL Sandboxを使ってみる - まめ畑</a></li>
+<li><a href="http://datacharmer.blogspot.jp/2013/01/easily-testing-mysql-56-gtid-in-sandbox.html">Easily testing MySQL 5.6 GTID in a sandbox - The Data Charmer</a></li>
+</ul>
+
+
+<blockquote><p>環境<br/>
+OS X 10.10.3<br/>
+MySQL-Sandbox v3.0.50</p></blockquote>
+
+<h2>cpanmでMySQL::Sandboxをインストール</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% cpanm MySQL::Sandbox
+</span><span class='line'>--&gt; Working on MySQL::Sandbox
+</span><span class='line'>Fetching http://www.cpan.org/authors/id/G/GM/GMAX/MySQL-Sandbox-3.0.50.tar.gz ... OK
+</span><span class='line'>Configuring MySQL-Sandbox-v3.0.50 ... OK
+</span><span class='line'>Building and testing MySQL-Sandbox-v3.0.50 ... OK
+</span><span class='line'>Successfully installed MySQL-Sandbox-v3.0.50
+</span><span class='line'>1 distribution installed
+</span><span class='line'>['-']% </span></code></pre></td></tr></table></div></figure>
+
+
+<h2>MySQL 5.6.25のレプリケーションを作成する</h2>
+
+<p><code>$HOME/mysqls</code>というディレクトリにMySQLをインストールする</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% mkdir ~/mysqls
+</span><span class='line'>['-']% cd ~/mysqls</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% make_replication_sandbox 5.6.25
+</span><span class='line'>installing and starting master
+</span><span class='line'>installing slave 1
+</span><span class='line'>installing slave 2
+</span><span class='line'>starting slave 1
+</span><span class='line'>.. sandbox server started
+</span><span class='line'>starting slave 2
+</span><span class='line'>.. sandbox server started
+</span><span class='line'>initializing slave 1
+</span><span class='line'>initializing slave 2
+</span><span class='line'>replication directory installed in $HOME/sandboxes/rsandbox_5_6_25
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これだけでインストールとレプリケーションが完了。</p>
+
+<p>ちゃんと入っているか確認</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% cd ~/sandboxes/rsandbox_5_6_25/
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./check_slaves
+</span><span class='line'>master
+</span><span class='line'>             File: mysql-bin.000001
+</span><span class='line'>         Position: 2696
+</span><span class='line'>slave # 1
+</span><span class='line'>              Master_Log_File: mysql-bin.000001
+</span><span class='line'>          Read_Master_Log_Pos: 2696
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 2696
+</span><span class='line'>slave # 2
+</span><span class='line'>              Master_Log_File: mysql-bin.000001
+</span><span class='line'>          Read_Master_Log_Pos: 2696
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 2696
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>GTIDモードに変更</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']%
+</span><span class='line'>['-']% ./enable_gtid
+</span><span class='line'># option 'master-info-repository=table' added to master configuration file
+</span><span class='line'># option 'relay-log-info-repository=table' added to master configuration file
+</span><span class='line'># option 'gtid_mode=ON' added to master configuration file
+</span><span class='line'># option 'log-slave-updates' added to master configuration file
+</span><span class='line'># option 'enforce-gtid-consistency' added to master configuration file
+</span><span class='line'># option 'master-info-repository=table' added to node1 configuration file
+</span><span class='line'># option 'relay-log-info-repository=table' added to node1 configuration file
+</span><span class='line'># option 'gtid_mode=ON' added to node1 configuration file
+</span><span class='line'># option 'log-slave-updates' added to node1 configuration file
+</span><span class='line'># option 'enforce-gtid-consistency' added to node1 configuration file
+</span><span class='line'># option 'master-info-repository=table' added to node2 configuration file
+</span><span class='line'># option 'relay-log-info-repository=table' added to node2 configuration file
+</span><span class='line'># option 'gtid_mode=ON' added to node2 configuration file
+</span><span class='line'># option 'log-slave-updates' added to node2 configuration file
+</span><span class='line'># option 'enforce-gtid-consistency' added to node2 configuration file
+</span><span class='line'># executing "stop" on /Users/kenjiskywalker/sandboxes/rsandbox_5_6_25
+</span><span class='line'>executing "stop" on slave 1
+</span><span class='line'>executing "stop" on slave 2
+</span><span class='line'>executing "stop" on master
+</span><span class='line'># executing "start" on /Users/kenjiskywalker/sandboxes/rsandbox_5_6_25
+</span><span class='line'>executing "start" on master
+</span><span class='line'>. sandbox server started
+</span><span class='line'>executing "start" on slave 1
+</span><span class='line'>.. sandbox server started
+</span><span class='line'>executing "start" on slave 2
+</span><span class='line'>. sandbox server started
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これだけでGTIDモードへ変更される。<br/>
+何をやったかはコメントアウトで出力されていて大変便利。</p>
+
+<p>先ほどと同様にレプリケーションのチェック</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% ./check_slaves
+</span><span class='line'>master
+</span><span class='line'>             File: mysql-bin.000002
+</span><span class='line'>         Position: 151
+</span><span class='line'>slave # 1
+</span><span class='line'>              Master_Log_File: mysql-bin.000002
+</span><span class='line'>          Read_Master_Log_Pos: 151
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 151
+</span><span class='line'>slave # 2
+</span><span class='line'>              Master_Log_File: mysql-bin.000002
+</span><span class='line'>          Read_Master_Log_Pos: 151
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 151
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<p>正常にレプリケーションがされいているようだ。</p>
+
+<h2>テストデータの投入とGTIDのチェック</h2>
+
+<ul>
+<li>m = master</li>
+<li>s1 = slave 1</li>
+<li>s2 = slave 2</li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% ./m -e 'CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)'
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./m -e 'INSERT INTO test.t1 VALUES (1)'
+</span><span class='line'>['-']% ./m -e 'INSERT INTO test.t1 VALUES (2)'
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./m -e 'SHOW MASTER STATUS;'
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set                        |
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>| mysql-bin.000002 |      825 |              |                  | c924fe80-1cda-11e5-89ae-14d803869455:1-3 |
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./m -e 'SHOW BINLOG EVENTS IN "mysql-bin.000002"'
+</span><span class='line'>+------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>| Log_name         | Pos | Event_type     | Server_id | End_log_pos | Info                                                              |
+</span><span class='line'>+------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>| mysql-bin.000002 |   4 | Format_desc    |         1 |         120 | Server ver: 5.6.25-log, Binlog ver: 4                             |
+</span><span class='line'>| mysql-bin.000002 | 120 | Previous_gtids |         1 |         151 |                                                                   |
+</span><span class='line'>| mysql-bin.000002 | 151 | Gtid           |         1 |         199 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:1' |
+</span><span class='line'>| mysql-bin.000002 | 199 | Query          |         1 |         317 | CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)                  |
+</span><span class='line'>| mysql-bin.000002 | 317 | Gtid           |         1 |         365 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:2' |
+</span><span class='line'>| mysql-bin.000002 | 365 | Query          |         1 |         440 | BEGIN                                                             |
+</span><span class='line'>| mysql-bin.000002 | 440 | Query          |         1 |         540 | INSERT INTO test.t1 VALUES (1)                                    |
+</span><span class='line'>| mysql-bin.000002 | 540 | Xid            |         1 |         571 | COMMIT /* xid=29 */                                               |
+</span><span class='line'>| mysql-bin.000002 | 571 | Gtid           |         1 |         619 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:3' |
+</span><span class='line'>| mysql-bin.000002 | 619 | Query          |         1 |         694 | BEGIN                                                             |
+</span><span class='line'>| mysql-bin.000002 | 694 | Query          |         1 |         794 | INSERT INTO test.t1 VALUES (2)                                    |
+</span><span class='line'>| mysql-bin.000002 | 794 | Xid            |         1 |         825 | COMMIT /* xid=32 */                                               |
+</span><span class='line'>+------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>['-']%
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>SLAVEの状態チェック</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% ./check_slaves
+</span><span class='line'>master
+</span><span class='line'>             File: mysql-bin.000002
+</span><span class='line'>         Position: 825
+</span><span class='line'>slave # 1
+</span><span class='line'>              Master_Log_File: mysql-bin.000002
+</span><span class='line'>          Read_Master_Log_Pos: 825
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 825
+</span><span class='line'>slave # 2
+</span><span class='line'>              Master_Log_File: mysql-bin.000002
+</span><span class='line'>          Read_Master_Log_Pos: 825
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>          Exec_Master_Log_Pos: 825
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>GTIDのチェック</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% ./s1 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+</span><span class='line'>           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+</span><span class='line'>            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+</span><span class='line'>['-']% ./s2 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+</span><span class='line'>           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+</span><span class='line'>            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>更にテストデータを追加</h1>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']% ./m -e 'INSERT INTO test.t1 VALUES (3)'
+</span><span class='line'>['-']% ./m -e 'SHOW MASTER STATUS;'
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set                        |
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>| mysql-bin.000002 |     1079 |              |                  | c924fe80-1cda-11e5-89ae-14d803869455:1-4 |
+</span><span class='line'>+------------------+----------+--------------+------------------+------------------------------------------+
+</span><span class='line'>['-']% ./m -e 'SHOW BINLOG EVENTS IN "mysql-bin.000002"'
+</span><span class='line'>+------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>| Log_name         | Pos  | Event_type     | Server_id | End_log_pos | Info                                                              |
+</span><span class='line'>+------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>| mysql-bin.000002 |    4 | Format_desc    |         1 |         120 | Server ver: 5.6.25-log, Binlog ver: 4                             |
+</span><span class='line'>| mysql-bin.000002 |  120 | Previous_gtids |         1 |         151 |                                                                   |
+</span><span class='line'>| mysql-bin.000002 |  151 | Gtid           |         1 |         199 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:1' |
+</span><span class='line'>| mysql-bin.000002 |  199 | Query          |         1 |         317 | CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)                  |
+</span><span class='line'>| mysql-bin.000002 |  317 | Gtid           |         1 |         365 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:2' |
+</span><span class='line'>| mysql-bin.000002 |  365 | Query          |         1 |         440 | BEGIN                                                             |
+</span><span class='line'>| mysql-bin.000002 |  440 | Query          |         1 |         540 | INSERT INTO test.t1 VALUES (1)                                    |
+</span><span class='line'>| mysql-bin.000002 |  540 | Xid            |         1 |         571 | COMMIT /* xid=29 */                                               |
+</span><span class='line'>| mysql-bin.000002 |  571 | Gtid           |         1 |         619 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:3' |
+</span><span class='line'>| mysql-bin.000002 |  619 | Query          |         1 |         694 | BEGIN                                                             |
+</span><span class='line'>| mysql-bin.000002 |  694 | Query          |         1 |         794 | INSERT INTO test.t1 VALUES (2)                                    |
+</span><span class='line'>| mysql-bin.000002 |  794 | Xid            |         1 |         825 | COMMIT /* xid=32 */                                               |
+</span><span class='line'>| mysql-bin.000002 |  825 | Gtid           |         1 |         873 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:4' |
+</span><span class='line'>| mysql-bin.000002 |  873 | Query          |         1 |         948 | BEGIN                                                             |
+</span><span class='line'>| mysql-bin.000002 |  948 | Query          |         1 |        1048 | INSERT INTO test.t1 VALUES (3)                                    |
+</span><span class='line'>| mysql-bin.000002 | 1048 | Xid            |         1 |        1079 | COMMIT /* xid=44 */                                               |
+</span><span class='line'>+------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./s1 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+</span><span class='line'>           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+</span><span class='line'>            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+</span><span class='line'>['-']% ./s2 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+</span><span class='line'>             Slave_IO_Running: Yes
+</span><span class='line'>            Slave_SQL_Running: Yes
+</span><span class='line'>      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+</span><span class='line'>           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+</span><span class='line'>            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<p>これでテスト環境が完成した</p>
+
+<h2>高速に検証が可能になる</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>['-']%
+</span><span class='line'>['-']% ./s2 -e 'SELECT i FROM test.t1'
+</span><span class='line'>+---+
+</span><span class='line'>| i |
+</span><span class='line'>+---+
+</span><span class='line'>| 1 |
+</span><span class='line'>| 2 |
+</span><span class='line'>| 3 |
+</span><span class='line'>+---+
+</span><span class='line'>['-']%
+</span><span class='line'>['-']% ./use_all 'SELECT i FROM test.t1'
+</span><span class='line'># master
+</span><span class='line'>i
+</span><span class='line'>1
+</span><span class='line'>2
+</span><span class='line'>3
+</span><span class='line'># server: 1:
+</span><span class='line'>i
+</span><span class='line'>1
+</span><span class='line'>2
+</span><span class='line'>3
+</span><span class='line'># server: 2:
+</span><span class='line'>i
+</span><span class='line'>1
+</span><span class='line'>2
+</span><span class='line'>3
+</span><span class='line'>['-']%</span></code></pre></td></tr></table></div></figure>
+
+
+<p>うーむ、便利だ。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/16/sensu-alert-repeat/">Sensuのアラートを復旧するまで繰り返し通知させたい</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-16T16:33:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://sensuapp.org/docs/0.19/checks">https://sensuapp.org/docs/0.19/checks</a></h2>
+
+<p>ここの<code>refresh</code>の項目がそれ。完全に忘れていたところ<br/>
+@la_luna_azulさんが即答してくれて感謝。</p>
+
+<p>PagerDutyの費用の計算間違えてて涙目です。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/07/201505-book/">2015/04読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-06-07T02:34:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>風雲児たちがついに最新刊まで追い付いた(booklogには登録してない)。<br/>
+最新刊付近になってくると魔法少女の話とかでてきて<br/>
+10年ぐらいタイムスリップして面白かった。<br/>
+黒船が突然来たわけではないこと、日本を開国させようと<br/>
+色んな人たちががんばっていたこと、たくさん知れて面白かった。<br/>
+尖ったことほとんどやってなくてアウトプットも全然していないので技術者としての死を感じる。</p>
+
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2015年05月 (10作品)</div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/B009QW63B8" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51h-GqRNDEL._SL75_.jpg" width="52" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/B009QW63B8" target="_blank">ＮＨＫ「１００分ｄｅ名著」ブックス　ブッダ　真理のことば NHK「100分de名著」ブックス</a><br /><a href="http://booklog.jp/author/%E4%BD%90%E3%80%85%E6%9C%A8%E9%96%91" target="_blank">佐々木閑</a><br />読了日：05月05日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-004" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_4_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-004" target="_blank">風雲児たち　幕末編　4巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月05日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-005" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_5_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-005" target="_blank">風雲児たち　幕末編　5巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月05日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-006" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_6_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-006" target="_blank">風雲児たち　幕末編　6巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月05日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/13/9784774172903" target="_blank"><img src="http://image.gihyo.co.jp/assets/images/gdp/2015/978-4-7741-7290-3.jpg" width="54" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/13/9784774172903" target="_blank">スクラム実践入門 ── 成果を生み出すアジャイルな開発プロセス</a><br /><a href="http://booklog.jp/author/%E8%B2%9D%E7%80%AC%E5%B2%B3%E5%BF%97%EF%BC%8C%E5%8E%9F%E7%94%B0%E5%8B%9D%E4%BF%A1%EF%BC%8C%E5%92%8C%E5%B3%B6%E5%8F%B2%E5%85%B8%EF%BC%8C%E6%A0%97%E6%9E%97%E5%81%A5%E5%A4%AA%E9%83%8E%EF%BC%8C%E6%9F%B4%E7%94%B0%E5%8D%9A%E5%BF%97%EF%BC%8C%E5%AE%B6%E6%B0%B8%E8%8B%B1%E6%B2%BB%E8%91%97" target="_blank">貝瀬岳志，原田勝信，和島史典，栗林健太郎，柴田博志，家永英治著</a><br />読了日：05月07日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4833473984" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51P%2BiYNYSuL._SL75_.jpg" width="58" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4833473984" target="_blank">プレジデントベイビー 0歳からの知育大百科 完全保存版 2015 (プレジデントムック プレジデントBaby)</a><br />読了日：05月08日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-010" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_10_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-010" target="_blank">風雲児たち　幕末編　10巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月08日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-007" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_7_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-007" target="_blank">風雲児たち　幕末編　7巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月08日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/8/229010-008" target="_blank"><img src="http://booklive.jp/resources/c_media/images/thumb/9/229010_01_8_M.jpg" width="53" height="77" alt="" /></a></div><div><a href="http://booklog.jp/item/8/229010-008" target="_blank">風雲児たち　幕末編　8巻</a><br /><a href="http://booklog.jp/author/%E3%81%BF%E3%81%AA%E3%82%82%E3%81%A8%E5%A4%AA%E9%83%8E" target="_blank">みなもと太郎</a><br />読了日：05月08日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4860641027" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51QMMA8248L._SL75_.jpg" width="51" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4860641027" target="_blank">英語上達完全マップ―初級からTOEIC900点レベルまでの効果的勉強法</a><br /><a href="http://booklog.jp/author/%E6%A3%AE%E6%B2%A2%E6%B4%8B%E4%BB%8B" target="_blank">森沢洋介</a><br />読了日：05月21日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/08/scrum-book/">「スクラム実践入門」を読んだ</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-05-08T00:22:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.amazon.co.jp/%E3%82%B9%E3%82%AF%E3%83%A9%E3%83%A0%E5%AE%9F%E8%B7%B5%E5%85%A5%E9%96%80-%E6%88%90%E6%9E%9C%E3%82%92%E7%94%9F%E3%81%BF%E5%87%BA%E3%81%99%E3%82%A2%E3%82%B8%E3%83%A3%E3%82%A4%E3%83%AB%E3%81%AA%E9%96%8B%E7%99%BA%E3%83%97%E3%83%AD%E3%82%BB%E3%82%B9-WEB-PRESS-plus/dp/4774172367%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4774172367" target="_blank" title="スクラム実践入門 ── 成果を生み出すアジャイルな開発プロセス (WEB+DB PRESS plus)"><img src="http://ecx.images-amazon.com/images/I/51ABflXRwZL.jpg" width="352" height="500" alt="スクラム実践入門 ── 成果を生み出すアジャイルな開発プロセス (WEB+DB PRESS plus)" /></a></p>
+
+<p>スクラムをやったことはない。けどこれを読んで<br/>
+スクラムやらアジャイルやら言われているものの、体系的な基礎的な知識と<br/>
+先人たちの貴重な体験を学ぶことができてとても素晴らしい本だった。</p>
+
+<p>個人的に本当に導入しようと思ったら、やはり一度お金払って<br/>
+知見を吸収してから行うか、インストラクターっぽい人を呼んでやるのが<br/>
+一番良さそうだなと感じた。</p>
+
+<p>&ldquo;人間が集まれば集まるほどろくなことが起きない&#8221;という持論があるが、<br/>
+スクラムやらアジャイルやら型を決めてその中で業務を遂行することで、<br/>
+人間が集まる欠点を補うことができるのかな、とか考えた。</p>
+
+<p>ただ、意識高い人がこの本を読んで所属しているグループに導入しようと考えると</p>
+
+<ul>
+<li>グループ全員が同じようにグループに改善が必要だと感じて導入に積極的である</li>
+<li>グループの権力を持った人間はグループに改善が必要だと感じているが他のメンバーは必要に感じていない</li>
+<li>グループの権力を持たない人間はグループに改善が必要だと感じているが権力を持ったメンバーは必要に感じていない</li>
+<li>グループの権力を持たない一部の人間がグループに改善が必要だと感じているが、グループ全体では感じていない</li>
+</ul>
+
+
+<p>みたいな背景があったりすると思う。少人数でも全員がグループに問題がないと感じていれば<br/>
+改善することはないだろうし、人数が多くても全員がグループに改善が必要だと感じており、<br/>
+行動をする術を探しているようなら改善される可能性は十分にある。</p>
+
+<p>いきなり全部をやって全部が成功するわけではないが<br/>
+少なくとも改善が必要な現場にいるので、できるところから色々やっていこうと思った。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

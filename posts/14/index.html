@@ -1,0 +1,500 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="Slackを使い始めたので昔つくったunazu_kunの機能を
+hubotに持ってきました。 hubot-at というように 1
+&gt; hubot at HH:MM message と指定することによって、その指定した時間にmessageを通知してくれます。 元々taiyohさんが &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/14/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/04/hubot-at/">Hubot-atというhubot Pluginをつくった</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-04T14:22:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Slackを使い始めたので昔つくった<a href="http://kenjiskywalker.hatenablog.com/entry/20121010/1349878137">unazu_kun</a>の機能を<br/>
+hubotに持ってきました。</p>
+
+<h2><a href="https://www.npmjs.org/package/hubot-at">hubot-at</a></h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/hubot-at-capture.png" alt="https://dl.dropboxusercontent.com/u/5390179/hubot-at-capture.png" /></p>
+
+<p>というように</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; hubot at HH:MM message</span></code></pre></td></tr></table></div></figure>
+
+
+<p>と指定することによって、その指定した時間に<code>message</code>を通知してくれます。</p>
+
+<p>元々taiyohさんが</p>
+
+<ul>
+<li><a href="http://taiyoh.hatenablog.com/entry/2013/05/19/105832">hubotにもunazu_kun的な機能を追加する - taiyoh&rsquo;s memorandum</a></li>
+</ul>
+
+
+<p>にて書いてくれていたので、それを踏襲しています。<br/>
+ありがとうございます。</p>
+
+<p>最低限の実装しかしていません。何かあればpull requestください:)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/31/201408-book/">2014/07読んだ本</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-31T16:06:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>booklogというサービス、デザインと使い勝手が本当に良い。</p>
+
+<div style="margin-bottom:15px;"><a href="http://booklog.jp/users/kenjiskywalker" target="_blank">kenjiskywalkerの本棚</a> - 2014年08月 (4作品)</div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4063951413" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51q59350wWL._SL75_.jpg" width="50" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4063951413" target="_blank">進撃の巨人(14) (講談社コミックス)</a><br /><a href="http://booklog.jp/author/%E8%AB%AB%E5%B1%B1%E5%89%B5" target="_blank">諫山創</a><br />読了日：08月09日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4041013992" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51qjvPhcfgL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4041013992" target="_blank">多重人格探偵サイコ (20) (カドカワコミックス・エース)</a><br /><a href="http://booklog.jp/author/%E7%94%B0%E5%B3%B6%E6%98%AD%E5%AE%87" target="_blank">田島昭宇</a><br />読了日：08月09日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4053031737" target="_blank"><img src="http://ecx.images-amazon.com/images/I/41OmvQ2%2BeZL._SL75_.jpg" width="54" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4053031737" target="_blank">成川の「なぜ」がわかる英文法の授業 (大学受験Nシリーズ)</a><br /><a href="http://booklog.jp/author/%E6%88%90%E5%B7%9D%E5%8D%9A%E5%BA%B7" target="_blank">成川博康</a><br />読了日：08月17日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin-bottom:5px;"><div style="width:75px;height:75px;float:left;margin-right:2px;"><a href="http://booklog.jp/item/1/4774165786" target="_blank"><img src="http://ecx.images-amazon.com/images/I/51XYWUokftL._SL75_.jpg" width="53" height="75" alt="" /></a></div><div><a href="http://booklog.jp/item/1/4774165786" target="_blank">フロントエンドエンジニア養成読本 [HTML、CSS、JavaScriptの基本から現場で役立つ技術まで満載! ] (Software Design plus)</a><br /><a href="http://booklog.jp/author/%E6%96%89%E8%97%A4%E7%A5%90%E4%B9%9F" target="_blank">斉藤祐也</a><br />読了日：08月17日<br /></div><br style="clear:both;" /></div>
+
+
+<div style="margin:10px 0;font-size:80%;">powered by <a href="http://booklog.jp" target="_blank">booklog</a></div>
+
+
+<p></p>
+
+<p>この前<br/>
+<a href="http://blog.kenjiskywalker.org/blog/2014/06/09/github-add-color-to-recently-not-update-file/">GitHubで最近更新されていないプロジェクトを簡単に見分けるChrome Extentionつくった</a><br/>
+で<br/>
+JavaScriptやってみたけど基本的なこと全然理解していなかったので<br/>
+本読んだ。JavaScriptとか目に見えて変わるものは面白い。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/31/yapcasia2014/">#yapcasia 2014 に発表者として参加してきたこと</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-31T00:37:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>YAPC::Asia 2014に参加してきました。<br/>
+今回は発表者という形で参加させて頂きました。<br/>
+スタッフのみなさま、yusukebeさん、現場でお声がけくれたみなさん<br/>
+トークを聞きに来てくれたみなさん、ありがとうございました。</p>
+
+<p>発表の時間が半分で終わったり、<br/>
+やたら時間余ったり、詰め込みすぎて発表の速度が早過ぎたり、<br/>
+時間配分間違えて最後駆け足になったりするのはただの準備不足なので<br/>
+反省。聞きに来てくれてがっかりした人申し訳ない！ごめん！</p>
+
+<p>発表内容は、サービスの開始、スケールアウト、機能追加の時点で<br/>
+それぞれ気を付けていかないといけないことを話した。</p>
+
+<p>細かくはこちらに書いたので参照してほしい。<br/>
+<a href="http://blog.kenjiskywalker.org/blog/2014/08/29/yapcasia2014-cosmo/">#yapcasia 2014 でシステムとの時間の旅の話をしてきました - さよならインターネット</a></p>
+
+<p>これからウェブサービスを大きくしていきたい、<br/>
+運用とかよくわからなくてどういう基準でどういう判断をしたら<br/>
+いいかわからない。という人に向けて話すつもりだったが</p>
+
+<p>聞きに来てくれた人は主にインフラを担当しているか<br/>
+大規模システムの運用者、技術部長や技術責任者の方がほとんどで<br/>
+思想とか良いから泥臭い話が聞きたかったという意見が多く<br/>
+求められていたものと話した内容の温度差があったことにも反省。</p>
+
+<p>発表方法は、淡々と話すよりかは、ウェブサービスを<br/>
+これから大きくしていこうとしている向けに、自分の携わっている<br/>
+サービスが大きくなっていく上で気を付けていかなければならないところを<br/>
+時系列で理解してほしかったので、その疑似体験を経験してほしかったので<br/>
+時間旅行的な話し方をしたが、発表方法が前衛的で<br/>
+話が頭の中に入ってこなかったという意見が多かったのでそこも反省。</p>
+
+<p>藤原洋記念ホールだったのでああいうプレゼンテーションの方法を取った。<br/>
+多目的教室だったら違う発表方法にしていたと思う。</p>
+
+<p>発表の動画はyoutubeにそのうち載せて頂けると思うので<br/>
+できそこないのTEDみたいな感じなので是非見てほしい。</p>
+
+<p>ああいう発表の方法で次もお願いします、みたいなことを言われたけど<br/>
+実際にやってみたらわかるけどああいう話し方無駄に疲れるし<br/>
+普段の発表方法である、<code>課題</code>・<code>やったこと</code>・<code>やって解決されたこと</code>の３つを<br/>
+文字多めのスライドで読み上げながら、発表していくのが一番楽で<br/>
+聞いている人もわかりやすいことがわかったのでもうやらないと思う。</p>
+
+<p>2015年、YAPCが日本で開催されるなら、お前らが求めてる<br/>
+泥臭い具体的でイノベーションなネタを応募したいと思う。</p>
+
+<p>ということで、こんな感じでトークするような人間もいるので<br/>
+今までYAPCで話してみたいんだけどちょっと怖いな&hellip;<br/>
+っていう人も応募したことのなかった人もほんのちょっと勇気出して<br/>
+応募してみると良いと思う。あんなんが良いなら<br/>
+(オレ|私)もちょっとやってみようかなみたいな感じでさ。</p>
+
+<p>@deeeet君、@tagomorisさん、@uzullaさん、おめでとうございました！</p>
+
+<p>おつかれさまでした！</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/29/yapcasia2014-cosmo/">#yapcasia 2014 でシステムとの時間の旅の話をしてきました</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-29T12:38:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><a href="https://speakerdeck.com/kenjiskywalker/yapcasia2014">The world is not complete </a></h2>
+
+<blockquote><p>邦題: <br/>
+「完成されたシステムなどない。完成された人間もいない。<br/>
+  あるのは成長し続ける未完成なシステムと、それを支える未完成な人間だけだ」</p></blockquote>
+
+<p>ウェブサービスを頭に描きながら、そのウェブサービスの成長の旅を体験することで<br/>
+その時その時に何が必要か、ということをお話をしました。後半はトークショーでした。</p>
+
+<blockquote><p>システムは完全ではないので壊れることを前提につくる<br/>
+人間は失敗をするので、失敗をしても復旧できるようにシステムをつくる</p>
+
+<p>システムや一部の機能を疎結合にし、再現性を保つことで、障害に強くする<br/>
+再現性をシンプルに保つことで、システム自体を変更の強いものにする</p></blockquote>
+
+<p>例えば、現代でいえば、クラウドサービスでしか動かない、<br/>
+特定のオンプレでしか動かないシステムではなく、<br/>
+機能毎に環境に依存しないようにシステムをつくることを忘れないでね。</p>
+
+<p>壊れたりした時に慌てるのではなく、保険をつくって<br/>
+再現性を持たせて同じ状態に戻せるようにしておいてね。ということでした。</p>
+
+<p>その意識があるかないかで、規模が拡大したり、機能が追加され<br/>
+複雑化した時に、大きな違いになってくることを私は経験してきました。</p>
+
+<p>大規模の経験がある人は、この辺は体験的に理解していますが<br/>
+大規模の経験がない人は、最初の構成を複雑にしてしまい<br/>
+後々苦労してしまうのはあるあるネタかと思います。</p>
+
+<p>再現性については、puppet、Chef、Ansible、Consul、Serfなど<br/>
+プロビジョニング、オーケストラレーションツールを利用し<br/>
+環境に依存しない構築が可能になり、<br/>
+簡易性、疎結合については、Dockerや各種クラウドサービスの登場で、<br/>
+機能毎にプラットフォームを渡りやすくなってきたのではないでしょうか。</p>
+
+<p>ただ、その記録、保険、再現性、簡易性は<br/>
+どのタイミングで、どの程度の精度を持たせるかは<br/>
+つくる時間・つくらなかった時のリスク・復旧時間・構築時間など<br/>
+都度見積もって、判断してね。という当たり前の話をしました。</p>
+
+<p>Infrastructure as Codeの時代、プログラミングで良く言われている<br/>
+「変化に強く、シンプルであれ」という哲学は、Infrastructureにも<br/>
+当てはまる時代になってきたのではないでしょうか。<br/>
+それは、UNIXの哲学や、日本の文化から学ぶことができます。</p>
+
+<p>そうして、みなさんのウェブサービスの旅は、これからも続いていきます。</p>
+
+<p>という発表を大ホールならではのエモーショナルな空気感で発表してきました。<br/>
+理想論だ、と吐き捨てることはできますが、その理想の世界が<br/>
+Go言語の登場から各種プロビジョニングツール、様々なクラウドサービスの登場で<br/>
+段々と実現可能になってきたのではないでしょうか。</p>
+
+<p>発表が結構早く終わってしまったけど、発表の補足を質問を回答する形ででき<br/>
+結果的に、視聴者参加型のとても素晴らしい空間が生まれました。<br/>
+みなさん、ありがとうございました。</p>
+
+<p>聞いてくれた人たち、選んでくれた人たち、ありがとうございました。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/27/yapcasia2014-before/">YAPC::Asia 2014 で時間旅行をしながらサービスの成長を体験し、人間とシステムの在り方について話します</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-27T12:35:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://yapcasia.org/2014/talk/show/4c7651e8-ed53-11e3-9faf-6ba36aeab6a4">完成されたシステムなどない。完成された人間もいない。あるのは成長し続ける未完成なシステムと、それを支える未完成な人間だけだ / YAPC::Asia 2014</a></p>
+
+<p>という話をします(題名長すぎて本番絶対噛むしそもそも覚えられない)</p>
+
+<p>YAPCへの参加は3回目で、今回はyusukebe氏が運営されるとのことで<br/>
+ヨッシャ！ワシもこのニューウェーブに乗るんや！とポエム先行型エントリーを行い</p>
+
+<ul>
+<li>これ題名で完結してるんじゃねーの？</li>
+<li>何かすごそうだけど結局何の話するの？</li>
+<li>で、誰？</li>
+</ul>
+
+
+<p>と色々なコメントを頂きつつ、お話しをする機会を頂きました。<br/>
+選んで頂きありがとうございます。</p>
+
+<p>実際ちゃんと話すことがまとまったのは一昨日ぐらいなのですが<br/>
+サービスが産まれ、成長していく時間の旅をしながら<br/>
+その時に何が必要だったのか、何を基準に構築、運用すれば良いのか<br/>
+というお話をする予定です。</p>
+
+<p>オレ自身がインフラだおじさんやインターネット懐古厨おじさん、<br/>
+インフラとかよくわからないけど担当しなければならない人、<br/>
+オレがインフラだおじさんとかインターネット懐古厨おじさんとかどうでもよくて、<br/>
+サーバの保守とか構築とかやらないといけないんだけど<br/>
+どういう思想を持って運用していけば良いのかいまいちわからない人とか<br/>
+ウェブオペレーションについて興味はあるけど、難しそうでよくわからない人とか<br/>
+そんな感じの人に是非聞きに来てほしいと思っています。</p>
+
+<p>興味ある方は是非 08/29 11:00 に藤原洋記念ホールに足を運んでみてください。<br/>
+朝早いですが、きっと何か得るものはあると思います;)</p>
+
+<p>参考情報</p>
+
+<ul>
+<li><a href="http://mizzy.org/blog/2013/10/29/1/">インフラ系技術の流れ - mizzy.org</a></li>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/09/13/the-unix-philosophy/">UNIXという考え方 - さよならインターネット</a></li>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/12/01/monitoringcasual-kyoto/">ディスポーザブル長屋 - さよならインターネット</a></li>
+<li><a href="http://blog.kenjiskywalker.org/blog/2013/08/11/shikinen-sengoo-infrastracture/">式年遷宮Infrastracture - さよならインターネット</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>さよならインターネット</title>
+  <meta name="author" content="kenjiskywalker">
+
+  
+  <meta name="description" content="TwitterのDevelopersサイトで必要な権限を取得(これは色んなところに載っているから省略)
+実行したい時間にcronでスクリプトを叩く これだけです。 brapi.rb 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+#!/ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.kenjiskywalker.org/posts/29/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="さよならインターネット" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37377904-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">さよならインターネット</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="main-navigation">
+  <li><a href="/">Goodbye The Internet.</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/13/brapi/">シンデレラのようにブラピになる方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-13T23:28:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li>TwitterのDevelopersサイトで必要な権限を取得(これは色んなところに載っているから省略)</li>
+<li>実行したい時間にcronでスクリプトを叩く</li>
+</ul>
+
+
+<p>これだけです。</p>
+
+<h2>brapi.rb</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/env ruby
+</span><span class='line'>
+</span><span class='line'># encoding: utf-8
+</span><span class='line'>
+</span><span class='line'>require 'twitter'
+</span><span class='line'>
+</span><span class='line'>YOUR_CONSUMER_KEY       = ''
+</span><span class='line'>YOUR_CONSUMER_SECRET    = ''
+</span><span class='line'>YOUR_OAUTH_TOKEN        = ''
+</span><span class='line'>YOUR_OAUTH_TOKEN_SECRET = ''
+</span><span class='line'>
+</span><span class='line'>Twitter.configure do |config|
+</span><span class='line'>  config.consumer_key       = YOUR_CONSUMER_KEY
+</span><span class='line'>  config.consumer_secret    = YOUR_CONSUMER_SECRET
+</span><span class='line'>  config.oauth_token        = YOUR_OAUTH_TOKEN
+</span><span class='line'>  config.oauth_token_secret = YOUR_OAUTH_TOKEN_SECRET
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>img = open('./brapi.png')
+</span><span class='line'>Twitter.update_profile_image(img)
+</span><span class='line'>Twitter.update_profile(:name =&gt; "ブラッド・ピット")</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>modoru.rb</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>#!/usr/bin/env ruby
+</span><span class='line'>
+</span><span class='line'># encoding: utf-8
+</span><span class='line'>
+</span><span class='line'>require 'twitter'
+</span><span class='line'>
+</span><span class='line'>YOUR_CONSUMER_KEY       = ''
+</span><span class='line'>YOUR_CONSUMER_SECRET    = ''
+</span><span class='line'>YOUR_OAUTH_TOKEN        = ''
+</span><span class='line'>YOUR_OAUTH_TOKEN_SECRET = ''
+</span><span class='line'>
+</span><span class='line'>Twitter.configure do |config|
+</span><span class='line'>  config.consumer_key       = YOUR_CONSUMER_KEY
+</span><span class='line'>  config.consumer_secret    = YOUR_CONSUMER_SECRET
+</span><span class='line'>  config.oauth_token        = YOUR_OAUTH_TOKEN
+</span><span class='line'>  config.oauth_token_secret = YOUR_OAUTH_TOKEN_SECRET
+</span><span class='line'>end
+</span><span class='line'>
+</span><span class='line'>img = open('./twitter.jpg')
+</span><span class='line'>
+</span><span class='line'>Twitter.update_profile_image(img)
+</span><span class='line'>Twitter.update_profile(:name =&gt; "kenjiskywalker")</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>Twitter.update_profile_image</code>で画像をアップロードして<br/>
+<code>Twitter.update_profile(:name =&gt; "name")</code>で名前を変更する。</p>
+
+<p>やり方さえわかれば簡単ですね。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/12/commit-hannyashinkyo/">コミットしたら般若心経が流れるgit Hookをつくった。</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-12T22:15:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>告白されたいと思って、
+告白しやすくしたりしたが、男からしか告白が来ない。</p>
+
+<p><a href="http://hisaichi5518.hatenablog.jp/entry/2012/11/10/003301">http://hisaichi5518.hatenablog.jp/entry/2012/11/10/003301</a></p>
+
+<p>よく考えたら、大人になって、社会人になって、エンジニアになって、<br/>
+おじさんと話すことは多くなったが、女の子と話すことがない。<br/>
+告白なんて夢のまた夢だと気づいた。</p>
+
+<p>でも、やっぱり女の子に告白されると嬉しい。<br/>
+とくに可愛い女の子に告白されたら嬉しい。</p>
+
+<p>可愛い女の子といえば、般若心経だと思う。</p>
+
+<p>般若心経に「照見五蘊皆空、度一切苦厄」とか言われたい。早く苦悩から開放されたくなる。 <br/>
+般若心経に「能除一切苦」とか言われたい。早く苦悩を除いて良かった。</p>
+
+<p>なので、コミットしたら般若心経が流れるgit hookを作った。<br/>
+コードを書いてコミットをする、たったそれだけで般若心経が流れて<br/>
+「羯諦羯諦、波羅羯諦、波羅僧羯諦、菩提薩婆訶」とか言われる。最高。解脱。</p>
+
+<h3>.git/hooks/post-commit</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>open http://www.kenjiskywalker.org/hannyashinkyoo.html</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<iframe src="//player.vimeo.com/video/79205431" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+
+<p> <p><a href="http://vimeo.com/79205431">commit般若心経</a> from <a href="http://vimeo.com/user16420998">kenjiskywalker</a> on <a href="https://vimeo.com">Vimeo</a>.</p></p>
+
+<h2>合わせて読みたい</h2>
+
+<ul>
+<li><a href="http://hisaichi5518.hatenablog.jp/entry/2013/11/03/193719">コミットしたら吉高由里子に告白されるgit hookを作った。 - パルカワ2</a></li>
+<li><a href="http://soh335.hatenablog.com/entry/2013/11/11/222949">コミットしたら宮崎あおいに告白されるgit hookを作った。 - @soh335 memo</a></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/11/isucon2013-main/">#isucon 2013 参加してきました</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T10:02:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>運営のみなさまおつかれさまでした。今回もとても楽しかったです。</p>
+
+<p>今回は誰でもわかるようなボトルネック、例えばクソクエリとか<br/>
+クソコードとかはなくて、現状のゼロベースからどうやってスコアを上げるか。<br/>
+みたいな感じだった。なので最初の方向性付けがすべてだったのかなと。<br/>
+出題者の@fujiwaraさんと@acidlemonさんすごい。</p>
+
+<p>また、アプリケーションを確認した時点で<br/>
+2人でできることって限界があるな。って感じていました。</p>
+
+<p>細かいことは<a href="http://soh335.hatenablog.com/entry/2013/11/10/214457">http://soh335.hatenablog.com/entry/2013/11/10/214457</a>ここ読んでください。</p>
+
+<h1>課題</h1>
+
+<ul>
+<li>予選の時にはできていたスコアを着実に上げていくことができなかった。(人数の問題もあった)</li>
+<li>エラーが発生していて、その解決を@soh335待ちにしてたところがあった。問題解決とは別に平行して作業を行えばよかった。</li>
+<li>待ちにしていた実装が不可能だった場合、即切り替えてやればよかった。</li>
+<li>切り替えるにしろ、実装の確認、問題意識のすり合わせをしなかったのでそこは予選から改善されていなかった。(問題の複雑さと人数の少なさを意識し過ぎた)</li>
+<li>Redis載せ、取り敢えず画像を縮小するか  手分けして複数台でRedisに載せられるように改修できればよかった。自分の実装力が足りなかった。</li>
+</ul>
+
+
+<p>残り2時間前まで何やっていたのか覚えていない。</p>
+
+<ul>
+<li>サーバ全員が同じ画像ディレクトリを見ていれば良い</li>
+<li>内部ネットワークは1Gbpsって言っていたのでネットワークのボトルネックはない</li>
+</ul>
+
+
+<p>と信じてNFSの導入をした。30分ぐらいで全台NFSで見れるようになったけど<br/>
+アプリでどうにかイケそうだ。っていう話だったのでNFSだと全台再起動してからのテストでコケた場合、<br/>
+設定箇所の特定が間に合わないかもしれないと判断して、NFSは捨ててアプリのフォローに回った。<br/>
+結果、改修は間に合わなかった。</p>
+
+<h1>まとめ</h1>
+
+<p>Failで終わるのはプロとして恥ずかしい。</p>
+
+<p>転職前にスピードワゴンはクールに去るぜ。の如くキメたかったけど<br/>
+先は長く厳しい。日々戦いは続く。ベルマーレがJ2に落ちたとしても<br/>
+オレたちは常に目の前の問題に最善をつくしていかなければならないんだ。</p>
+
+<p>先は長く、厳しい。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/07/example-aws-cost/">AWS費用試算例</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-07T14:16:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>実在するかどうかはわかりませんがこのような構成があった場合に<br/>
+どのような費用が発生するのか試算してみました。<br/>
+AWSは費用の算出が難しいので、参考になれば幸いです。</p>
+
+<p>また、計算方法の誤りや、情報の過不足等あれば<br/>
+gistにコメントか、Twitterなどで教えて頂ければ有難いです。</p>
+
+<blockquote><p><a href="http://calculator.s3.amazonaws.com/calc5.html?lng=ja_JP">Simple Monthly Calculator</a>を利用して算出しています。</p></blockquote>
+
+<div><script src='https://gist.github.com/7349351.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/11/04/meta-programming-eloquent-ruby/">「メタプログラミングRuby」と「Eloquent Ruby」を斜め読みした</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-04T20:14:00+09:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>読んだ時のメモです</p>
+
+<div><script src='https://gist.github.com/7281133.js'></script>
+<noscript><pre><code></code></pre></noscript></div>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    <a href="/blog/archives">Blog Archives</a>
+  </div>
+</div>
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - kenjiskywalker -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

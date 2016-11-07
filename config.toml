@@ -1,0 +1,25 @@
+baseurl = "http://blog.kenjiskywalker.org/"
+title = "さよならインターネット"
+languageCode = "ja-jp"
+staticdir = "static"
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
+[indexes]
+  category = "categories"
+[params]
+    bio = "さよならインターネット"
+    name = "kenjiskywalker"
+    description = "さよならインターネット"
+    twitter = "kenjiskywalker"
+    [params.analytics]
+         googleid = "UA-37377904-1"
+
+[permalinks]
+    post = "/blog/:year/:month/:day/:filename/"
+
+[social]
+    twitter  = "https://www.twitter.com/kenjiskywalker"
+    github   = "https://www.github.com/kenjiskywalker"
+
+
