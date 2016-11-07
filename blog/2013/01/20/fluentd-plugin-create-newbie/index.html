@@ -1,0 +1,419 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>fluentdのプラグインを書く練習をする為にsecureログをparseしてZabbixで値が取得できるようにしてみた(設定編) &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>fluentdのプラグインを書く練習をする為にsecureログをparseしてZabbixで値が取得できるようにしてみた(設定編)</h1>
+                    <h2 class="headline">
+                    January 20, 2013 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><a href="https://github.com/kenjiskywalker/fluent-plugin-securelog-parser">https://github.com/kenjiskywalker/fluent-plugin-securelog-parser</a></p>
+
+<pre>
+   ,j;;;;;j,. ---一､ ｀   ―--‐､_ l;;;;;;  
+  ｛;;;;;;ゝ T辷iﾌ i      f'辷jァ   !i;;;;;    全く触ったことがなくてもpluginを書いたらfluentdがわかる  
+   ヾ;;;ﾊ        ﾉ              .::!lﾘ;;rﾞ  
+     `Z;i      〈.,_..,.            ﾉ;;;;;;;;>    そんなふうに考えていた時期が  
+     ,;ぇﾊ、  ､_,.ｰ-､_',.      ,ｆﾞ: Y;;f.      俺にもありました  
+     ~''戈ヽ    ｀二´      r'´:::.  `!  
+</pre>
+
+<p>最初Postfixのmaillogつくってやろうかなんて<br />
+思っていたりした時期もオレにはありました。</p>
+
+<p>しかしログが多様すぎるので、ちょっとこれ最初にやるには敷居高いなー<br />
+と思い、だからってあんまり理にかなわないことをしても意味ないな<br />
+ということで、<code>/var/log/secure</code>のログを指定した文字列の出現具合を<br />
+Zabbixで取得したら面白いかなというアイデアが思いついたので<br />
+取り敢えずコードは汚いにしろ、動くまで書いてみたメモです。</p>
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2013/01/20/fluentd-plugin-create-newbiee/">プラグイン作成編はこちらから</a></p>
+
+<h2 id="テスト環境">テスト環境</h2>
+
+<p><code>/etc/fluent-agent-lite.conf</code></p>
+
+<pre><code>/etc/fluent-agent-lite.conf 
+TAG_PREFIX=&quot;&quot;
+LOGS=$(cat &lt;&lt;&quot;EOF&quot;
+secure                   /var/log/secure
+EOF
+)
+PRIMARY_SERVER=&quot;0.0.0.0:24224&quot;
+</code></pre>
+
+<p><code>/etc/td-agent/td-agent.conf</code></p>
+
+<pre><code>&lt;source&gt;
+  type forward
+  port 24224
+&lt;/source&gt;
+
+&lt;match secure&gt;
+  type securelog-parser
+  tag  seclog.local
+&lt;/match&gt;
+
+&lt;match seclog.*&gt;
+  type copy
+   &lt;store&gt;
+    type datacounter
+    count_key message
+    aggregate all
+    tag check.seclog
+    pattern1 acce Accepted
+    pattern2 fail failure
+    pattern3 inva Invalid
+  &lt;/store&gt;
+  &lt;store&gt;
+   type file
+   path /tmp/hoge
+  &lt;/store&gt;
+&lt;/match&gt;
+
+&lt;match check.**&gt;
+  type copy
+  &lt;store&gt;
+    type file
+    path /var/log/td-agent/check_seclog
+  &lt;/store&gt;
+  &lt;store&gt;
+    type             zabbix
+    zabbix_server    192.0.2.2
+    host             watashi
+    name_key_pattern (fail|acce|inva)_count
+    add_key_prefix   securelog
+  &lt;/store&gt;
+&lt;/match&gt;
+</code></pre>
+
+<h2 id="環境および設定内容の解説">環境および設定内容の解説</h2>
+
+<h2 id="fluent-agent-lite"><code>fluent-agent-lite</code></h2>
+
+<p><code>in_tail</code>で見に行くとパーミッションが足りないとのことなので<br />
+fluent-agent-liteを噛ましました。</p>
+
+<p>localhostに転送するので
+<code>PRIMARY_SERVER=&quot;0.0.0.0:24224&quot;</code>として自分自身へ転送。</p>
+
+<h2 id="td-agent"><code>td-agent</code></h2>
+
+<p><code>fluent-agent-lite</code>から値を取得。</p>
+
+<pre><code>&lt;source&gt;
+  type forward
+  port 24224
+&lt;/source&gt;
+</code></pre>
+
+<h3 id="自作pluginを通す">自作pluginを通す</h3>
+
+<p><code>fluent-agent-lite</code>で付与した<code>secure</code>のタグをmatchさせて<br />
+自作したテスト用のpluginへ渡します。</p>
+
+<pre><code>&lt;match secure&gt;
+  type securelog-parser
+  tag  seclog.local
+&lt;/match&gt;
+</code></pre>
+
+<h3 id="fluent-plugin-datacounterを通す">fluent-plugin-datacounterを通す</h3>
+
+<p><code>seclog.*</code>にmatchさせ</p>
+
+<p>もりす先生の<a href="https://github.com/tagomoris/fluent-plugin-datacounter">fluent-plugin-datacounter</a>を利用し<br />
+それぞれ確認したいログのpatternを登録します。</p>
+
+<pre><code>&lt;match seclog.*&gt;
+  type copy
+   &lt;store&gt;
+    type datacounter
+    count_key message
+    aggregate all
+    tag check.seclog
+    pattern1 acce Accepted
+    pattern2 fail failure
+    pattern3 inva Invalid
+  &lt;/store&gt;
+  &lt;store&gt;
+   type file
+   path /tmp/hoge
+  &lt;/store&gt;
+&lt;/match&gt;
+</code></pre>
+
+<ul>
+<li><p><code>pattern1 acce Accepted</code><br />
+接続が許可されたログ(Acceptedという文字列を含んだログ)を<br />
+*pattern1*として*acce*というprefixで渡します。</p></li>
+
+<li><p><code>pattern2 fail failure</code><br />
+接続に失敗したログ(failureという文字列を含んだログ)を<br />
+*pattern2*として*fail*というprefixで渡します。</p></li>
+
+<li><p><code>pattern3 inva Invalid</code><br />
+無効な接続のログ(Invalidという文字列を含んだログ)を<br />
+*pattern3*として*inva*というprefixで渡します。</p></li>
+</ul>
+
+<p>また、デバッグの為に、<code>/tmp/hoge</code>ファイルへ<br />
+現時点での状態をファイル出力しておきます。</p>
+
+<pre><code>2013-01-20T18:12:24+09:00       seclog.local    {&quot;message&quot;:&quot;Accepted publickey for hogehoge from 192.0.2.100 port 64884 ssh2&quot;}
+2013-01-20T18:12:24+09:00       seclog.local    {&quot;message&quot;:&quot;pam_unix(sshd:session): session opened for user hogehoge by (uid=0)&quot;}
+2013-01-20T18:12:28+09:00       seclog.local    {&quot;message&quot;:&quot;Received disconnect from 192.0.2.100: 11: disconnected by user&quot;}
+</code></pre>
+
+<p>上記のような内容で、出力されています。<br />
+この時点で期待した内容のログ出力がされていない場合は<br />
+どこかに誤りがあるので、修正していく流れになります。</p>
+
+<h3 id="fluent-plugin-zabbixへデータを渡す">fluent-plugin-zabbixへデータを渡す</h3>
+
+<p>fujiwaraさん作成の<a href="https://github.com/fujiwara/fluent-plugin-zabbix">fluent-plugin-zabbix</a>を利用し、Zabbixへデータを渡します。</p>
+
+<pre><code>&lt;match check.**&gt;
+  type copy
+  &lt;store&gt;
+    type file
+    path /var/log/td-agent/check_seclog
+  &lt;/store&gt;
+  &lt;store&gt;
+    type             zabbix
+    zabbix_server    192.0.2.2
+    host             watashi
+    name_key_pattern (fail|acce|inva)_count
+    add_key_prefix   securelog
+  &lt;/store&gt;
+&lt;/match&gt;
+</code></pre>
+
+<p><code>/tmp/hoge</code>へのデバッグ出力と同様に<br />
+*fluent-plugin-datacounter*を通したログを<br />
+<code>/var/log/td-agent/check_seclog</code>へ出力しておきます。</p>
+
+<pre><code>  &lt;store&gt;
+    type file
+    path /var/log/td-agent/check_seclog
+  &lt;/store&gt;
+</code></pre>
+
+<p>こちらも、値が正常に取得されているかを確認します。</p>
+
+<pre><code>2013-01-20T18:09:56+09:00       check.seclog    {&quot;unmatched_count&quot;:4,&quot;unmatched_rate&quot;:0.06,&quot;unmatched_percentage&quot;:66.66666666666667,&quot;acce_count&quot;:0,&quot;acce_rate&quot;:0.0,&quot;acce_percentage&quot;:0.0,&quot;fail_count&quot;:0,&quot;fail_rate&quot;:0.0,&quot;fail_percentage&quot;:0.0,&quot;inva_count&quot;:2,&quot;inva_rate&quot;:0.03,&quot;inva_percentage&quot;:33.333333333333336}
+2013-01-20T18:10:56+09:00       check.seclog    {&quot;unmatched_count&quot;:0,&quot;unmatched_rate&quot;:0.0,&quot;acce_count&quot;:0,&quot;acce_rate&quot;:0.0,&quot;fail_count&quot;:0,&quot;fail_rate&quot;:0.0,&quot;inva_count&quot;:0,&quot;inva_rate&quot;:0.0}
+2013-01-20T18:11:56+09:00       check.seclog    {&quot;unmatched_count&quot;:0,&quot;unmatched_rate&quot;:0.0,&quot;acce_count&quot;:0,&quot;acce_rate&quot;:0.0,&quot;fail_count&quot;:0,&quot;fail_rate&quot;:0.0,&quot;inva_count&quot;:0,&quot;inva_rate&quot;:0.0}
+2013-01-20T18:12:56+09:00       check.seclog    {&quot;unmatched_count&quot;:14,&quot;unmatched_rate&quot;:0.23,&quot;unmatched_percentage&quot;:73.6842105263158,&quot;acce_count&quot;:4,&quot;acce_rate&quot;:0.06,&quot;acce_percentage&quot;:21.05263157894737,&quot;fail_count&quot;:0,&quot;fail_rate&quot;:0.0,&quot;fail_percentage&quot;:0.0,&quot;inva_count&quot;:1,&quot;inva_rate&quot;:0.01,&quot;inva_percentage&quot;:5.2631578947368425}
+</code></pre>
+
+<ul>
+<li><p><code>zabbix_server    192.0.2.2</code>
+zabbixサーバのIPアドレスを指定します。</p></li>
+
+<li><p><code>host             watashi</code>
+データ送り元のホスト名を指定します。</p></li>
+
+<li><p><code>name_key_pattern (fail|acce|inva)_count</code><br />
+*name_key_pattern (fail|acce|inva)_count*の設定と<br />
+*add_key_prefix   securelog*の設定は</p></li>
+</ul>
+
+<p><a href="https://dl.dropbox.com/u/5390179/6c2da543eb8312cd496ef8f75fb8d83d.png"><img src="https://dl.dropbox.com/u/5390179/6c2da543eb8312cd496ef8f75fb8d83d.png" alt="zabbix" /></a></p>
+
+<p>Zabbixで、itemを上記設定のように作成し<br />
+trapperのデータとしてZabbixが受け取れる為に設定します。</p>
+
+<h3 id="zabbixでグラフ化">Zabbixでグラフ化</h3>
+
+<p>Zabbix上で上手く値が取得できていれば</p>
+
+<p><a href="https://dl.dropbox.com/u/5390179/107d6802dbac9f28c4b78819242d3018.png"><img src="https://dl.dropbox.com/u/5390179/107d6802dbac9f28c4b78819242d3018.png" alt="zabbix" /></a></p>
+
+<p>このようにグラフに値が出力され、期待通りの動作をすることが確認できました。</p>
+
+<p>awesome fluentd!</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f01%2f20%2ffluentd-plugin-create-newbie%2f - fluentd%e3%81%ae%e3%83%97%e3%83%a9%e3%82%b0%e3%82%a4%e3%83%b3%e3%82%92%e6%9b%b8%e3%81%8f%e7%b7%b4%e7%bf%92%e3%82%92%e3%81%99%e3%82%8b%e7%82%ba%e3%81%absecure%e3%83%ad%e3%82%b0%e3%82%92parse%e3%81%97%e3%81%a6Zabbix%e3%81%a7%e5%80%a4%e3%81%8c%e5%8f%96%e5%be%97%e3%81%a7%e3%81%8d%e3%82%8b%e3%82%88%e3%81%86%e3%81%ab%e3%81%97%e3%81%a6%e3%81%bf%e3%81%9f%28%e8%a8%ad%e5%ae%9a%e7%b7%a8%29 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

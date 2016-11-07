@@ -1,0 +1,256 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>Monitoring Casual Talk in Kyoto 行ってきた #monitoringcasual &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Monitoring Casual Talk in Kyoto 行ってきた #monitoringcasual</h1>
+                    <h2 class="headline">
+                    December 1, 2013 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    <p><a href="http://www.zusaar.com/event/1377006">Monitoring Casual Talk in Kyoto</a>へ参加してきました。</p>
+
+<p><a href="https://github.com/kenjiskywalker/p5-Zabbix-Senrigan/">Zabbix::Senrigan</a>を成仏させるために発表の機会を求めていたら、<br />
+モニカジが京都で開催されるとのことだったので<br />
+夜行バスや新幹線などの費用を調べて、京都へ旅行へ行ってきました。<br />
+参加できたのも、@shiba_yu36君がお家に宿泊させてくれたからでした。<br />
+紅葉シーズンど真ん中でどこも空いていなかったので助かりました。<br />
+ありがとうございました！</p>
+
+<p>また、京都に行くきっかけをつくってくれた@shoichimasuharaさん<br />
+ありがとうございました！おつかれさまでした！</p>
+
+<p>発表、デモサーバとZabbixサーバを立ててる自宅サーバにつながらなくて<br />
+カミさんに連絡したら、ブレーカー落としちゃったって聞いて大変でした。<br />
+こういうこともあるのだなと、バックアップ体制について考えなおすきっかけになりました。</p>
+
+<p>まともに発表できないのなら、せめて京都繋がりで有意義な発表をすべく<br />
+私の大好きな<a href="http://blog.kenjiskywalker.org/blog/2013/07/18/kiga-to-sensou/">応仁の乱の話</a>でもしようかと考えたのですが<br />
+40分ぐらいかかるようだったので、みなさんに聞きたいですか？と確認し<br />
+誰ひとり手を挙げてくれなかったので、普通にみんなのイメージに委ねながら発表をしました。</p>
+
+<p><a href="https://gist.github.com/kenjiskywalker/7703670">発表内容</a></p>
+
+<p>完結に書くと、何かツールを使っていて<br />
+そのツールがイケていないなら自分で何かつくってフォローしようという話でした。<br />
+もちろんそのツールがプラガブルならどんどん組み込めばいいし<br />
+フォローツールのせいで管理するソフトウェアが多くなってくるなら<br />
+もともと利用しているソフトウェアを見直すべきです。</p>
+
+<p>というように、状況も厳しく、内容も軽めだったのに<br />
+全体的にDocker、Sensu、Immutable Infrastructureなど<br />
+ウェブサービスのミドルウェア構成管理のモダンな話が多く<br />
+2014年を迎えるにあたっての技術者としての姿勢を正さなければならない状態でした。<br />
+関西で気軽に勉強会に参加すると返り討ちにあう可能性が高いです。<br />
+関東各位は気を引き締めて参加されたし。</p>
+
+<p>会場ははてな社だったのですが、無限にビールが出てきて最高の勉強会環境でした。<br />
+近くの席に@hitode909っていう人がいていよいよ無限にビール出てくる状況でした。</p>
+
+<p>飲み会、挙動不審の若者がいて、何やってるんですか？って聞いたら<br />
+鹿児島出身の大学生で広島の大学に通っていて、京都に旅行へ来ていて<br />
+調べたら宿泊しているホテルの隣りのビルがはてな社だったので<br />
+遊びに行ってみたら勉強会していたので参加した。みたいなこと言っていて<br />
+&ldquo;持ってる&rdquo;青年でした。はてなのサービスには興味がないって言って<br />
+ずっともりすさんにLINEのサービスのこと熱心に聞いてて面白かったです。</p>
+
+<p>そういえば、帰り際に興味深い体験がありました。<br />
+新幹線までの時間、鴨川で遊んでいると、川沿いにある長屋が目に飛び込んできて<br />
+長屋、火事になると隣家が燃えて大変になる。そこで編み出されたのが<br />
+長屋を壊しやすくして、火事になればすぐに取り壊して建て替えるシステムだったな。<br />
+はて、これはもしやImmutable Infrastructureではないのか。<br />
+不要になったものを取り壊し、新しくつくりなおす。<br />
+まさにImmutable Infrastructureでした。<br />
+我々日本人は、ちょんまげの頃に既に<br />
+Immutable Infrastructureの概念を取り入れていたのです。</p>
+
+<p>まるで新しい概念のように受け入れていたimmutable infrastructureは<br />
+車輪の再発明にすぎなかったことに、おろどきを隠せませんでした。</p>
+
+<p>Blue-Green Developmentも式年遷宮の再発明なので、いい加減我々は<br />
+インターネットからもう少し視野を広げて物事を考えなければ<br />
+ならないのではないかと実感した京都旅行でした。</p>
+
+<p>このように学びを得るために毎年京都に来たいです。<br />
+ありがとうございました。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f12%2f01%2fmonitoringcasual-kyoto%2f - Monitoring%20Casual%20Talk%20in%20Kyoto%20%e8%a1%8c%e3%81%a3%e3%81%a6%e3%81%8d%e3%81%9f%20%23monitoringcasual by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

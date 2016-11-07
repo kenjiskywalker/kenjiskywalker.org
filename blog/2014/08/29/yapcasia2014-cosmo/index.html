@@ -1,0 +1,254 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>#yapcasia 2014 でシステムとの時間の旅の話をしてきました &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>#yapcasia 2014 でシステムとの時間の旅の話をしてきました</h1>
+                    <h2 class="headline">
+                    August 29, 2014 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<h2 id="the-world-is-not-complete-https-speakerdeck-com-kenjiskywalker-yapcasia2014"><a href="https://speakerdeck.com/kenjiskywalker/yapcasia2014">The world is not complete </a></h2>
+
+<blockquote>
+<p>邦題:<br />
+「完成されたシステムなどない。完成された人間もいない。<br />
+  あるのは成長し続ける未完成なシステムと、それを支える未完成な人間だけだ」</p>
+</blockquote>
+
+<p>ウェブサービスを頭に描きながら、そのウェブサービスの成長の旅を体験することで<br />
+その時その時に何が必要か、ということをお話をしました。後半はトークショーでした。</p>
+
+<blockquote>
+<p>システムは完全ではないので壊れることを前提につくる<br />
+人間は失敗をするので、失敗をしても復旧できるようにシステムをつくる</p>
+
+<p>システムや一部の機能を疎結合にし、再現性を保つことで、障害に強くする<br />
+再現性をシンプルに保つことで、システム自体を変更の強いものにする</p>
+</blockquote>
+
+<p>例えば、現代でいえば、クラウドサービスでしか動かない、<br />
+特定のオンプレでしか動かないシステムではなく、<br />
+機能毎に環境に依存しないようにシステムをつくることを忘れないでね。</p>
+
+<p>壊れたりした時に慌てるのではなく、保険をつくって<br />
+再現性を持たせて同じ状態に戻せるようにしておいてね。ということでした。</p>
+
+<p>その意識があるかないかで、規模が拡大したり、機能が追加され<br />
+複雑化した時に、大きな違いになってくることを私は経験してきました。</p>
+
+<p>大規模の経験がある人は、この辺は体験的に理解していますが<br />
+大規模の経験がない人は、最初の構成を複雑にしてしまい<br />
+後々苦労してしまうのはあるあるネタかと思います。</p>
+
+<p>再現性については、puppet、Chef、Ansible、Consul、Serfなど<br />
+プロビジョニング、オーケストラレーションツールを利用し<br />
+環境に依存しない構築が可能になり、<br />
+簡易性、疎結合については、Dockerや各種クラウドサービスの登場で、<br />
+機能毎にプラットフォームを渡りやすくなってきたのではないでしょうか。</p>
+
+<p>ただ、その記録、保険、再現性、簡易性は<br />
+どのタイミングで、どの程度の精度を持たせるかは<br />
+つくる時間・つくらなかった時のリスク・復旧時間・構築時間など<br />
+都度見積もって、判断してね。という当たり前の話をしました。</p>
+
+<p>Infrastructure as Codeの時代、プログラミングで良く言われている<br />
+「変化に強く、シンプルであれ」という哲学は、Infrastructureにも<br />
+当てはまる時代になってきたのではないでしょうか。<br />
+それは、UNIXの哲学や、日本の文化から学ぶことができます。</p>
+
+<p>そうして、みなさんのウェブサービスの旅は、これからも続いていきます。</p>
+
+<p>という発表を大ホールならではのエモーショナルな空気感で発表してきました。<br />
+理想論だ、と吐き捨てることはできますが、その理想の世界が<br />
+Go言語の登場から各種プロビジョニングツール、様々なクラウドサービスの登場で<br />
+段々と実現可能になってきたのではないでしょうか。</p>
+
+<p>発表が結構早く終わってしまったけど、発表の補足を質問を回答する形ででき<br />
+結果的に、視聴者参加型のとても素晴らしい空間が生まれました。<br />
+みなさん、ありがとうございました。</p>
+
+<p>聞いてくれた人たち、選んでくれた人たち、ありがとうございました。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2014%2f08%2f29%2fyapcasia2014-cosmo%2f - %23yapcasia%202014%20%e3%81%a7%e3%82%b7%e3%82%b9%e3%83%86%e3%83%a0%e3%81%a8%e3%81%ae%e6%99%82%e9%96%93%e3%81%ae%e6%97%85%e3%81%ae%e8%a9%b1%e3%82%92%e3%81%97%e3%81%a6%e3%81%8d%e3%81%be%e3%81%97%e3%81%9f by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>さよならインターネット</title>
+    <link>http://blog.kenjiskywalker.org/</link>
+    <description>Recent content on さよならインターネット</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    <lastBuildDate>Tue, 12 Jul 2016 11:44:00 +0900</lastBuildDate>
+    <atom:link href="http://blog.kenjiskywalker.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/</link>
+      <pubDate>Tue, 12 Jul 2016 11:44:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/</guid>
+      <description>
+
+&lt;p&gt;EC2がちょくちょくStatus ChecksがコケてTerminateされていたので&lt;br /&gt;
+CloudWatchで見ているStatus Checkの値の変異を見て&lt;br /&gt;
+SNSに通知をさせている。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;SNS &amp;lt;-&amp;gt; PagerDuty &amp;lt;-&amp;gt; Slack&lt;/code&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;参考url&#34;&gt;参考URL&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html&#34;&gt;インスタンスのステータスチェック&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.pagerduty.com/docs/guides/aws-cloudwatch-integration-guide/&#34;&gt;AWS CloudWatch Integration Guide:PagerDuty&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.pagerduty.com/docs/guides/slack-integration-guide/&#34;&gt;Slack Integration Guide:PagerDuty&lt;/a&gt;
+
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;一番良いのはEC2が立ち上がってきた時に自分自身に下記設定を導入し&lt;br /&gt;
+自分が消える時に設定を削除するのが好ましいが、所々事情があり&lt;br /&gt;
+下記のようなスクリプトを特定のEC2で回している。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-rb&#34;&gt;#!/usr/bin/env ruby
+
+region = &#39;REGION&#39;
+
+# インスタンスID一覧を取得する ( --max-items XXX # インスタンス数次第 )
+instance_ids = `aws --region #{region} ec2 describe-instances \
+                    --max-items XXX \
+                    --filters Name=tag-key,Values=Name \
+                    | jq -r &#39;.Reservations[].Instances[].InstanceId&#39;
+                    `
+
+# CloudWatchでStatusCheckFailed_Checkが設定されているインスタンスID一覧 ( --max-items XXX # インスタンス数次第 )
+checked_instance_ids = `aws --region #{region} cloudwatch describe-alarms \
+                            --max-items XXX \
+                            | jq -r &#39;.MetricAlarms[].AlarmName&#39; \
+                            | grep &#39;StatusCheckFailed_Check&#39; \
+                            | cut -f 1 -d &#39; &#39;
+                            `
+
+# 改行で要素を分割
+instance_ids = instance_ids.split(&amp;quot;\n&amp;quot;)
+checked_instance_ids = checked_instance_ids.split(&amp;quot;\n&amp;quot;)
+
+# インスタンス一覧にあってCloudWatch側にない監視追加対象のインスタンスID一覧を抽出
+new_instance_ids = instance_ids - checked_instance_ids
+
+# CloudWatch側にあってインスタンス一覧にない削除対象のインスタンスID一覧を抽出
+deleted_instance_ids = checked_instance_ids - instance_ids
+
+# 監視追加対象のインスタンスID一覧が空でなければCloudWatchに追加していく
+unless new_instance_ids.empty?
+  new_instance_ids.each do |instance_id|
+
+    # StageというKeyのタグで本番かそれ以外を分けている
+    stage = `aws --region #{region} ec2 describe-instances \
+                 --instance-ids #{instance_id} \
+                 --query &#39;Reservations[].Instances[].Tags[?Key==\`Stage\`].Value&#39; \
+                 --output text
+                 `.chomp
+
+    # 本番の場合は通知先が違うのでSNSの向き先を変える
+    if stage == &#39;production&#39;
+      sns_topic = &#39;PRODUCTION_SNS_TOPIC&#39;
+    else
+      sns_topic = &#39;OTHER_SNS_TOPIC&#39;
+    end
+
+    # MAIN: ここで設定を追加する
+    `aws --region #{region} cloudwatch put-metric-alarm \
+         --alarm-name &amp;quot;#{instance_id} StatusCheckFailed_Check&amp;quot; \
+         --metric-name StatusCheckFailed \
+         --namespace AWS/EC2 \
+         --statistic Maximum \
+         --dimensions Name=InstanceId,Value=#{instance_id} \
+         --period 60 \
+         --unit Count \
+         --evaluation-periods 1 \
+         --threshold 0 \
+         --comparison-operator GreaterThanThreshold \
+         --ok-actions #{sns_topic} \
+         --alarm-actions #{sns_topic} \
+         --insufficient-data-actions #{sns_topic}
+         `
+
+    puts &amp;quot;#{instance_id} StatusCheckFailed_Check is created&amp;quot;
+  end
+end
+
+# 削除対象のインスタンスID一覧が空でなければ設定を削除していく
+unless deleted_instance_ids.empty?
+  deleted_instance_ids.each do |instance_id|
+
+    # MAIN: ここで設定を削除する
+    `aws --region #{region} cloudwatch delete-alarms \
+         --alarm-names &amp;quot;#{instance_id} StatusCheckFailed_Check&amp;quot;`
+
+    puts &amp;quot;#{instance_id} StatusCheckFailed_Check is deleted&amp;quot;
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;こんな感じでやってる。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>特定のインスタンスIDのタグのValueを出力する</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/</link>
+      <pubDate>Tue, 12 Jul 2016 10:31:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/</guid>
+      <description>
+
+&lt;h3 id=&#34;query-オプションとかよー使わんわということで個人的メモ&#34;&gt;&lt;code&gt;query&lt;/code&gt;オプションとかよー使わんわということで個人的メモ&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Name&lt;/code&gt;タグを出力したければこう&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ aws ec2 describe-instances \
+          --instance-ids i-XXXXXXXX \
+          --query &#39;Reservations[].Instances[].Tags[?Key==`Name`].Value&#39; \
+          --output text
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/</link>
+      <pubDate>Fri, 08 Jul 2016 13:32:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/</guid>
+      <description>
+
+&lt;p&gt;件の通り&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;&lt;a href=&#34;https://twitter.com/kenjiskywalker&#34;&gt;@kenjiskywalker&lt;/a&gt; そんな仕組みあるの？&lt;/p&gt;&amp;mdash; そのっつ (Naotoshi Seo) (@sonots) &lt;a href=&#34;https://twitter.com/sonots/status/751219867785711616&#34;&gt;July 8, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;&lt;a href=&#34;https://twitter.com/kenjiskywalker&#34;&gt;@kenjiskywalker&lt;/a&gt; クレクレ&lt;/p&gt;&amp;mdash; そのっつ (Naotoshi Seo) (@sonots) &lt;a href=&#34;https://twitter.com/sonots/status/751220071335235585&#34;&gt;July 8, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;今見直したら結構ひどい感じだったけど一旦公開しておく。&lt;br /&gt;
+AWS SDK for Rubyを利用してもいいし、これぐらいならgoで書いても良いスね。&lt;/p&gt;
+
+&lt;h3 id=&#34;仕組み&#34;&gt;仕組み&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Role&lt;/code&gt;  - web, db, app, etc&amp;hellip;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Stage&lt;/code&gt; - development, staging, production, etc&amp;hellip;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;EC2&lt;/code&gt;のインスタンスそれぞれに&lt;a href=&#34;http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/Using_Tags.html&#34;&gt;タグ&lt;/a&gt;の設定を入れている。&lt;br /&gt;
+それぞれのインスタンスは&lt;a href=&#34;http://docs.aws.amazon.com/ja_jp/AutoScaling/latest/DeveloperGuide/WhatIsAutoScaling.html&#34;&gt;AutoScalingGroup&lt;/a&gt;管理下にあり、&lt;br /&gt;
+上記タグもそれぞれのAutoScalingGroupにてインスタンス起動時に付与するようになっている。&lt;/p&gt;
+
+&lt;h4 id=&#34;起動時に浮いたeipをアサインさせたい&#34;&gt;起動時に浮いたEIPをアサインさせたい&lt;/h4&gt;
+
+&lt;p&gt;Ref: &lt;a href=&#34;http://qiita.com/toshihirock/items/81d6612511f0d1f5db77&#34;&gt;Qiita:AmazonLinuxのcloud-initについての調査メモ&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;cloud-init&lt;/code&gt;のいい感じのオフィシャルドキュメントってどこにあるんだ&amp;hellip;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;/var/lib/cloud/scripts/per-boot/004_assign-elastic-ip.rb&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-rb&#34;&gt;#!/usr/bin/env ruby
+
+#
+# 基本的に 各Role に EIP を付与するインスタンスは 2台 毎
+# 
+#
+
+INSTANCEID  = `curl -s http://169.254.169.254/latest/meta-data/instance-id/`
+
+REGION      = &#39;ap-northeast-1&#39;
+ROLE        = `aws --region #{REGION} ec2 describe-instances \
+                 --instance-ids #{INSTANCEID} \
+                 --output text \
+                 --query &#39;Reservations[].Instances[].Tags[?Key==\`Role\`].[Value]&#39; \
+                 `.chomp
+STAGE       = `aws --region #{REGION} ec2 describe-instances \
+                 --instance-ids #{INSTANCEID} \
+                 --output text \
+                 --query &#39;Reservations[].Instances[].Tags[?Key==\`Stage\`].[Value]&#39; \
+                 `.chomp
+
+# foo, bar以外はEIPの付与はないので一旦この条件を設定する
+exit 0 unless ROLE == &#39;foo&#39; || ROLE == &#39;bar&#39;
+
+# 浮いたEIPを入れる変数
+elasticip_allocation_ids = []
+
+# ROLE と STAGE 毎に保持している EIP は違う
+# TODO: hash or json
+case ROLE
+when &#39;foo&#39;
+  if STAGE == &#39;development&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;, &#39;eipalloc-XXXXXXXX&#39;]
+  elsif STAGE == &#39;staging&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;, &#39;eipalloc-XXXXXXXX&#39;]
+  else
+    exit 0
+  end
+when &#39;bar&#39;
+  if STAGE == &#39;production&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;]
+  elsif STAGE == &#39;staging&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;]
+  else
+    exit 0
+  end
+when &#39;baz&#39;
+  if STAGE == &#39;production&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;]
+  elsif STAGE == &#39;staging&#39;
+    elasticip_allocation_ids = [&#39;eipalloc-XXXXXXXX&#39;]
+  else
+    exit 0
+  end
+else
+  exit 0
+end
+
+elasticip_allocation_ids.each do |eip_id|
+  # 対象のEIPにEC2が紐付いているか確認(浮いたEIPを探す)
+  assigned_instance_id = `aws --region #{REGION} ec2 describe-addresses \
+                            --allocation-ids #{eip_id} \
+                            | jq &#39;.Addresses[].InstanceId&#39; \
+                            `.chomp
+  
+  # 浮いたEIPがあれば付与する処理へ移る
+  next unless assigned_instance_id == &#39;null&#39;
+  
+  # EIPを付与する
+  `aws --region #{REGION} ec2 associate-address \
+     --allocation-id #{eip_id} \
+     --instance-id #{INSTANCEID}`
+  puts &amp;quot;COMPLETE: associate-address --allocation-id #{eip_id} --instance-id #{INSTANCEID}&amp;quot;
+  exit 0
+end
+
+puts &amp;quot;CANNOT ASSOCIATE EIP to `hostname`&amp;quot;
+exit 1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;という感じで&lt;code&gt;/var/lib/cloud/scripts/per-boot/&lt;/code&gt;配下にスクリプトを置いている。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/</link>
+      <pubDate>Fri, 08 Jul 2016 12:45:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/</guid>
+      <description>
+
+&lt;p&gt;みんなのネットワーク環境が安定しているのか..&lt;br /&gt;
+我々の世界線にノイズが混在してしまっているのか&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;それを調べるすべはないが、下記のような問題があった。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mackerel&lt;/code&gt;で突然グラフが表示されなくなる&lt;/li&gt;
+&lt;li&gt;そのグラフを表示しているのは&lt;code&gt;fluent-plugin-mackerel&lt;/code&gt;を利用して&lt;code&gt;fluentd&lt;/code&gt;経由で作成している&lt;/li&gt;
+&lt;li&gt;その&lt;code&gt;td-agent&lt;/code&gt;は再起動しようとすると&lt;code&gt;Timeout error&lt;/code&gt;になる&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ということで怪奇現象を解決する為にやったことをメモ&lt;/p&gt;
+
+&lt;h3 id=&#34;愚直に-td-agent-の再起動を試みてみる&#34;&gt;愚直に&lt;code&gt;td-agent&lt;/code&gt;の再起動を試みてみる&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$ 
+[watashi@example-host ~]$ 
+[watashi@example-host ~]$ sudo service td-agent restart
+Restarting td-agent:
+
+Timeout error occurred trying to stop td-agent...                                          [  OK  ]
+[watashi@example-host ~]$ 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ダメや&lt;/p&gt;
+
+&lt;p&gt;fluentdのコミッターの&lt;a href=&#34;https://twitter.com/sonots&#34;&gt;@sonots&lt;/a&gt;さんに&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ログは出ない&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;デーモンは生きている&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;そんな現象に出会ったことない？と聞いたところ&lt;br /&gt;
+fluentdには&lt;a href=&#34;https://github.com/frsyuki/sigdump&#34;&gt;sigdump&lt;/a&gt;が入っているから&lt;br /&gt;
+そこでstacktraceを追ってみれば、と意識の高いお返事を頂いたので実行してみる。&lt;/p&gt;
+
+&lt;h4 id=&#34;kill-cont&#34;&gt;kill -CONT&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/frsyuki/sigdump#usage&#34;&gt;ドキュメント&lt;/a&gt;に書いてあるように&lt;code&gt;CONT&lt;/code&gt;のシグナルを送る&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+td-agent  7779  0.0  0.3 241756 26700 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+[watashi@example-host ~]$ 
+[watashi@example-host ~]$ sudo kill -CONT 7915
+[watashi@example-host ~]$ 
+[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+[watashi@example-host ~]$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;sigdumpができあがっている&#34;&gt;sigdumpができあがっている&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$ ls -la /tmp/
+total 1048
+-rw-rw-rw-  1 td-agent td-agent    5937 Jul  7 10:51 sigdump-7915.log
+[watashi@example-host ~]$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;sigdumpの中身を見てみる&#34;&gt;sigdumpの中身を見てみる&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$ sudo view /tmp/sigdump-7915.log
+Sigdump at 2016-07-07 10:52:00 +0900 process 7915 (/usr/sbin/td-agent)
+  Thread #&amp;lt;Thread:0x007fce4f19e658&amp;gt; status=run priority=0
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:39:in `backtrace&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:39:in `dump_backtrace&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:25:in `block in dump_all_thread_backtrace&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:24:in `each&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:24:in `dump_all_thread_backtrace&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:16:in `block in dump&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:119:in `open&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:119:in `_open_dump_path&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:14:in `dump&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/sigdump-0.2.3/lib/sigdump.rb:7:in `block in setup&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `join&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `block in shutdown&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `each&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/agent.rb:102:in `shutdown&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:131:in `block in shutdown&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:130:in `each&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/root_agent.rb:130:in `shutdown&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/engine.rb:229:in `shutdown&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/engine.rb:200:in `run&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:597:in `run_engine&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:148:in `block in start&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:352:in `call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:352:in `main_process&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:325:in `block in supervise&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:324:in `fork&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:324:in `supervise&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/supervisor.rb:142:in `start&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/command/fluentd.rb:171:in `&amp;lt;top (required)&amp;gt;&#39;
+      /opt/td-agent/embedded/lib/ruby/site_ruby/2.1.0/rubygems/core_ext/kernel_require.rb:54:in `require&#39;
+      /opt/td-agent/embedded/lib/ruby/site_ruby/2.1.0/rubygems/core_ext/kernel_require.rb:54:in `require&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/bin/fluentd:6:in `&amp;lt;top (required)&amp;gt;&#39;
+      /opt/td-agent/embedded/bin/fluentd:23:in `load&#39;
+      /opt/td-agent/embedded/bin/fluentd:23:in `&amp;lt;top (required)&amp;gt;&#39;
+      /usr/sbin/td-agent:7:in `load&#39;
+      /usr/sbin/td-agent:7:in `&amp;lt;main&amp;gt;&#39;
+  Thread #&amp;lt;Thread:0x007fce4f1910c0&amp;gt; status=sleep priority=0
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `sleep&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `wait&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:165:in `cond_wait&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:149:in `run&#39;
+  Thread #&amp;lt;Thread:0x007fce4f192880&amp;gt; status=sleep priority=0
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/cool.io-1.4.2/lib/cool.io/loop.rb:88:in `run_once&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/cool.io-1.4.2/lib/cool.io/loop.rb:88:in `run&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/plugin/out_forward.rb:185:in `run&#39;
+  Thread #&amp;lt;Thread:0x007fce4f18eb40&amp;gt; status=sleep priority=0
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `block in connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/timeout.rb:75:in `timeout&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:863:in `do_start&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:852:in `start&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:1375:in `request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:82:in `perform_request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:40:in `block in call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:87:in `with_net_http_connection&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:32:in `call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/rack_builder.rb:139:in `build_response&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:377:in `run_request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:177:in `post&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/mackerel-client-0.1.0/lib/mackerel/client.rb:108:in `post_service_metrics&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:161:in `send&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:151:in `write&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:345:in `write_chunk&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:324:in `pop&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:329:in `try_flush&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:140:in `run&#39;
+  
+  ...
+  
+    GC stat:
+      count: 59808
+      heap_used: 261
+      heap_length: 261
+      heap_increment: 0
+      heap_live_slot: 105333
+      heap_free_slot: 1061
+      heap_final_slot: 0
+      heap_swept_slot: 26253
+      heap_eden_page_length: 261
+      heap_tomb_page_length: 0
+      total_allocated_object: 2536413815
+      total_freed_object: 2536308482
+      malloc_increase: 3756384
+      malloc_limit: 16777216
+      minor_gc_count: 58261
+      major_gc_count: 1547
+      remembered_shady_object: 2178
+      remembered_shady_object_limit: 2276
+      old_object: 62144
+      old_object_limit: 112630
+      oldmalloc_increase: 3800672
+      oldmalloc_limit: 16777216
+  Built-in objects:
+   106,394: TOTAL
+    47,172: T_STRING
+    21,189: T_DATA
+    16,574: T_ARRAY
+     6,805: T_NODE
+     3,221: T_OBJECT
+     3,064: T_CLASS
+     2,418: T_HASH
+     1,910: T_FILE
+     1,300: FREE
+       736: T_ICLASS
+       719: T_REGEXP
+       701: T_STRUCT
+       287: T_MATCH
+       168: T_MODULE
+        61: T_BIGNUM
+        59: T_RATIONAL
+         9: T_FLOAT
+         1: T_COMPLEX
+[watashi@example-host ~]$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;よくわからんが読んで見る&#34;&gt;よくわからんが読んで見る&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;  Thread #&amp;lt;Thread:0x007fce4f18f1a8&amp;gt; status=sleep priority=0
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `block in connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/timeout.rb:75:in `timeout&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:923:in `connect&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:863:in `do_start&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:852:in `start&#39;
+      /opt/td-agent/embedded/lib/ruby/2.1.0/net/http.rb:1375:in `request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:82:in `perform_request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:40:in `block in call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:87:in `with_net_http_connection&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/adapter/net_http.rb:32:in `call&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/rack_builder.rb:139:in `build_response&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:377:in `run_request&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/faraday-0.9.2/lib/faraday/connection.rb:177:in `post&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/mackerel-client-0.1.0/lib/mackerel/client.rb:108:in `post_service_metrics&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:161:in `send&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluent-plugin-mackerel-0.1.3/lib/fluent/plugin/out_mackerel.rb:151:in `write&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:345:in `write_chunk&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/buffer.rb:324:in `pop&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:329:in `try_flush&#39;
+      /opt/td-agent/embedded/lib/ruby/gems/2.1.0/gems/fluentd-0.12.20/lib/fluent/output.rb:140:in `run&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;fluent-plugin-mackerel&lt;/code&gt;と&lt;code&gt;faraday&lt;/code&gt;という文字列が見える&lt;/p&gt;
+
+&lt;h3 id=&#34;mackerel-client-rubyにprを送る&#34;&gt;mackerel-client-rubyにPRを送る&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/mackerelio/mackerel-client-ruby/pull/24&#34;&gt;pull/24&lt;/a&gt;のやりとりがそれ&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;faraday&lt;/code&gt;に&lt;code&gt;timeout&lt;/code&gt;のオプションがなかったので足した。&lt;/p&gt;
+
+&lt;h2 id=&#34;後処理&#34;&gt;後処理&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;対象サーバで&lt;code&gt;mackerel-client-ruby&lt;/code&gt;をバージョンアップ&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$
+[watashi@example-host ~]$ sudo /opt/td-agent/embedded/bin/gem update mackerel-client
+Updating installed gems
+Updating mackerel-client
+Fetching: mackerel-client-0.1.1.gem (100%)
+Successfully installed mackerel-client-0.1.1
+Parsing documentation for mackerel-client-0.1.1
+Installing ri documentation for mackerel-client-0.1.1
+Installing darkfish documentation for mackerel-client-0.1.1
+Done installing documentation for mackerel-client after 0 seconds
+Parsing documentation for mackerel-client-0.1.1
+Done installing documentation for mackerel-client after 0 seconds
+Gems updated: mackerel-client
+[watashi@example-host ~]$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;対象のプロセスを始末してデーモンを起動&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;[watashi@example-host ~]$ kill 7915
+[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+[watashi@example-host ~]$
+[watashi@example-host ~]$ kill 7779
+[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+td-agent  7779  0.0  0.3 241756 26836 ?        Sl   May27   0:00 /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+td-agent  7915  0.3  3.7 838976 288956 ?       Sl   May27 225:44  \_ /opt/td-agent/embedded/bin/ruby /usr/sbin/td-agent --log /var/log/td-agent/td-agent.log --use-v1-config --group td-agent --daemon /var/run/td-agent/td-agent.pid
+[watashi@example-host ~]$
+[watashi@example-host ~]$ kill -9 7915
+[watashi@example-host ~]$ kill -9 7779
+[watashi@example-host ~]$ ps auxwwwf | grep td-agent
+[watashi@example-host ~]$
+[watashi@example-host ~]$
+[watashi@example-host ~]$ sudo  service td-agent start
+Starting td-agent:                                         [  OK  ]
+[watashi@example-host ~]$
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ログや&lt;code&gt;mackerel&lt;/code&gt;などで問題なく出力がされているか確認する。&lt;/p&gt;
+
+&lt;p&gt;サービスを利用させてもらっている側もこのように地味なところで貢献できるので&lt;br /&gt;
+何かあったら色々とやってみよう💪&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Terraformを始める上でのresourceの命名規則について</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/</link>
+      <pubDate>Wed, 06 Jul 2016 09:52:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/</guid>
+      <description>
+
+&lt;h2 id=&#34;terraformとは&#34;&gt;Terraformとは&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.terraform.io&#34;&gt;https://www.terraform.io&lt;/a&gt;ここ見てください。&lt;br /&gt;
+&lt;code&gt;INFRASTRUCTURE AS CODE&lt;/code&gt;と書いてあります。&lt;/p&gt;
+
+&lt;h2 id=&#34;何が便利か&#34;&gt;何が便利か&lt;/h2&gt;
+
+&lt;p&gt;たとえばAWSの新規VPCの作成など画面ポチポチで設定していくオペレーションをコードに落とせる。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;それってAPI叩けば同じでは？&lt;br /&gt;
+PaaSが&lt;a href=&#34;https://www.terraform.io/docs/providers/index.html&#34;&gt;色々&lt;/a&gt;対応している。MySQLにも対応しているの&amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;伝えたいこと&#34;&gt;伝えたいこと&lt;/h2&gt;
+
+&lt;p&gt;たとえばVPCを構築するとして&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;Terraformの有識者にどうにかしてresourceの名前にvariableの値を入れる方法を教えてほしい🤔&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750200917312417792&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;resource &amp;quot;aws_vpc&amp;quot; &amp;quot;${var.prefix}-${var.environment_name}-vpc&amp;quot; {
+    cidr_block           = &amp;quot;${var.vpc.cidr_block}&amp;quot;
+    enable_dns_hostnames = true
+    enable_dns_support   = true
+    instance_tenancy     = &amp;quot;default&amp;quot;
+
+    tags {
+        &amp;quot;Name&amp;quot; = &amp;quot;${var.environment_name}-vpc&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;などと&lt;code&gt;resource&lt;/code&gt;名をユニークな感じでやろうとしたのだけれど&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;so this is by design.と言われればそれまでだ &lt;a href=&#34;https://t.co/Im2kwIqiQa&#34;&gt;https://t.co/Im2kwIqiQa&lt;/a&gt;&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750218349884301313&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;by design&lt;/code&gt;と言われていたので、なんだか使いづらいな〜と考えていた。が&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;そもそもresourceは固有な名前を設定すべきではないという思想が理解できていなかった、例えばpublicであればfoo-development-publicなどとうい名前を付けるべきではなかった&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750243305481396224&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;そうなのだ。そもそもこの発想で良く、&lt;code&gt;resource&lt;/code&gt;はあくまでTerraform内での管理するためだけの命名であるので&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;vpc.tf&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;resource &amp;quot;aws_vpc&amp;quot; &amp;quot;main-vpc&amp;quot; {
+    cidr_block           = &amp;quot;${var.vpc.cidr_block}&amp;quot;
+    enable_dns_hostnames = true
+    enable_dns_support   = true
+    instance_tenancy     = &amp;quot;default&amp;quot;
+
+    tags {
+        &amp;quot;Name&amp;quot; = &amp;quot;${var.environment_name}-vpc&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;このように&lt;code&gt;Name Tags&lt;/code&gt;でユニークな情報を付与すれば良かった。&lt;br /&gt;
+このことに気付かず&lt;code&gt;resource&lt;/code&gt;にひたすら&lt;code&gt;variable&lt;/code&gt;の値を入れようと頑張っていた。&lt;/p&gt;
+
+&lt;p&gt;結局、上記のように&lt;code&gt;resource&lt;/code&gt;にユニークな情報を入れない仕組みで汎用性は担保できた。&lt;br /&gt;
+これで似たような環境も&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;vpc.tf&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;# Create Subnet
+# - ec2:CreateSubnet
+resource &amp;quot;aws_subnet&amp;quot; &amp;quot;some-subnet-a&amp;quot; {
+    vpc_id            = &amp;quot;${aws_vpc.main-vpc.id}&amp;quot;
+    cidr_block        = &amp;quot;${var.vpc.public_subnet_a}&amp;quot;
+    availability_zone = &amp;quot;${var.availability_zone.a}&amp;quot;
+    tags {
+        Name = &amp;quot;${var.environment_name}-some-subnet-a&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;variables.tf&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;&lt;code&gt;variable &amp;quot;region&amp;quot; {
+    default = &amp;quot;ap-northeast-1&amp;quot;
+}
+
+variable &amp;quot;environment_name&amp;quot; {
+    default = &amp;quot;development&amp;quot;
+}
+
+variable &amp;quot;availability_zone&amp;quot; {
+    default = {
+        a = &amp;quot;ap-northeast-1a&amp;quot;
+        c = &amp;quot;ap-northeast-1c&amp;quot;
+    }
+}
+
+variable &amp;quot;vpc&amp;quot; {
+    default = {
+        cidr_block    = &amp;quot;10.200.0.0/16&amp;quot;
+        some_subnet_a = &amp;quot;10.200.210.0/24&amp;quot;
+        some_subnet_c = &amp;quot;10.200.211.0/24&amp;quot;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;上記のように&lt;code&gt;variables.tf&lt;/code&gt;などと値を別のファイルに分けておくことで&lt;br /&gt;
+汎用的なテンプレートが作成可能となる。しかし便利だな〜&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>CodeDeployのfailをSlackに通知して原因までたどりやすくする</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/</link>
+      <pubDate>Mon, 14 Mar 2016 11:03:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;https://aws.amazon.com/jp/about-aws/whats-new/2016/02/aws-codedeploy-adds-push-notification-support/&#34;&gt;AWS CodeDeploy Adds Push Notification Support&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ということで、これができるまではひたすらstate毎にslackに通知していたけど&lt;br /&gt;
+failしたらfailしたよって通知するようにした。&lt;/p&gt;
+
+&lt;p&gt;流れ的にはこう&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CodeDeploy fail -&amp;gt; AWS SNS -&amp;gt; AWS Lambda -&amp;gt; Slack
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;やり方&#34;&gt;やり方&lt;/h2&gt;
+
+&lt;h3 id=&#34;aws-snsで受け口をつくる&#34;&gt;AWS SNSで受け口をつくる&lt;/h3&gt;
+
+&lt;p&gt;CodeDeployがfailした歳に利用するSNSを用意する&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;NotifyCodeDeployErrorToSlack&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;みたいな感じで。開発環境やステージングなどでslackの通知グループが別れる場合は&lt;br /&gt;
+都度SNSをつくっているんだけど、これもっと良いやり方ないのかな？&lt;/p&gt;
+
+&lt;h3 id=&#34;codedeployのtriggerに先ほどつくったsnsを設定する&#34;&gt;CodeDeployのtriggerに先ほどつくったSNSを設定する&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployTrigger.png&#34; alt=&#34;https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployTrigger.png&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;fail以外にもステータスがあるのでそこでhookかけても良いですね。&lt;br /&gt;
+自分のところはstate毎に通知させているので一旦この形です。&lt;/p&gt;
+
+&lt;h3 id=&#34;aws-lambdaでslackへの通知を行う&#34;&gt;AWS LambdaでSlackへの通知を行う&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;NotifyCodeDeployErrorToSlackFunction&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;とか適当な名前でfunctionをつくる&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;// Ref: https://gist.github.com/vgeshel/1dba698aed9e8b39a464
+console.log(&#39;Loading function&#39;);
+
+const https = require(&#39;https&#39;);
+const url = require(&#39;url&#39;);
+// to get the slack hook url, go into slack admin and create a new &amp;quot;Incoming Webhook&amp;quot; integration
+const slack_url = &#39;&#39;;
+const region = &#39;ap-northeast-1&#39;
+const codedeploy_url = &#39;https://&#39; + region + &#39;.console.aws.amazon.com/codedeploy/home?region=&#39; + region + &#39;#/deployments/&#39;
+const slack_req_opts = url.parse(slack_url);
+slack_req_opts.method = &#39;POST&#39;;
+slack_req_opts.headers = {&#39;Content-Type&#39;: &#39;application/json&#39;};
+
+exports.handler = function(event, context) {
+  (event.Records || []).forEach(function (rec) {
+    if (rec.Sns) {
+      var req = https.request(slack_req_opts, function (res) {
+        if (res.statusCode === 200) {
+          context.succeed(&#39;posted to slack&#39;);
+        } else {
+          context.fail(&#39;status code: &#39; + res.statusCode);
+        }
+      });
+      
+      req.on(&#39;error&#39;, function(e) {
+        console.log(&#39;problem with request: &#39; + e.message);
+        context.fail(e.message);
+      });
+      
+      var message = JSON.parse(rec.Sns.Message);
+      var str = &#39;*&#39; + &#39;Application: &#39; + message.applicationName + &#39; deploymentGroupName: &#39; + message.deploymentGroupName + &#39; deploymentId: &#39; + message.deploymentId + &#39;*&#39; + &#39; &#39; + codedeploy_url + message.deploymentId;
+      req.write(JSON.stringify({text: str})); // for testing: , channel: &#39;@vadim&#39;
+      
+      req.end();
+    }
+  });
+};
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;slack_url&lt;/code&gt;に自前のIncoming Webhookを入れる&lt;/p&gt;
+
+&lt;h2 id=&#34;通知される&#34;&gt;通知される&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;https://dl.dropboxusercontent.com/u/5390179/capture-CodeDeployError.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ご覧のとおりFail時に通知され、かつURLをクリックしたらCodeDeployのエラー画面にとべて便利なので&lt;br /&gt;
+ご利用ください。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/</link>
+      <pubDate>Thu, 25 Feb 2016 14:18:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/</guid>
+      <description>&lt;p&gt;以上です。(どこかドキュメント落ちてるかな)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>CodeDeployでApplicationStopでどうしようもなくなったら</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/</link>
+      <pubDate>Thu, 21 Jan 2016 17:37:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/</guid>
+      <description>&lt;p&gt;これやで&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ rm -rf  /opt/codedeploy-agent/deployment-root/deployment-instructions/*
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/</link>
+      <pubDate>Tue, 19 Jan 2016 11:24:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/</guid>
+      <description>
+
+&lt;h2 id=&#34;自分用メモ&#34;&gt;自分用メモ&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-rb&#34;&gt;#!/usr/bin/env ruby
+
+loadbalancers = `aws elb describe-load-balancers | jq &#39;.[][][&amp;quot;LoadBalancerName&amp;quot;]&#39; -r `
+alert_sns = &amp;quot;SNS&amp;quot;
+
+loadbalancers.each_line do |lb|
+  lb.chomp!
+  p lb
+`aws cloudwatch put-metric-alarm --alarm-name &amp;quot;#{lb} UnHealthyHostCountUp&amp;quot; --alarm-description &amp;quot;#{lb} ELB UnHealthyHostCountUp&amp;quot; \
+  --actions-enabled \
+  --ok-actions #{alert_sns} \
+  --alarm-actions #{alert_sns} \
+  --insufficient-data-actions #{alert_sns} \
+  --metric-name &amp;quot;UnHealthyHostCount&amp;quot; \
+  --namespace AWS/ELB \
+  --statistic Maximum\
+  --dimensions Name=LoadBalancerName,Value=#{lb} \
+  --period 60 \
+  --evaluation-periods 5 \
+  --threshold 1 \
+  --comparison-operator GreaterThanOrEqualToThreshold`
+end
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/</link>
+      <pubDate>Sun, 10 Jan 2016 00:11:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/</guid>
+      <description>&lt;p&gt;iPhone水没した。人生で二度目だ。トイレで諸所の動作をする時はスマホいじくるのやめよう。&lt;br /&gt;
+高校サッカーの準決勝を見に行った。高校サッカー、本当に面白い。&lt;/p&gt;
+
+&lt;p&gt;東福岡の藤川虎太朗くんがとても良かった。&lt;br /&gt;
+国学院久我山の澁谷雅也くんと名倉巧くんがとても魅力的だった。&lt;/p&gt;
+
+&lt;p&gt;神谷くんは我らが湘南ベルマーレに来てくれるのでこれからが楽しみだ。&lt;br /&gt;
+見終わった後はおじさんたちで赤羽の町で飲み歩いた。話題は最初から最後まで最低だったが良い夜だった。&lt;br /&gt;
+ただ、iPhoneはこわれたままなので明日修理屋持って行ってみようと思う。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>「学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命」を読んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/broken-class/</link>
+      <pubDate>Sun, 20 Dec 2015 15:16:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/broken-class/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E5%AD%A6%E7%B4%9A%E5%B4%A9%E5%A3%8A%E7%AB%8B%E3%81%A6%E7%9B%B4%E3%81%97%E8%AB%8B%E8%B2%A0%E4%BA%BA-%E5%A4%A7%E4%BA%BA%E3%81%A8%E5%AD%90%E3%81%A9%E3%82%82%E3%81%A7%E5%8F%96%E3%82%8A%E7%B5%84%E3%82%80%E3%80%8C%E8%A8%80%E8%91%89%E3%80%8D%E6%95%99%E8%82%B2%E9%9D%A9%E5%91%BD-%E8%8F%8A%E6%B1%A0-%E7%9C%81%E4%B8%89/dp/4103343613%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4103343613&#34; target=&#34;_blank&#34; title=&#34;学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51p52cuC7NL.jpg&#34; width=&#34;344&#34; height=&#34;500&#34; alt=&#34;学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;ちょうど知り合いのおうちに遊びに行った時に&lt;br /&gt;
+テレビでやっていて、興味が湧いたので読んでみた。&lt;/p&gt;
+
+&lt;p&gt;学校に関係するサービスをやっていて、詳しい人から色々な話は聞くが&lt;br /&gt;
+実際に問題を解決している人はどのような方法で対処しているのかを知れてよかった。&lt;/p&gt;
+
+&lt;h2 id=&#34;メモ&#34;&gt;メモ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ほめ言葉のシャワー&lt;/li&gt;
+&lt;li&gt;成長を約束する&lt;/li&gt;
+&lt;li&gt;1年後に具体的にどこが成長できたか、成長ノートで確認をする&lt;/li&gt;
+&lt;li&gt;安心できる場を与える&lt;/li&gt;
+&lt;li&gt;子供ではなく人間を育てる&lt;/li&gt;
+&lt;li&gt;対話ノート。年百六十個のテーマについて&lt;/li&gt;
+&lt;li&gt;「父性」の欠如 = 「モンスターペアレンツ」&lt;/li&gt;
+&lt;li&gt;八対二」で止まらないようにする。「八」の中でスーパーＡをつくる&lt;/li&gt;
+&lt;li&gt;子供は褒められたい&lt;/li&gt;
+&lt;li&gt;「対話とは、話すことと聞くことの掛け算」&lt;/li&gt;
+&lt;li&gt;習慣化しない場合は自己責任で説明する。約束したよね、と&lt;/li&gt;
+&lt;li&gt;危ないな、というクラスはだいたい先生の目が下がっている。声が届いていない、教卓にしがみついているなど&lt;/li&gt;
+&lt;li&gt;今の時代、一人の大人が「Ｍ（mother＝母性）」「Ｆ（father＝父性）」「Ｃ（child＝無邪気さ）」を持たなくてはならない&lt;/li&gt;
+&lt;li&gt;厳しくやった後は、再び「眺める」という方法が有効になる&lt;/li&gt;
+&lt;li&gt;怒るとは、「自分中心の感情で相手に接すること」。叱るとは、「相手の存在を認め成長を願って強く意見すること」&lt;/li&gt;
+&lt;li&gt;一生懸命だと知恵が出る、中途半端だと愚痴が出る&lt;/li&gt;
+&lt;li&gt;全てに主語を入れて責任を持つようにする&lt;/li&gt;
+&lt;li&gt;家族でも絶対に譲れないものを３つつくる&lt;/li&gt;
+&lt;li&gt;反省ではなく内省ができるように&lt;/li&gt;
+&lt;li&gt;つねに全国レベルを意識しろ&lt;/li&gt;
+&lt;li&gt;「いいよ、頑張ってるからね。ずっと見守ってるからね、先生は」は効果がある。叱る時にも、「よくなるためのもの」とはっきりと伝える&lt;/li&gt;
+&lt;li&gt;現状の変化に対応できなかった先生が心の病で入院しがち&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;色々と子供に求めがちな手法がよく聞こえるが、まずは自分たちから律していきたいものだ。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>「velocity」を読んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</link>
+      <pubDate>Sun, 20 Dec 2015 14:26:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</guid>
+      <description>
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%83%99%E3%83%AD%E3%82%B7%E3%83%86%E3%82%A3%E6%80%9D%E8%80%83-%E6%9C%80%E9%AB%98%E3%81%AE%E6%88%90%E6%9E%9C%E3%82%92%E4%B8%8A%E3%81%92%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AE%E3%82%AF%E3%83%AA%E3%82%A8%E3%82%A4%E3%83%86%E3%82%A3%E3%83%96%E8%A1%93-%E3%82%A2%E3%82%B8%E3%83%A3%E3%82%BA%E3%83%BB%E3%82%A2%E3%83%BC%E3%83%A1%E3%83%83%E3%83%89/dp/4756242898%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4756242898&#34; target=&#34;_blank&#34; title=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/31y4L6-%2BngL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;会社の本棚にあったので借りて読んだらめちゃくちゃおもしろかった。&lt;br /&gt;
+今自分がどうしたらいいもんか、と悩んでいるところに適切に回答してくれていた。&lt;/p&gt;
+
+&lt;h3 id=&#34;個人メモ&#34;&gt;個人メモ&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;評価を1年に1度では遅い&lt;/li&gt;
+&lt;li&gt;アシュトンテイトの悲劇(決済報告が品質より優先された結果)&lt;/li&gt;
+&lt;li&gt;経営幹部の役割は迅速な意思決定と実験の推奨、スリムな組織体系を維持する&lt;/li&gt;
+&lt;li&gt;カリフォルニアには前向きな風がある&lt;/li&gt;
+&lt;li&gt;どれだけの収益に貢献できるかよりり、どれだけ人々の生活を便利に快適にするかからスタートしよう&lt;/li&gt;
+&lt;li&gt;優れた企業は細部にこだわる&lt;/li&gt;
+&lt;li&gt;顧客が欲しいものを顧客が欲しいと思う前に見つける&lt;/li&gt;
+&lt;li&gt;インスピレーションを与え、貢献し、情報や知識を提供しない限りマーケティングは環境汚染だ&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Keep it stupid simple&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;貝にアイフォーンが入っていて海の音が聞こえる。聴覚は味覚を高める。体験という価値&lt;/li&gt;
+&lt;li&gt;「だからなに？どんなメリットがあるの？それのどこがいいの？」を繰り返す&lt;/li&gt;
+&lt;li&gt;チームで決断することと正しい決断をすることは全く別&lt;/li&gt;
+&lt;li&gt;それはシンプルで人間らしくて欠かせないものか&lt;/li&gt;
+&lt;li&gt;AKQA優れた人は価値観に共感できない組織では働きたがらず、自らが信頼するチームには喜んで参加する&lt;/li&gt;
+&lt;li&gt;常にアスリートだ&lt;/li&gt;
+&lt;li&gt;チャンスは無限にあるがリソースには限りがある&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;冒頭の&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;変化は「酸素」である。変化があるからこそ、ビジネスに活力が生まれ、ビジネスへの熱意が生まれる。
+確立された方法が崩壊する時こそ、新しいエネルギーが入り込む余地が生まれ、従来の方法よりも&lt;br /&gt;
+さらに良い方法で成功できるチャンスをつかめるのだ&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;これが全てだった。思考停止してあの頃は良かったなぁ〜ってならないように&lt;br /&gt;
+変化を楽しめるようにしてこう。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>2016年を質の高いものにするために集中力を高められそうな本をいくつか読んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/for-the-mind/</link>
+      <pubDate>Sun, 20 Dec 2015 12:14:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/for-the-mind/</guid>
+      <description>
+
+&lt;p&gt;もうすぐ今年も終わるということで&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;子供がいるとなかなかまとまった時間がつくれない&lt;/li&gt;
+&lt;li&gt;業務時間の時間の密度を上げたい&lt;/li&gt;
+&lt;li&gt;効率的に物事にあたりたい
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;この3点が今年の主な課題だった。&lt;br /&gt;
+来年も今年と同じ感じで過ごすと職を失う可能性があるので&lt;br /&gt;
+時間毎の質の向上を目指したい。&lt;/p&gt;
+
+&lt;p&gt;個人的な課題としては集中力と自制心、その場の自己の客観性が大きく欠けていると理解したので&lt;br /&gt;
+来年はそれをどう改善するかということに注力していきたいのだが、&lt;br /&gt;
+根本的には集中力の向上が全体的な生活の質の向上に繋がるんじゃあないかと思って&lt;br /&gt;
+一旦本を何冊か読んでみた。&lt;/p&gt;
+
+&lt;p&gt;その個人的なメモ&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E7%8F%BE%E4%BB%A3%E4%BA%BA%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E7%9E%91%E6%83%B3%E6%B3%95%E2%80%95%E5%BD%B9%E7%AB%8B%E3%81%A4%E5%88%9D%E6%9C%9F%E4%BB%8F%E6%95%99%E6%B3%95%E8%A9%B1%E3%80%884%E3%80%89-%E3%82%B5%E3%83%B3%E3%82%AC%E6%96%B0%E6%9B%B8-%E3%82%A2%E3%83%AB%E3%83%9C%E3%83%A0%E3%83%83%E3%83%AC%E3%83%BB%E3%82%B9%E3%83%9E%E3%83%8A%E3%82%B5%E3%83%BC%E3%83%A9-ebook/dp/B00BAO0HJE%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00BAO0HJE&#34; target=&#34;_blank&#34; title=&#34;現代人のための瞑想法―役立つ初期仏教法話〈4〉 (サンガ新書)&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/412PsQac9cL.jpg&#34; width=&#34;375&#34; height=&#34;500&#34; alt=&#34;現代人のための瞑想法―役立つ初期仏教法話〈4〉 (サンガ新書)&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;この本が一番おもしろかったです。&lt;br /&gt;
+マインドフルネスも源流は同じかと。&lt;/p&gt;
+
+&lt;p&gt;そして、スマナサーラさんの本は全体的に面白い印象だ。&lt;br /&gt;
+何故面白いのか、原始仏教は宗教である以前に精神の鍛錬や物事の観方を訓練するものであって&lt;br /&gt;
+スマナサーラさんの本はその実践とその為の理解を助けてくれるので&lt;br /&gt;
+読んだ後、自分でやってみようと思えるとこに面白さを感じるのかもしれない。&lt;/p&gt;
+
+&lt;h3 id=&#34;いまだけをみる&#34;&gt;いまだけをみる&lt;/h3&gt;
+
+&lt;p&gt;将来のことや過去のことのことにとらわれて今が見えなくならないように&lt;br /&gt;
+今その瞬間を生きる&lt;/p&gt;
+
+&lt;h3 id=&#34;やりたくないこととやりたいこと&#34;&gt;やりたくないこととやりたいこと&lt;/h3&gt;
+
+&lt;p&gt;嫌だなって思う時点で怒りにとらわれている。これは本当に多いので反省点&lt;/p&gt;
+
+&lt;h3 id=&#34;心というものは放っておくとどんどん悪くなる&#34;&gt;心というものは放っておくとどんどん悪くなる&lt;/h3&gt;
+
+&lt;p&gt;自然体なんてウソ。律しないとダメ&lt;/p&gt;
+
+&lt;h3 id=&#34;ヴィパッサナー瞑想&#34;&gt;ヴィパッサナー瞑想&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;ヴィパッサナーというのは、パーリ語で、「ヴィ（vi）」は「明確に」の意味で、「パッサティ（passati）」は「観察する、見る」という意味です。「明確に観察する」とは、どういうことでしょう？&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;ヴィパッサナー瞑想の初歩的な解説が載っていた&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.jp.dhamma.org/940.html&#34;&gt;日本ヴィパッサナー協会&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;友人がこれに参加したことがあるので知っていた。いつか行ってみたい。&lt;/p&gt;
+
+&lt;h3 id=&#34;事象に対して主観を取りのぞく&#34;&gt;事象に対して主観を取りのぞく&lt;/h3&gt;
+
+&lt;p&gt;主観「嫌いなヤツが嫌なこと言っているな〜」&lt;br /&gt;
+客観「あの人が発音している」&lt;/p&gt;
+
+&lt;p&gt;雑音があっても「音」「音」「音」と認識することで&lt;br /&gt;
+事象と自分の感情の結びつきをなくして心が事象に依存することをやめさせる。&lt;br /&gt;
+これは瞑想系や仏教系の基本的な姿勢でよく見るものだ。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%83%96%E3%83%83%E3%83%80%E3%81%AE%E9%9B%86%E4%B8%AD%E5%8A%9B-%E5%BD%B9%E7%AB%8B%E3%81%A4%E5%88%9D%E6%9C%9F%E4%BB%8F%E6%95%99%E6%B3%95%E8%A9%B1-%E3%82%A2%E3%83%AB%E3%83%9C%E3%83%A0%E3%83%83%E3%83%AC%E3%83%BB%E3%82%B9%E3%83%9E%E3%83%8A%E3%82%B5%E3%83%BC%E3%83%A9-ebook/dp/B00LSURB5I%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00LSURB5I&#34; target=&#34;_blank&#34; title=&#34;ブッダの集中力 役立つ初期仏教法話&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51S428EvVPL.jpg&#34; width=&#34;306&#34; height=&#34;500&#34; alt=&#34;ブッダの集中力 役立つ初期仏教法話&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;たのしむこと&#34;&gt;たのしむこと&lt;/h3&gt;
+
+&lt;p&gt;極力無関心になった方が良いけど、批判的な無関心ではなく&lt;br /&gt;
+楽しみをもって試みるべし。楽しみを持ってあたれば集中力は自然と増し&lt;br /&gt;
+効率や能率を求めても結果はあまり付いてこない。&lt;/p&gt;
+
+&lt;h3 id=&#34;やらないことをきめる&#34;&gt;やらないことをきめる&lt;/h3&gt;
+
+&lt;p&gt;仕事でもそうだけど、やること、やらなければならないことは無限にあるが&lt;br /&gt;
+その中で理性的な無関心を育てていこうと。興味が起こった時は&lt;br /&gt;
+貪瞋癡のいずれかによって生まれていないか、もしそうなっていたら&lt;br /&gt;
+理性的な無関心によって捨ててこう。&lt;/p&gt;
+
+&lt;h3 id=&#34;なににもとらわれていないという境地&#34;&gt;なににもとらわれていないという境地&lt;/h3&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;つまり、「いま、こころに、欲もなく、怒りもなく、無知もありません。なにに対しても執着していません。ですから、究極に楽しいのです」&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;ご飯を食べている時に幸福と感じることはあるが、隣りの人が怒鳴り声を上げて喧嘩したり&lt;br /&gt;
+虫が出てきたりしたら一瞬で終わっちゃうので、そういうところに楽しみを見出すと疲れちゃうから&lt;br /&gt;
+なにものにもとらわれていない最高の状態があることに気付いて、それを最良としよう。&lt;/p&gt;
+
+&lt;h3 id=&#34;やりたいやりたくないではなく-必要か必要でないか&#34;&gt;やりたいやりたくないではなく、必要か必要でないか&lt;/h3&gt;
+
+&lt;p&gt;きになること、やりたいことがあった時に「貪瞋癡」から来ているものでないか&lt;br /&gt;
+確認しよう。そうであるなら理性的な無関心で捨てよう、そうでないなら楽しもう。&lt;br /&gt;
+また、やりたい、やりたくないで選ぶのではなく、必要か必要ではないかで決めよう。&lt;/p&gt;
+
+&lt;h3 id=&#34;肉体をそとからみる&#34;&gt;肉体をそとからみる&lt;/h3&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;「みなさいごはうんちになるのだから、あまり腹を立てたりだとか、期待をしたりだとかすることを止めてみてはどうかね？キミの言うそれも、キミも、また、僭越ながらわたくしも、うんちなりに今を精一杯生きているのだから。けんじ」&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/670023871462928384&#34;&gt;November 26, 2015&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;これと似たようなことが書いてあった。&lt;br /&gt;
+ここまで品が悪くはもちろんない。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E4%B8%96%E7%95%8C%E3%81%AE%E3%83%88%E3%83%83%E3%83%97%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%88%E3%81%8C%E5%AE%9F%E6%88%A6%E3%81%99%E3%82%8B%E9%9B%86%E4%B8%AD%E5%8A%9B%E3%81%AE%E9%8D%9B%E3%81%88%E6%96%B9-%E3%83%8F%E3%83%BC%E3%83%90%E3%83%BC%E3%83%89%E3%80%81Google%E3%80%81Facebook%E3%81%8C%E5%8F%96%E3%82%8A%E3%81%8F%E3%82%80%E3%83%9E%E3%82%A4%E3%83%B3%E3%83%89%E3%83%95%E3%83%AB%E3%83%8D%E3%82%B9%E5%85%A5%E9%96%80-%E8%8D%BB%E9%87%8E%E6%B7%B3%E4%B9%9F-ebook/dp/B015XS6RRI%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB015XS6RRI&#34; target=&#34;_blank&#34; title=&#34;世界のトップエリートが実戦する集中力の鍛え方　ハーバード、Google、Facebookが取りくむマインドフルネス入門&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51D-yS7QLvL.jpg&#34; width=&#34;309&#34; height=&#34;500&#34; alt=&#34;世界のトップエリートが実戦する集中力の鍛え方　ハーバード、Google、Facebookが取りくむマインドフルネス入門&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;我々もアスリート。心を整えること。力まないこと。だらだらと続けずに準備をすること。&lt;/li&gt;
+&lt;li&gt;モンキーマインド、マインドフル・ウォーキング、ラベリング&lt;/li&gt;
+&lt;li&gt;言葉と脳の関係。言葉を選ぶことの大切さ&lt;/li&gt;
+&lt;li&gt;「あなたが仕事をしていくうえで、また生きていくうえで、最も大切にしたいと思っていることはなんですか」&lt;/li&gt;
+&lt;li&gt;瞬間を生きる&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;基本的にはスマナサーラさんの法話と同じ。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;モンキーマインドという言葉を知れてよかった。自分はいつもこの状態にある。&lt;br /&gt;
+ので、何かをやる時は必ず終わりを設けて、それが終わるまでは音や思考を、&lt;br /&gt;
+外に置いて集中するようにしてみようと思う。&lt;br /&gt;
+また、もう少し悪い言葉を発するときは2秒ぐらい置いて選べるようにする。&lt;br /&gt;
+情報と行動の選択、やりたくないことではなくやらないといけないものを選んで進んでいく。&lt;br /&gt;
+未来と過去ではなく、今その瞬間に集中する。&lt;/p&gt;
+
+&lt;p&gt;この点を注意して生きていければと思った。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E9%9B%86%E4%B8%AD%E5%8A%9B-%E3%82%BB%E3%83%AD%E3%83%B3%E3%83%BBQ%E3%83%BB%E3%83%87%E3%83%A5%E3%83%A2%E3%83%B3-ebook/dp/B008BCCLQU%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB008BCCLQU&#34; target=&#34;_blank&#34; title=&#34;集中力&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/41qk06z2hQL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;集中力&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;この本はあんまり得られるものはなかった。&lt;br /&gt;
+本当になかったかKindleのハイライト見なおしてみたけどあまりなかった。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>もうやんカレーお持ち帰りという解脱の境地</title>
+      <link>http://blog.kenjiskywalker.org/blog/2015/12/08/curry-2015/</link>
+      <pubDate>Tue, 08 Dec 2015 17:48:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2015/12/08/curry-2015/</guid>
+      <description>&lt;p&gt;この記事は&lt;a href=&#34;http://www.adventar.org/calendars/725&#34;&gt;カレー Advent Calendar 2015&lt;/a&gt;の9日目の記事です。&lt;/p&gt;
+
+&lt;p&gt;今、とある事情で都庁前で働いているが、都庁前、空間設計が素晴らしく&lt;br /&gt;
+まるで洗練された欧州の町並みを感じさせる(実際は地上と地下という概念があってファンタジー)。&lt;/p&gt;
+
+&lt;p&gt;そんな都庁前では、多種多様な飲食店があり、食べることにはまず困ることはない。&lt;br /&gt;
+しかし、どうしても1000円前後の出費がかかってしまう。&lt;br /&gt;
+それを避けたければ牛丼屋か、コンビニ、ビル内にある弁当屋で食べるという選択肢もあるが&lt;br /&gt;
+どうも満たされない。そんな経験は誰にでもあるだろう。&lt;/p&gt;
+
+&lt;p&gt;そこで私がおすすめしたいのは&lt;a href=&#34;http://www.moyan.jp&#34;&gt;もうやんカレー&lt;/a&gt;である。&lt;br /&gt;
+もうやん？あそこはランチ1,000円だろ？何書いちゃってんのコイツ？&lt;br /&gt;
+などと思われる方は題名を読んでくれ。お持ち帰りの話をしたいんだ。&lt;/p&gt;
+
+&lt;p&gt;お持ち帰り？カレー食べ放題のビュッフェという楽園を捨てて&lt;br /&gt;
+貴様は何をほざいているんだ？と思われる方は年末年始は是非お寺に行って&lt;br /&gt;
+煩悩を取り払ってくれ。&lt;/p&gt;
+
+&lt;p&gt;個人的にもうやんカレーの唯一のデメリットは「食べ過ぎてしまうこと」だった。&lt;br /&gt;
+何故ならもうやんカレーはビュッフェスタイルを取っており、カレーが飲み放題なのだ。&lt;br /&gt;
+これは仏教でいう三毒の中のひとつ、「貪」に該当するものだ。&lt;/p&gt;
+
+&lt;p&gt;何故、薬膳カレーのもうやんカレーをたべたのに毒を得る必要があるのか。&lt;br /&gt;
+私はもうやんカレーを食べる度に悩み苦しんでいた。&lt;/p&gt;
+
+&lt;p&gt;そして、食べ終わった後オフィスに帰ると、食べ過ぎた反動で頭が働かなくなっているのだ。&lt;br /&gt;
+私は怒りに震え、キーボードで頭を何度も叩き割ろうとした。「瞋」だ。&lt;/p&gt;
+
+&lt;p&gt;壊れたキーボードを眺めながら、冷静になった時に激しい後悔に襲わる。&lt;br /&gt;
+「俺は地獄へ行く必要があるんだ。俺みたいなどうしようもない奴はどうせ地獄行きだ」&lt;br /&gt;
+と愚痴り続け、仕事さえもままならない状態に至ってしまう。「癡」だ。&lt;/p&gt;
+
+&lt;p&gt;本来最高の食物であるもうやんカレーを食べることで、自己の制御ができず&lt;br /&gt;
+貪り、怒り、愚痴り、私はいつも三毒の中心で悩み苦しんでいた。&lt;/p&gt;
+
+&lt;p&gt;そんなある日、同僚のエンジニア(仏陀)が言った。&lt;br /&gt;
+「おもちかえりしましょう。630円で箱に詰めるだけなんで食べ過ぎないですよ」&lt;/p&gt;
+
+&lt;p&gt;これは悟りであり、解であった。目の前は大いなる光に包まれ&lt;br /&gt;
+祝福の鐘は鳴り響き、心はどこまでも高く舞い上がっていった。&lt;/p&gt;
+
+&lt;p&gt;ということでもうやんカレーのおもちかえり630円、おすすめです。&lt;br /&gt;
+個人的に米なし大量チキンでやらせて頂いています。&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;instagram-media&#34; data-instgrm-captioned data-instgrm-version=&#34;6&#34; style=&#34; background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:658px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);&#34;&gt;&lt;div style=&#34;padding:8px;&#34;&gt; &lt;div style=&#34; background:#F8F8F8; line-height:0; margin-top:40px; padding:50.0% 0; text-align:center; width:100%;&#34;&gt; &lt;div style=&#34; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAMAAAApWqozAAAAGFBMVEUiIiI9PT0eHh4gIB4hIBkcHBwcHBwcHBydr+JQAAAACHRSTlMABA4YHyQsM5jtaMwAAADfSURBVDjL7ZVBEgMhCAQBAf//42xcNbpAqakcM0ftUmFAAIBE81IqBJdS3lS6zs3bIpB9WED3YYXFPmHRfT8sgyrCP1x8uEUxLMzNWElFOYCV6mHWWwMzdPEKHlhLw7NWJqkHc4uIZphavDzA2JPzUDsBZziNae2S6owH8xPmX8G7zzgKEOPUoYHvGz1TBCxMkd3kwNVbU0gKHkx+iZILf77IofhrY1nYFnB/lQPb79drWOyJVa/DAvg9B/rLB4cC+Nqgdz/TvBbBnr6GBReqn/nRmDgaQEej7WhonozjF+Y2I/fZou/qAAAAAElFTkSuQmCC); display:block; height:44px; margin:0 auto -44px; position:relative; top:-22px; width:44px;&#34;&gt;&lt;/div&gt;&lt;/div&gt; &lt;p style=&#34; margin:8px 0 0 0; padding:0 4px;&#34;&gt; &lt;a href=&#34;https://www.instagram.com/p/_BnizDpqs9/&#34; style=&#34; color:#000; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none; word-wrap:break-word;&#34; target=&#34;_blank&#34;&gt;解脱が具現化された様子です🍛&lt;/a&gt;&lt;/p&gt; &lt;p style=&#34; color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;&#34;&gt;A photo posted by kenjiskywalker (@kenjiskywalker) on &lt;time style=&#34; font-family:Arial,sans-serif; font-size:14px; line-height:17px;&#34; datetime=&#34;2015-12-08T09:09:38+00:00&#34;&gt;Dec 8, 2015 at 1:09am PST&lt;/time&gt;&lt;/p&gt;&lt;/div&gt;&lt;/blockquote&gt; &lt;script async defer src=&#34;//platform.instagram.com/en_US/embeds.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>「お母さんの「敏感期」―モンテッソーリ教育は子を育てる、親を育てる」を読んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2015/10/30/learning-montessori-system-fisrt/</link>
+      <pubDate>Fri, 30 Oct 2015 06:59:00 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2015/10/30/learning-montessori-system-fisrt/</guid>
+      <description>&lt;p&gt;最近自分で考えて誰かに伝えることが疎かになってきているので&lt;br /&gt;
+雑でも良いので書いていく。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%81%8A%E6%AF%8D%E3%81%95%E3%82%93%E3%81%AE%E3%80%8C%E6%95%8F%E6%84%9F%E6%9C%9F%E3%80%8D%E2%80%95%E3%83%A2%E3%83%B3%E3%83%86%E3%83%83%E3%82%BD%E3%83%BC%E3%83%AA%E6%95%99%E8%82%B2%E3%81%AF%E5%AD%90%E3%82%92%E8%82%B2%E3%81%A6%E3%82%8B%E3%80%81%E8%A6%AA%E3%82%92%E8%82%B2%E3%81%A6%E3%82%8B-%E6%96%87%E6%98%A5%E6%96%87%E5%BA%AB-%E7%9B%B8%E8%89%AF-%E6%95%A6%E5%AD%90/dp/416771745X%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D416771745X&#34; target=&#34;_blank&#34; title=&#34;お母さんの「敏感期」―モンテッソーリ教育は子を育てる、親を育てる (文春文庫)&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/413Pf23jBaL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;お母さんの「敏感期」―モンテッソーリ教育は子を育てる、親を育てる (文春文庫)&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;最近いろいろと知る機会があってモンテッソーリの書いてある本を読んでみたくて読んだ。&lt;br /&gt;
+個人的に子供と接する時に気を付けているのは&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;この世界に絶対はないこと&lt;/li&gt;
+&lt;li&gt;物事の背景を理解するようにすること&lt;/li&gt;
+&lt;li&gt;何歳であろうと一人の人間として丁寧に物事を教えること&lt;/li&gt;
+&lt;li&gt;やりたいものはやらせて自分の頭で学ばせること&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;この辺を気を付けていたけど、モンテッソーリはもう少し体系的に&lt;br /&gt;
+より高度に実践しているようだった。&lt;br /&gt;
+ちゃんとした教材を読んでみたくなった。&lt;/p&gt;
+
+&lt;p&gt;あと秩序の話で、朝うんち流しちゃってずっとうんちうんち言われてたのが一番面白かった&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

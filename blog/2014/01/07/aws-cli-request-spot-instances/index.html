@@ -1,0 +1,299 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>AWS CLIでスポットインスタンスリクエストを送る &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>AWS CLIでスポットインスタンスリクエストを送る</h1>
+                    <h2 class="headline">
+                    January 7, 2014 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>日本語の情報があまりなかったので共有しておきます。</p>
+
+<blockquote>
+<p>aws cli 1.2.9</p>
+</blockquote>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/request-spot-instances.html">AWS CLI / request-spot-instances</a><br />
+基本のドキュメント。</p></li>
+
+<li><p><a href="http://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html">AWS CLI / run-instances</a><br />
+&gt; &ndash;user-data (blob)<br />
+&gt;<br />
+&gt; Specifies additional information to make available to the instance(s). This parameter must be passed as a Base64-encoded string.</p></li>
+</ul>
+
+<p>user-dataをbase64で送らなければいけないことはこちらに書いてあった。</p>
+
+<ul>
+<li><a href="http://blog.awsapi.com/blog/2013/09/17/launch-your-own-nat-instance-under-vpc/">Launch Your Own NAT Instance in VPC - Indefinable Hacking</a><br />
+ヘンリーさんのやり方がとてもセンスがあった。ほぼヘンリーさんのやり方を踏襲した。
+<br /></li>
+</ul>
+
+<h2 id="exp-spot-instance-request-sh">exp) spot_instance_request.sh</h2>
+
+<pre><code>HOST=$1
+AMI=&quot;AMI&quot;
+INSTANCE_TYPE=&quot;t1.micro&quot;
+PRICE=&quot;0.1&quot;
+KEYPAIR=&quot;KEYPAIR&quot;
+AZ=&quot;AZ&quot;
+USER_DATA=`echo &quot;${HOST}&quot; | openssl enc -base64`
+REGION=&quot;REGION&quot;
+SECURITY_GROUPS=&quot;\&quot;default\&quot;, \&quot;image\&quot;&quot;
+
+### jq check
+JQ_COMMAND=`which jq`
+if [ -z ${JQ_COMMAND} ]; then
+    echo &quot;jq command not found&quot;
+    exit 1
+fi
+
+### SET JSON
+rm -f /tmp/launch_config.json
+cat &lt;&lt; EOF &gt;&gt; /tmp/launch_config.json
+{
+  &quot;ImageId&quot;: &quot;${AMI}&quot;,
+  &quot;KeyName&quot;: &quot;${KEYPAIR}&quot;,
+  &quot;InstanceType&quot;: &quot;${INSTANCE_TYPE}&quot;,
+  &quot;Placement&quot;: {
+    &quot;AvailabilityZone&quot;: &quot;${AZ}&quot;
+  },
+  &quot;Monitoring&quot;: {
+    &quot;Enabled&quot;: true
+  },
+  &quot;UserData&quot;: &quot;${USER_DATA}&quot;,
+  &quot;SecurityGroups&quot;: [
+    ${SECURITY_GROUPS}
+  ]
+}
+EOF
+
+### PUT SPOT_REQUEST
+aws ec2 request-spot-instances --spot-price ${PRICE} --region ${REGION} --launch-specification file:///tmp/launch_config.json &gt; /tmp/spot_request.json
+SIR_ID=`jq '.SpotInstanceRequests[0] | .SpotInstanceRequestId' /tmp/spot_request.json --raw-output`
+
+echo &quot;[INFO] SpotInstanceRequestID: ${SIR_ID}&quot;;
+
+
+### GET SPOT_INSTANCE INSTANCE_ID
+rm -f /tmp/spot_instance.json
+
+aws ec2 describe-spot-instance-requests --spot-instance-request-ids ${SIR_ID} --region ${REGION} &gt; /tmp/spot_instance.json
+INSTANCE_ID=`jq '.SpotInstanceRequests[0] | .InstanceId' /tmp/spot_instance.json --raw-output`
+
+while [ &quot;${INSTANCE_ID}&quot; == &quot;null&quot; ]
+do
+    aws ec2 describe-spot-instance-requests --spot-instance-request-ids ${SIR_ID} --region ${REGION} &gt; /tmp/spot_instance.json
+    INSTANCE_ID=`jq '.SpotInstanceRequests[0] | .InstanceId' /tmp/spot_instance.json --raw-output`
+
+    sleep 10
+done
+
+echo &quot;[INFO] INSTANCE_ID: ${INSTANCE_ID}&quot;;
+
+# つづく
+</code></pre>
+
+<p>こんな感じで取得できます。</p>
+
+<ul>
+<li>Monitoringが渡せなかった。(バージョンを1.2.9にしたら渡せるようになった)<br /></li>
+<li>JSON祭り<br /></li>
+<li>UserDataをbase64にencodeしないといけない<br /></li>
+<li>SecurityGroupsの渡し方がアレだ<br />
+<br /></li>
+</ul>
+
+<p>などなどやっていました。今後は<code>DeleteOnTermination</code>も有効にしたいです。<br />
+aws cliはバージョンがどんどん上がっているので、そのうち<br />
+JSON祭りもなくなるのではないかと思います。</p>
+
+<p>参考になれば幸いです。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2014%2f01%2f07%2faws-cli-request-spot-instances%2f - AWS%20CLI%e3%81%a7%e3%82%b9%e3%83%9d%e3%83%83%e3%83%88%e3%82%a4%e3%83%b3%e3%82%b9%e3%82%bf%e3%83%b3%e3%82%b9%e3%83%aa%e3%82%af%e3%82%a8%e3%82%b9%e3%83%88%e3%82%92%e9%80%81%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,253 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>Chefのruby_blockを利用してファイル更新時に条件によってログを出力する &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Chefのruby_blockを利用してファイル更新時に条件によってログを出力する</h1>
+                    <h2 class="headline">
+                    March 28, 2014 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    <p>Chefには冪等性という特徴がありますが、実際の運用では<br />
+ミドルウェアの設定の更新はしたいが、ミドルウェアの再起動までは<br />
+自分の手で確認したい。という条件もあるかと思います。</p>
+
+<ul>
+<li>設定ファイルは常に更新しても良い</li>
+<li>設定ファイルが更新された時だけミドルウェアを起動したい</li>
+<li>設定ファイルが更新された時にミドルウェアが起動済みであればログに出力</li>
+</ul>
+
+<p>上記条件を満たすために実施した内容について共有します。</p>
+
+<ul>
+<li>chef/site-cookbooks/apache/recipes/default.rb</li>
+</ul>
+
+<pre><code>template &quot;/etc/httpd/conf/httpd.conf&quot; do
+  source &quot;httpd.conf.erb&quot;
+  owner  &quot;www&quot;
+  mode   0644
+  notifies :run, &quot;ruby_block[warn]&quot;, :immediately
+end
+
+ruby_block &quot;warn&quot; do
+  block do
+
+    # httpdが起動中であればログ出力
+    unless `pgrep httpd` == &quot;&quot;
+      print &lt;&lt;&quot;EOS&quot;
+
+\e[33m===================================================================
+recipe:apache
+
+apacheが起動中です。
+新しい設定を反映させるためにはapahceを再起動してください。
+===================================================================\e[0m
+EOS
+    end
+  end
+  action :nothing
+  notifies :start, &quot;service[httpd]&quot;
+end
+
+service &quot;httpd&quot; do
+  action :enable
+end
+
+</code></pre>
+
+<ol>
+<li><code>/etc/httpd/conf/httpd.conf</code> が更新される</li>
+<li><code>notifies :run, &quot;ruby_block[warn]&quot;</code>で<code>ruby_block</code>を実行</li>
+<li><code>ruby_block</code>内でミドルウェアが起動中かどうかRubyのコードで条件分岐</li>
+<li>起動中であればログを出力</li>
+<li><code>ruby_block</code>で<code>notifies :start, &quot;service[httpd]&quot;</code>を実行、ミドルウェアの起動を行う</li>
+</ol>
+
+<p><code>ruby_block</code>は実行順序が最後になるというChefの設計上、<br />
+<code>notifies :start, &quot;service[httpd]&quot;</code>という方法を選択しました。</p>
+
+<p>もう少しマシな方法があれば是非とも教えてください。<br />
+Chefは何か込み入ったことをしようとすると色々と工夫しないといけないのが難点ですね。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2014%2f03%2f28%2fchef-ruby-block%2f - Chef%e3%81%aeruby_block%e3%82%92%e5%88%a9%e7%94%a8%e3%81%97%e3%81%a6%e3%83%95%e3%82%a1%e3%82%a4%e3%83%ab%e6%9b%b4%e6%96%b0%e6%99%82%e3%81%ab%e6%9d%a1%e4%bb%b6%e3%81%ab%e3%82%88%e3%81%a3%e3%81%a6%e3%83%ad%e3%82%b0%e3%82%92%e5%87%ba%e5%8a%9b%e3%81%99%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

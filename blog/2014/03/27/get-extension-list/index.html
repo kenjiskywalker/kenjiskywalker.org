@@ -1,0 +1,284 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>対象のディレクトリの拡張子一覧を取得する方法と便利コマンド少々 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>対象のディレクトリの拡張子一覧を取得する方法と便利コマンド少々</h1>
+                    <h2 class="headline">
+                    March 27, 2014 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>bashの奥は深い。</p>
+
+<ul>
+<li>ext-list.sh</li>
+</ul>
+
+<pre><code>#!/bin/bash
+
+dir=`pwd`
+list=`find ${dir} -type f -perm 755`
+
+# not = !
+# list=`find ${dir} -type f ! -perm 755`
+
+for file in $list
+do
+    filename=`basename $file`
+    ext=${filename##*.}
+    ext_list=(&quot;${ext_list[@]}&quot; ${ext})
+done
+
+echo ${ext_list[@]} | tr ' ' '\n' | sort | uniq -c | sort -n
+</code></pre>
+
+<p>などというスクリプトを作成しておいて<br />
+確認したいディレクトリでそのスクリプトを叩けば取得できます。</p>
+
+<p><strong>/usr/local/Cellar</strong>で実行したら</p>
+
+<pre><code>['-']% sh /tmp/ext-list.sh | tail -n10
+   5 1
+   5 6
+   6 0
+   7 py
+  10 test
+  11 sh
+  16 pl
+  27 result
+  62 so
+ 116 la
+['-']% 
+</code></pre>
+
+<p>こんな感じの結果になりました。</p>
+
+<h3 id="便利コマンド">便利コマンド</h3>
+
+<ul>
+<li>basename</li>
+</ul>
+
+<pre><code>['-']% basename /usr/local/bin/zsh
+zsh
+['-']%
+</code></pre>
+
+<ul>
+<li>dirname</li>
+</ul>
+
+<pre><code>['-']% dirname /usr/local/bin/zsh
+/usr/local/bin
+['-']%
+</code></pre>
+
+<ul>
+<li>シャープ</li>
+</ul>
+
+<pre><code>['-']% hoge=/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil.so
+['-']%
+['-']% echo ${hoge##*.}
+so
+['-']% echo ${hoge#*.}
+0.2/lib/zsh/zutil.so
+['-']%
+</code></pre>
+
+<ul>
+<li>パーセント</li>
+</ul>
+
+<pre><code>['-']% hoge=/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil.so
+['-']%
+['-']% echo ${hoge%%.*}
+/usr/local/Cellar/zsh/5
+['-']%
+['-']% echo ${hoge%.*}
+/usr/local/Cellar/zsh/5.0.2/lib/zsh/zutil
+['-']%
+</code></pre>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2014%2f03%2f27%2fget-extension-list%2f - %e5%af%be%e8%b1%a1%e3%81%ae%e3%83%87%e3%82%a3%e3%83%ac%e3%82%af%e3%83%88%e3%83%aa%e3%81%ae%e6%8b%a1%e5%bc%b5%e5%ad%90%e4%b8%80%e8%a6%a7%e3%82%92%e5%8f%96%e5%be%97%e3%81%99%e3%82%8b%e6%96%b9%e6%b3%95%e3%81%a8%e4%be%bf%e5%88%a9%e3%82%b3%e3%83%9e%e3%83%b3%e3%83%89%e5%b0%91%e3%80%85 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>
