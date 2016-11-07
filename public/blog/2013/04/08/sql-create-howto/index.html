@@ -1,0 +1,249 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>tweets.zipを読みこませるSQLを書いた時のメモ &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>tweets.zipを読みこませるSQLを書いた時のメモ</h1>
+                    <h2 class="headline">
+                    April 8, 2013 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><a href="http://atnd.org/events/38091">MySQL Casual Talks vol.4</a>で話してみて<br />
+ってmyfinderさんからお声がけしてもらって、SQL周りノータッチで生きてきて<br />
+今色々勉強しだしてるけど、正直当日までに有用な話ができる気がしてない。</p>
+
+<p>再来週のオレが今のオレよりもう少し有意義な情報を持ち合わせているようにしたい。</p>
+
+<p>この前<a href="http://blog.kenjiskywalker.org/blog/2013/04/04/tweets_zip_big_data/">tweets.zipをMySQLに突っ込んでSQLを学ぶ(導入編)</a>というのを書いて<br />
+ホッテントリー入ったねとか、何回もブクマ数数えたでしょ？とか<br />
+コンテンツ力高いとか、正直中身ないでしょアレとか。色々言われたんだけど<br />
+SQLをはじめて作成するにあたって勉強になったので、その時のメモ</p>
+
+<h4 id="参考-mysql-5-1-リファレンスマニュアル-10-データタイプ-10-1-データタイプ概要-10-1-4-データタイプデフォルト値-http-dev-mysql-com-doc-refman-5-1-ja-data-type-defaults-html">参考: <a href="http://dev.mysql.com/doc/refman/5.1/ja/data-type-defaults.html">MySQL 5.1 リファレンスマニュアル :: 10 データタイプ :: 10.1 データタイプ概要 :: 10.1.4 データタイプデフォルト値</a></h4>
+
+<p>TEXTタイプでは<code>NOT NULL</code>が使えない</p>
+
+<h4 id="参考-mysql-5-1-リファレンスマニュアル-10-データタイプ-10-2-数値タイプ-http-dev-mysql-com-doc-refman-5-1-ja-numeric-types-html">参考: <a href="http://dev.mysql.com/doc/refman/5.1/ja/numeric-types.html">MySQL 5.1 リファレンスマニュアル :: 10 データタイプ :: 10.2. 数値タイプ</a></h4>
+
+<p>必要な数値タイプのバイト数の参考</p>
+
+<h4 id="参考-mysql-5-1-リファレンスマニュアル-10-データタイプ-10-5-データタイプが必要とする記憶容量-http-dev-mysql-com-doc-refman-5-1-ja-storage-requirements-html">参考: <a href="http://dev.mysql.com/doc/refman/5.1/ja/storage-requirements.html">MySQL 5.1 リファレンスマニュアル :: 10 データタイプ :: 10.5 データタイプが必要とする記憶容量</a></h4>
+
+<p>VARCHAR(255)が1バイトで、VARCHAR(256)で2バイト
+utf8の日本語(マルチバイト)は1文字で3バイト。4byteのUTF8とかはutf8mb4</p>
+
+<h4 id="参考-mysql-5-1-リファレンスマニュアル-10-データタイプ-10-4-文字列タイプ-10-4-1-char-と-varchar-タイプ-http-dev-mysql-com-doc-refman-5-1-ja-char-html">参考: <a href="http://dev.mysql.com/doc/refman/5.1/ja/char.html">MySQL 5.1 リファレンスマニュアル :: 10 データタイプ :: 10.4 文字列タイプ :: 10.4.1 CHAR と VARCHAR タイプ</a></h4>
+
+<p>参考程度</p>
+
+<h4 id="参考-mysql-5-1-リファレンスマニュアル-オンラインヘルプ-6-データ型-6-3-日付と時刻型-6-3-1-datetime-date-そして-timestamp-型-http-dev-mysql-com-doc-refman-5-1-olh-ja-datetime-html">参考: <a href="http://dev.mysql.com/doc/refman/5.1-olh/ja/datetime.html">MySQL 5.1 リファレンスマニュアル (オンラインヘルプ) :: 6 データ型 :: 6.3 日付と時刻型 :: 6.3.1 DATETIME、DATE、そして TIMESTAMP 型</a></h4>
+
+<p>日付と時刻を入れる時の適切なタイプについての確認</p>
+
+<pre><code>CREATE TABLE tweets (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tweet_id` BIGINT UNSIGNED,
+  `in_reply_to_status_id` BIGINT UNSIGNED,
+  `in_reply_to_user_id` BIGINT UNSIGNED,
+  `retweeted_status_id` BIGINT UNSIGNED,
+  `retweeted_status_user_id` BIGINT UNSIGNED,
+  `timestamp` TIMESTAMP DEFAULT 0,
+  `source` VARCHAR(255),
+  `text` VARCHAR(140),
+  `expanded_urls` VARCHAR(255),
+  PRIMARY KEY (id) )
+ENGINE = InnoDB DEFAULT CHARACTER SET utf8;
+</code></pre>
+
+<ul>
+<li><code>UNSIGED</code> = 符号なしで正の値のみを扱う</li>
+<li><code>VARCHAR(140)</code> = VARCHAR(n)は文字数。Twitterは140文字制限なので140決め打ちでイケる<br /></li>
+<li><code>VARCHAR(255)</code> = マルチバイト文字列が入らず、255文字以内であれば1byteで済むので(255)<br /></li>
+<li><code>TIMESTAMP</code> = <code>2013-03-13 08:52:14 +0000</code>を<code>2013-03-13 08:52:14 +0900</code>としても型自体が<code>YYY-MM-DD HH:MM:SS</code>しかサポートしていない為、その後のGMTの指定は破棄されたことを確認</li>
+</ul>
+
+<p>ジャンパーソンみたいにMySQLのオフィシャルのリファレンスぺら読みしただけで<br />
+全部の内容を記憶できる能力あったら便利っぽい。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f04%2f08%2fsql-create-howto%2f - tweets.zip%e3%82%92%e8%aa%ad%e3%81%bf%e3%81%93%e3%81%be%e3%81%9b%e3%82%8bSQL%e3%82%92%e6%9b%b8%e3%81%84%e3%81%9f%e6%99%82%e3%81%ae%e3%83%a1%e3%83%a2 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,304 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト</h1>
+                    <h2 class="headline">
+                    July 8, 2016 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>件の通り</p>
+
+<p><blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr"><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> そんな仕組みあるの？</p>&mdash; そのっつ (Naotoshi Seo) (@sonots) <a href="https://twitter.com/sonots/status/751219867785711616">July 8, 2016</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" data-lang="en"><p lang="ja" dir="ltr"><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> クレクレ</p>&mdash; そのっつ (Naotoshi Seo) (@sonots) <a href="https://twitter.com/sonots/status/751220071335235585">July 8, 2016</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>今見直したら結構ひどい感じだったけど一旦公開しておく。<br />
+AWS SDK for Rubyを利用してもいいし、これぐらいならgoで書いても良いスね。</p>
+
+<h3 id="仕組み">仕組み</h3>
+
+<ul>
+<li><code>Role</code>  - web, db, app, etc&hellip;</li>
+<li><code>Stage</code> - development, staging, production, etc&hellip;</li>
+</ul>
+
+<p><code>EC2</code>のインスタンスそれぞれに<a href="http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/Using_Tags.html">タグ</a>の設定を入れている。<br />
+それぞれのインスタンスは<a href="http://docs.aws.amazon.com/ja_jp/AutoScaling/latest/DeveloperGuide/WhatIsAutoScaling.html">AutoScalingGroup</a>管理下にあり、<br />
+上記タグもそれぞれのAutoScalingGroupにてインスタンス起動時に付与するようになっている。</p>
+
+<h4 id="起動時に浮いたeipをアサインさせたい">起動時に浮いたEIPをアサインさせたい</h4>
+
+<p>Ref: <a href="http://qiita.com/toshihirock/items/81d6612511f0d1f5db77">Qiita:AmazonLinuxのcloud-initについての調査メモ</a></p>
+
+<p><code>cloud-init</code>のいい感じのオフィシャルドキュメントってどこにあるんだ&hellip;</p>
+
+<ul>
+<li>/var/lib/cloud/scripts/per-boot/004_assign-elastic-ip.rb</li>
+</ul>
+
+<pre><code class="language-rb">#!/usr/bin/env ruby
+
+#
+# 基本的に 各Role に EIP を付与するインスタンスは 2台 毎
+# 
+#
+
+INSTANCEID  = `curl -s http://169.254.169.254/latest/meta-data/instance-id/`
+
+REGION      = 'ap-northeast-1'
+ROLE        = `aws --region #{REGION} ec2 describe-instances \
+                 --instance-ids #{INSTANCEID} \
+                 --output text \
+                 --query 'Reservations[].Instances[].Tags[?Key==\`Role\`].[Value]' \
+                 `.chomp
+STAGE       = `aws --region #{REGION} ec2 describe-instances \
+                 --instance-ids #{INSTANCEID} \
+                 --output text \
+                 --query 'Reservations[].Instances[].Tags[?Key==\`Stage\`].[Value]' \
+                 `.chomp
+
+# foo, bar以外はEIPの付与はないので一旦この条件を設定する
+exit 0 unless ROLE == 'foo' || ROLE == 'bar'
+
+# 浮いたEIPを入れる変数
+elasticip_allocation_ids = []
+
+# ROLE と STAGE 毎に保持している EIP は違う
+# TODO: hash or json
+case ROLE
+when 'foo'
+  if STAGE == 'development'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX', 'eipalloc-XXXXXXXX']
+  elsif STAGE == 'staging'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX', 'eipalloc-XXXXXXXX']
+  else
+    exit 0
+  end
+when 'bar'
+  if STAGE == 'production'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX']
+  elsif STAGE == 'staging'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX']
+  else
+    exit 0
+  end
+when 'baz'
+  if STAGE == 'production'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX']
+  elsif STAGE == 'staging'
+    elasticip_allocation_ids = ['eipalloc-XXXXXXXX']
+  else
+    exit 0
+  end
+else
+  exit 0
+end
+
+elasticip_allocation_ids.each do |eip_id|
+  # 対象のEIPにEC2が紐付いているか確認(浮いたEIPを探す)
+  assigned_instance_id = `aws --region #{REGION} ec2 describe-addresses \
+                            --allocation-ids #{eip_id} \
+                            | jq '.Addresses[].InstanceId' \
+                            `.chomp
+  
+  # 浮いたEIPがあれば付与する処理へ移る
+  next unless assigned_instance_id == 'null'
+  
+  # EIPを付与する
+  `aws --region #{REGION} ec2 associate-address \
+     --allocation-id #{eip_id} \
+     --instance-id #{INSTANCEID}`
+  puts &quot;COMPLETE: associate-address --allocation-id #{eip_id} --instance-id #{INSTANCEID}&quot;
+  exit 0
+end
+
+puts &quot;CANNOT ASSOCIATE EIP to `hostname`&quot;
+exit 1
+</code></pre>
+
+<p>という感じで<code>/var/lib/cloud/scripts/per-boot/</code>配下にスクリプトを置いている。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2016%2f07%2f08%2fsamsara-eip%2f - %e7%89%b9%e5%ae%9a%e3%81%aeRole%e3%81%aeEIP%e3%81%8c%e4%bb%98%e4%b8%8e%e3%81%95%e3%82%8c%e3%81%a6%e3%81%84%e3%82%8bEC2%e3%81%8cTerminate%e3%81%95%e3%82%8c%e3%81%9f%e6%99%82%e3%81%ab%e6%96%b0%e3%81%97%e3%81%8f%e8%b5%b7%e5%8b%95%e3%81%97%e3%81%9fEC2%e3%81%ab%e6%b5%ae%e3%81%84%e3%81%9fEIP%e3%82%92%e4%bb%98%e4%b8%8e%e3%81%95%e3%81%9b%e3%82%8b%e3%82%b9%e3%82%af%e3%83%aa%e3%83%97%e3%83%88 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

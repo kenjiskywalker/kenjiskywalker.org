@@ -1,0 +1,267 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>起動時にresolv.confが何者かに上書きされた時に更に上書きをする戦い &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>起動時にresolv.confが何者かに上書きされた時に更に上書きをする戦い</h1>
+                    <h2 class="headline">
+                    February 7, 2015 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<blockquote>
+<p>みんなこういうのはどういう対応しているんだろう</p>
+</blockquote>
+
+<p><blockquote class="twitter-tweet" data-conversation="none" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> PEERDNS=noを/etc/sysconfig/network-scripts/ifcfg-ethXに書くとか</p>&mdash; TSUNEMATSU Shinya (@tnmt) <a href="https://twitter.com/tnmt/status/564019209189851136">February 7, 2015</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>常松先生が一瞬で解決方法を教えてくれました。<br />
+ありがとうございます！</p>
+
+<h2 id="resolv-confが圧倒的暴力によって上書きされる場合">resolv.confが圧倒的暴力によって上書きされる場合</h2>
+
+<p>対応として<code>resolv-update</code>みたいな雑なサービス定義をして、サーバ起動時に実行させるようにした。<br />
+ポイントはcloud-initとかそれ系のヤツが実行される前に上書いてもその後に上書きされるのでタイミングが大切。</p>
+
+<p>ここの</p>
+
+<pre><code># chkconfig: 2345 49 49
+</code></pre>
+
+<p><code>49 49</code>の最初の数字が起動時に実行される順番で、後ろの数字が終了時に実行される順番。</p>
+
+<pre><code>$ chkconfig --add resolv-update
+</code></pre>
+
+<p>とすることで自動に実行されるようになる。</p>
+
+<p>runlevel 3のものを確認したければ<code>/etc/rc3.d/</code>とか見ればわかる。</p>
+
+<pre><code>#!/bin/sh
+#
+# resolv-update
+# create by kenjiskywalker
+#
+# chkconfig: 2345 49 49
+# 
+
+lock_file=&quot;/var/lock/subsys/resolv-update&quot;
+redis_port=&quot;6379&quot;
+
+start()
+{
+    # lock_fileを生成しないとshutdownの時に実行されない
+    touch ${lock_file}
+
+    # 圧倒的暴力によってresolv.confが上書きされていたら更に上書きする
+    if [[ -z &quot;`grep 'nameserver 127.0.0.1' /etc/resolv.conf`&quot; ]]
+    then
+        sed -i '1s/^/nameserver 127.0.0.1\n/' /etc/resolv.conf
+    fi
+}
+
+stop()
+{
+    # lock_fileの削除
+    rm -r ${lock_file}
+}
+
+case &quot;$1&quot; in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    *)
+        echo &quot;Usage: $0 {start|stop}&quot;
+    ;;
+esac
+
+exit 0
+</code></pre>
+
+<p>Systemd？はて？</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2015%2f02%2f07%2fupdate-resolv-conf%2f - %e8%b5%b7%e5%8b%95%e6%99%82%e3%81%abresolv.conf%e3%81%8c%e4%bd%95%e8%80%85%e3%81%8b%e3%81%ab%e4%b8%8a%e6%9b%b8%e3%81%8d%e3%81%95%e3%82%8c%e3%81%9f%e6%99%82%e3%81%ab%e6%9b%b4%e3%81%ab%e4%b8%8a%e6%9b%b8%e3%81%8d%e3%82%92%e3%81%99%e3%82%8b%e6%88%a6%e3%81%84 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

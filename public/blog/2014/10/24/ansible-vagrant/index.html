@@ -1,0 +1,358 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>Ansibleを利用してRailsが動くVagrantfileを作成する &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Ansibleを利用してRailsが動くVagrantfileを作成する</h1>
+                    <h2 class="headline">
+                    October 24, 2014 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><img src="http://cdn2.hubspot.net/hub/330046/file-769078190-png/Official_Logos/ansible_wordlogo_whiteonblack_small.png?t=1414090782106" alt="http://cdn2.hubspot.net/hub/330046/file-769078190-png/Official_Logos/ansible_wordlogo_whiteonblack_small.png?t=1414090782106" /></p>
+
+<h2 id="tl-dr">TL;DR</h2>
+
+<p>Ansibleを利用したからって複雑な処理がシンプルになるわけではない</p>
+
+<h3 id="1st">1st</h3>
+
+<p>対象のサーバに何か設定をする必要はないので<br />
+このように少量のコードでやりたいことが実現できる。</p>
+
+<pre><code>['-']%
+['-']% cat hosts
+ansible.example.com
+['-']%
+['-']% ansible -m ping -i hosts ansible.example.com
+ansible.example.com | success &gt;&gt; {
+    &quot;changed&quot;: false,
+    &quot;ping&quot;: &quot;pong&quot;
+}
+
+['-']%
+['-']% cat playbook.yml
+- hosts: all
+
+  tasks:
+  - name: Install dstat
+    yum: name=dstat
+['-']%
+['-']%
+['-']% ansible-playbook -i hosts playbook.yml
+
+PLAY [all] ********************************************************************
+
+GATHERING FACTS ***************************************************************
+ok: [ansible.example.com]
+
+TASK: [Install dstat] *********************************************************
+ok: [ansible.example.com]
+
+PLAY RECAP ********************************************************************
+ansible.example.com            : ok=2    changed=0    unreachable=0    failed=0
+
+['-']%
+</code></pre>
+
+<p>Inventoryファイル(上記でいうとhostsファイル)の動的更新<br />
+各社独自で工夫してるんだろうな&hellip;</p>
+
+<h2 id="role">Role</h2>
+
+<p>1.2から使える機能とのこと、詳しくは<br />
+<a href="http://docs.ansible.com/playbooks_roles.html">Playbook Roles and Include Statements</a>を読んでもらいたい.<br />
+Chefを利用している人は馴染みがあるというか<br />
+そういう構成なのか、とすんなりと理解できると思う.</p>
+
+<p>Chefでいうcookbookの構成に近いというか<br />
+Chefを意識したつくりになっている気がする.<br />
+ある程度の規模になったらRoleを利用しないとつらいと思う.</p>
+
+<h2 id="railsの環境をasibleで用意してみる">Railsの環境をAsibleで用意してみる</h2>
+
+<p><a href="https://github.com/kenjiskywalker/ansible">https://github.com/kenjiskywalker/ansible</a></p>
+
+<pre><code>['-']% tree .
+.
+├── dev.yml
+└── roles
+    ├── mysql
+    │   └── tasks
+    │       └── main.yml
+    ├── rails
+    │   └── tasks
+    │       └── main.yml
+    └── ruby
+        ├── files
+        ├── handlers
+        ├── tasks
+        │   ├── main.yml
+        │   ├── rbenv.yml
+        │   ├── ruby-build.yml
+        │   └── ruby-install.yml
+        └── templates
+            └── rbenv.sh.j2
+
+10 directories, 8 files
+</code></pre>
+
+<h3 id="軽く書いてみて気がついたこと">軽く書いてみて気がついたこと</h3>
+
+<ul>
+<li><code>command</code>がコマンドだけで<code>shell</code>がパイプも使えるとか気が付かなくてハマった</li>
+<li><code>ohai</code>がいないので<code>apt</code>や<code>yum</code>など、ディストリビューションのパッケージ管理ツールを<code>package</code>みたいにラッピングしてくれない</li>
+<li><code>register</code>の概念が面白かった</li>
+</ul>
+
+<pre><code>- name: check Rails installed
+  shell: rails -v | cut -f 2 -d ' '
+  register: rails_installed
+  ignore_errors: yes
+  tags:
+    - ruby
+    - ruby:install
+    - install
+
+- name: gem install rails -v {{ rails_version }}
+  command: gem install rails -v {{ rails_version }}
+  when: rails_installed.stdout != rails_version
+  tags:
+    - rails
+    - install
+</code></pre>
+
+<p>のように書くと、<code>rails -v | cut -f 2 -d ' '</code>のコマンドの実行結果を<br />
+<code>rails_installed</code>という変数に格納し、その変数を利用して<br />
+条件分岐などを行うことができる.</p>
+
+<h3 id="vagrantfile">Vagrantfile</h3>
+
+<pre><code>VAGRANTFILE_API_VERSION = &quot;2&quot;
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = &quot;centos65&quot;
+  config.vm.box_url = &quot;https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box&quot;
+  config.vm.define :&quot;dev&quot; do |dev|
+    dev.vm.network :private_network, ip: '192.168.77.11'
+  end
+  config.vm.provision &quot;ansible&quot; do |ansible|
+    ansible.playbook = &quot;./ansible/dev.yml&quot;
+  end
+end
+</code></pre>
+
+<p>このようにVagrantのprovisonerにansibleを利用することが可能です。<br />
+READMEに書いてあるように、<code>vagrant up</code>を発行するとdev.ymlを利用した<br />
+ansibleが実行されます.</p>
+
+<pre><code>$ vagrant provision
+</code></pre>
+
+<p>とコマンドを発行することで、実行中のVagrantのインスタンスに対して<br />
+プロビジョニングすることが可能です。</p>
+
+<h3 id="chefの闇はansibleで光を得るのか">Chefの闇はAnsibleで光を得るのか</h3>
+
+<ul>
+<li>構成や管理方法が複雑であれば何を使ってもあまり変わらない</li>
+<li>新しく覚える時間が許されるなら両方試してみれば良いのでは</li>
+<li>上から下に実行されるだけ(ruby_blockとか使わなくていい)のは良い</li>
+</ul>
+
+<h3 id="個人的感想">個人的感想</h3>
+
+<ul>
+<li>Ansible縛りでなければ<a href="https://github.com/ryotarai/itamae">Itamae</a>試したかった</li>
+<li>まだちょっとしかさわってないので知見があればシェアさせて頂きます</li>
+</ul>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="http://docs.ansible.com/playbooks_roles.html">Playbook Roles and Include Statements - Ansible</a><br /></li>
+<li><a href="http://docs.ansible.com/playbooks_best_practices.html">Best Practices - Ansible</a><br /></li>
+<li><a href="http://tdoc.info/blog/2013/04/20/ansible.html">ansibleを使ってみる - そこはかとなく書くよん。</a><br /></li>
+</ul>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2014%2f10%2f24%2fansible-vagrant%2f - Ansible%e3%82%92%e5%88%a9%e7%94%a8%e3%81%97%e3%81%a6Rails%e3%81%8c%e5%8b%95%e3%81%8fVagrantfile%e3%82%92%e4%bd%9c%e6%88%90%e3%81%99%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

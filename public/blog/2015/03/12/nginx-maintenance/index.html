@@ -1,0 +1,313 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>nginxでメンテナンスページ用意する技 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>nginxでメンテナンスページ用意する技</h1>
+                    <h2 class="headline">
+                    March 12, 2015 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<h2 id="lt-dr">LT;DR</h2>
+
+<p>かっぱ先輩！</p>
+
+<h2 id="かっぱ先輩のブログを読んで">かっぱ先輩のブログを読んで</h2>
+
+<ul>
+<li><a href="http://inokara.hateblo.jp/entry/2014/02/22/134221">深夜メンテナンスに役立ちそうな nginx 小ネタ - ようへいの日々精進 XP </a></li>
+</ul>
+
+<p>同じようなことを最近やっていたのでメモ。</p>
+
+<h2 id="追記-03-12-14-00">追記(03/12) 14:00</h2>
+
+<ul>
+<li>リダイレクトやめましょうとのこと</li>
+<li>503でお返事しましょうとのこと</li>
+</ul>
+
+<p><blockquote class="twitter-tweet" lang="en"><p>メンテナンス時にメンテページにリダイレクトするのやめましょう</p>&mdash; そらは (@sora_h) <a href="https://twitter.com/sora_h/status/575875916506640384">March 12, 2015</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> <a href="https://twitter.com/sora_h">@sora_h</a> 元ネタの自分の記事は503返してるよ <a href="http://t.co/lONIVrv7OF">http://t.co/lONIVrv7OF</a></p>&mdash; fujiwara (@fujiwara) <a href="https://twitter.com/fujiwara/status/575877278355214336">March 12, 2015</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> <a href="https://twitter.com/sora_h">@sora_h</a> 静的ページ更新して差し替えぐらいでいいんじゃないですかねえ</p>&mdash; fujiwara (@fujiwara) <a href="https://twitter.com/fujiwara/status/575880371214020609">March 12, 2015</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> <a href="https://twitter.com/fujiwara">@fujiwara</a> あ、そういう話か。ちょっと勘違いしてた。静的ページ更新の差し替えしかないのでは。</p>&mdash; そらは (@sora_h) <a href="https://twitter.com/sora_h/status/575880494400729088">March 12, 2015</a></blockquote> <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>ノーSEO(disallow: /)だったので完全に無視してた</p>
+
+<h3 id="nginxに設定しているメンテナンスモードの条件">nginxに設定しているメンテナンスモードの条件</h3>
+
+<ul>
+<li><p><code>/var/nginx/html/maintenance/maintenance.html</code>ファイルがあればメンテナンスモードとして<code>maintenance.html</code>を表示するように</p></li>
+
+<li><p><code>/healthcheck</code>のリクエストはメンテナンスモードでも通す</p></li>
+
+<li><p>管理IPアドレスからはメンテナンスモードでも通す</p></li>
+</ul>
+
+<p>という3点を設定しています。</p>
+
+<ul>
+<li>nginx.conf</li>
+</ul>
+
+<pre><code>upstream example_pool {
+    server 127.0.0.1:3000;
+}
+
+geo $allow_ip_flag {
+    default 0;
+    192.0.2.0/24 1;    #TEST-NET-1
+    198.51.100.0/24 1; #TEST-NET-2
+}
+
+server {
+    listen       80;
+    server_name  example.com;
+
+    access_log  /var/log/nginx/example_com_access.log  ltsv;
+    error_log  /var/log/nginx/example_com_error.log warn;
+
+    root /var/nginx/html/example;
+
+    location /robots.txt {
+            alias /var/nginx/html/robots.txt;
+    }
+
+    location / {
+
+        ### メンテナンスの設定 ここから ###############################
+        if ( -e /var/nginx/html/maintenance/maintenance.html ) {
+            set $maintenance true;
+        }
+
+        # health checkのリクエストはログに出さずに
+        # メンテナンスページを通過する
+        if ( $request_uri ~ /healthcheck ) {
+            set $maintenance false;
+            access_log off;
+        }
+
+        # 許可IPアドレスならメンテナンスページを通過する
+        if ( $allow_ip_flag ) {
+            set $maintenance false;
+        }
+
+        # それ以外は/maintenance.htmlに飛ばす
+        if ( $maintenance = true ) {
+            rewrite ^ /maintenance.html redirect;
+        }
+
+        location /maintenance.html {
+            alias /var/nginx/html/maintenance/maintenance.html;
+            expires 0;
+        }
+        ### メンテナンスの設定 ここまで ###############################
+
+        proxy_pass http://example_pool;
+
+        proxy_set_header Host              $http_host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+
+        client_max_body_size 710M;
+        proxy_connect_timeout      3000;
+        proxy_send_timeout         3000;
+        proxy_read_timeout         3000;
+        break;
+    }
+}
+</code></pre>
+
+<p>nginxは複数の条件の場合bit立てて判断するの知らなかった。</p>
+
+<ul>
+<li><a href="http://wiki.nginx.org/IfIsEvil">IfIsEvil</a></li>
+</ul>
+
+<p>こういうのはエレガントにngx_mrubyでやった方が運用楽そう。</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2015%2f03%2f12%2fnginx-maintenance%2f - nginx%e3%81%a7%e3%83%a1%e3%83%b3%e3%83%86%e3%83%8a%e3%83%b3%e3%82%b9%e3%83%9a%e3%83%bc%e3%82%b8%e7%94%a8%e6%84%8f%e3%81%99%e3%82%8b%e6%8a%80 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

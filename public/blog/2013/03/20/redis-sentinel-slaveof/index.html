@@ -1,0 +1,259 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>Redis Sentinelが動いていたらslaveof no oneしない &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Redis Sentinelが動いていたらslaveof no oneしない</h1>
+                    <h2 class="headline">
+                    March 20, 2013 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<blockquote>
+<p>色々とあれだったのでシンプルにキメうちにしました<br />
+thanks: @sawanoboly<br />
+update: 2013/03/22</p>
+</blockquote>
+
+<h4 id="環境">環境</h4>
+
+<blockquote>
+<p>Redis version 2.6.7</p>
+</blockquote>
+
+<p>Redis Sentinelは
+ <strong>Monitoring</strong> 、 <strong>Notification</strong>  、<strong>Automatic failover</strong><br />
+の3つの機能があって、主に自動フェイルオーバ目的で利用する機会が多いと思うのですが<br />
+その際に、手動で<code>slaveof no one</code>を打っちゃうことで予期しない状態になるので</p>
+
+<p><code>slaveof no one</code>打つならRedis Sentinelを止めてからにしましょう。</p>
+
+<hr />
+
+<p><del>事前情報</del></p>
+
+<p><del>こんな感じでredis-sentinel.confが設定されているとします</del></p>
+
+<p><del> 構成: Master:1 &lt;=&gt; Slave:1  </del></p>
+
+<pre><code>sentinel monitor check_one 192.168.2.100 6379 2
+sentinel down-after-milliseconds check_one 5000
+sentinel failover-timeout check_one 50000
+sentinel can-failover check_one yes
+sentinel parallel-syncs check_one 1
+
+daemonize yes
+pidfile /var/run/redis-sentinel.pid
+loglevel notice
+logfile /var/log/redis-sentinel.log
+port 26379
+</code></pre>
+
+<p><del> Redis Sentinelが動いているのに「slaveof no one」をかます</del></p>
+
+<p><del>こわいですねー、Redis Sentinelさんが</del><br />
+<del>レプリケーションの状況理解できなくなってしまいますね。</del><br />
+<del>やるならRedis Sentinelは落としてやるべきですね。</del></p>
+
+<p><del>Redis Sentinelが動いているのに「slaveof host port」をかます</del></p>
+
+<p><del>こわいですねー、Redis Sentinelさんは</del><br />
+<del>そんなの無視して正しい状況に持って行こうとしますから</del><br />
+<del>やるならRedis Sentinelは落としてやるべきですね。</del><br />
+<del>永続的に設定を変更するなら、Redis Sentinelさんを落として</del><br />
+<del>設定を期待している内容にして起動し直すのが良いです</del>ね。</p>
+
+<p><del>## 対策？  </del><br />
+<del>などなど、Redis Sentinelさんが動いている状態での</del><br />
+<del>手動レプリケーション設定変更を行うと、色々と予期しないことが起こるので</del><br />
+<del>- Redis Sentinelが動いてる時に*slaveofなんとか*は発行しない</del><br />
+<del>- レプリケーションの設定を変えるならデータのバックアップをとっておく</del><br />
+<del>- レプリケーションの状態を変えるならRedis Sentinelは落としてから行う</del><br />
+<del>- レプリケーションの状態を変えるならRedis Sentinel側の設定を変えて落としてから行う</del><br />
+<del>など対策というか、ハウツーがあるかと思うのですが</del><br />
+<del>こういうオペミスっぽいのを未然に防ぐにはどうしたらいいですかねー</del><br />
+<del>って話をしてました。</del><br />
+<del>みなさんどうやってRedis使ってるんでしょう</del><br />
+<del></del></p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f03%2f20%2fredis-sentinel-slaveof%2f - Redis%20Sentinel%e3%81%8c%e5%8b%95%e3%81%84%e3%81%a6%e3%81%84%e3%81%9f%e3%82%89slaveof%20no%20one%e3%81%97%e3%81%aa%e3%81%84 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

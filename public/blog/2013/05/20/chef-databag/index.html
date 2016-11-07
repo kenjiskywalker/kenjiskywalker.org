@@ -1,0 +1,380 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.16" />
+		<title>Chefで公開したくないJSONデータを暗号化するためにDataBagsを利用してみた記録 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Chefで公開したくないJSONデータを暗号化するためにDataBagsを利用してみた記録</h1>
+                    <h2 class="headline">
+                    May 20, 2013 
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<blockquote>
+<p>ruby 1.8.7<br />
+chef 11.4.4<br />
+knife-solo_data_bag 0.3.2</p>
+</blockquote>
+
+<p>2013/05/20 現在</p>
+
+<blockquote>
+<p>knife-solo 0.2.0 では &ldquo;knife solo data bag&rdquo; は使えず<br />
+<a href="https://github.com/thbishop/knife-solo_data_bag">https://github.com/thbishop/knife-solo_data_bag</a> こちらを利用</p>
+</blockquote>
+
+<hr />
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="http://docs.opscode.com/essentials_data_bags.html">About Data Bags — Chef Docs</a></li>
+<li><a href="http://docs.opscode.com/essentials_data_bags_encrypt.html">Encrypt a Data Bag — Chef Docs</a></li>
+</ul>
+
+<h2 id="knife-solo-data-bagのインストール">knife-solo_data_bagのインストール</h2>
+
+<pre><code># gem install knife-solo_data_bag 
+# cd /root/chef/ ; pwd
+</code></pre>
+
+<h2 id="暗号化用の鍵を用意">暗号化用の鍵を用意</h2>
+
+<pre><code># openssl rand -base64 512 &gt; encrypted_data_bag_secret
+</code></pre>
+
+<h2 id="環境整備">環境整備</h2>
+
+<pre><code># mkdir /root/chef/data_bags
+# cat /root/.chef/knife.rb
+cookbook_path '/root/chef/cookbooks'
+data_bag_path '/root/chef/data_bags'
+encrypted_data_bag_secret '/root/chef/encrypted_data_bag_secret'
+#
+</code></pre>
+
+<p>のような感じでknifeの設定を整えます</p>
+
+<h2 id="data-bagをつくる">data_bagをつくる</h2>
+
+<pre><code>#
+# knife solo data bag create data_hoge bag_hoge --secret-file ./encrypted_data_bags_secret
+ERROR: RuntimeError: Please set EDITOR environment variable
+#
+# export EDITOR=vim
+#
+# knife solo data bag create data_hoge bag_hoge --secret-file ./encrypted_data_bags_secret
+{
+    &quot;id&quot;: &quot;bag_hoge&quot;,
+  &quot;data&quot;: &quot;bagbag&quot;
+}
+# 
+# cat /root/chef/data_bags/data_hoge/bag_hoge.json
+{
+  &quot;data_bag&quot;: &quot;data_hoge&quot;,
+  &quot;chef_type&quot;: &quot;data_bag_item&quot;,
+  &quot;name&quot;: &quot;data_bag_item_data_hoge_bag_hoge&quot;,
+  &quot;json_class&quot;: &quot;Chef::DataBagItem&quot;,
+  &quot;raw_data&quot;: {
+    &quot;id&quot;: &quot;bag_hoge&quot;,
+    &quot;data&quot;: {
+      &quot;iv&quot;: &quot;++q0Yc6EHUu8bdAxb/Ekuw==\n&quot;,
+      &quot;version&quot;: 1,
+      &quot;encrypted_data&quot;: &quot;ErOwQM7QzvSJavsHPQovjwmRk7egm6EOCvDz2cUMd0Y=\n&quot;,
+      &quot;cipher&quot;: &quot;aes-256-cbc&quot;
+    }
+  }
+}#
+#
+# knife solo data bag show data_hoge bag_hoge
+data: bagbag
+id:   bag_hoge
+#
+</code></pre>
+
+<p><code>bag_hoge.json</code>の実ファイルを開いても中身は暗号化されている</p>
+
+<h2 id="秘密鍵が利用されているか確認">秘密鍵が利用されているか確認</h2>
+
+<pre><code># cat /root/.chef/knife.rb
+cookbook_path '/root/chef/cookbooks'
+data_bag_path '/root/chef/data_bags'
+# encrypted_data_bag_secret '/root/chef/encrypted_data_bag_secret' 
+
+#
+</code></pre>
+
+<p>コメントアウトしてみる</p>
+
+<pre><code>aws_keys = Chef::EncryptedDataBagItem.load(, secret)
+# knife solo data bag show data_hoge bag_hoge
+data:
+  cipher:         aes-256-cbc
+  encrypted_data: ErOwQM7QzvSJavsHPQovjwmRk7egm6EOCvDz2cUMd0Y=
+
+  iv:             ++q0Yc6EHUu8bdAxb/Ekuw==
+
+  version:        1
+id:   bag_hoge
+#
+</code></pre>
+
+<p>復号化されない。秘密鍵が使われていることがわかる</p>
+
+<h2 id="recipeから呼び出す">recipeから呼び出す</h2>
+
+<p><code>solo.rb</code></p>
+
+<pre><code>file_cache_path '/tmp/chef-solo'
+cookbook_path   '/root/chef/cookbooks'
+data_bag_path   '/root/chef/data_bags'
+encrypted_data_bag_secret '/root/chef/encrypted_data_bag_secret'
+</code></pre>
+
+<p><code>data_bag_path</code>と<code>encrypted_data_bag_secret</code>でファイルの位置をsoloに教える。</p>
+
+<p><code>/root/chef/cookbooks/data_bag_test/recipes/default.rb</code></p>
+
+<pre><code>data_bag = Chef::EncryptedDataBagItem.load('data_hoge','bag_hoge')
+hoge = data_bag['data']
+
+p &quot;data_bag is [#{hoge}]&quot;
+</code></pre>
+
+<p>こんな感じのrecipeをつくる</p>
+
+<p><code>data_bag_test.json</code></p>
+
+<pre><code>{
+   &quot;run_list&quot;: [
+    &quot;data_bag_test&quot;
+  ]
+}
+</code></pre>
+
+<p>のようなテストJSONを作成し、chef-soloを走らせる</p>
+
+<pre><code># chef-solo -j data_bag_test.json -c solo.rb
+Starting Chef Client, version 11.4.4
+Compiling Cookbooks...
+&quot;data_bag is [bagbag]&quot;
+Converging 0 resources
+Chef Client finished, 0 resources updated
+#
+</code></pre>
+
+<p>上記のようにdata_bagの値が取得できれば成功。<br />
+秘密鍵をcookbooksとは別で管理することにより<br />
+漏洩してほしくない情報を暗号化することが可能になる。</p>
+
+<p>とても便利。</p>
+
+<h2 id="暗号化しないで保存するパターン-05-28-追記">暗号化しないで保存するパターン (05/28 追記)</h2>
+
+<p><code>--secret-file</code>鍵を指定しなければ暗号化はされない。</p>
+
+<pre><code># knife solo data bag create data_hoge bag_hoge
+#
+# knife solo data bag show data_hoge bag_hoge
+data: bagbag
+id:   bag_hoge
+#
+# cat /root/chef/data_bags/data_hoge/bag_hoge.json
+{&quot;name&quot;:&quot;data_bag_item_data_hoge_bag_hoge&quot;,&quot;data_bag&quot;:&quot;data_hoge&quot;,&quot;chef_type&quot;:&quot;data_bag_item&quot;,&quot;raw_data&quot;:{&quot;id&quot;:&quot;bag_hoge&quot;,&quot;data&quot;:&quot;bagbag&quot;},&quot;json_class&quot;:&quot;Chef::DataBagItem&quot;}
+#
+</code></pre>
+
+<h3 id="recipe">recipe</h3>
+
+<pre><code>aws_keys = data_bag_item(&quot;data_hoge&quot;,&quot;bag_hoge&quot;)
+
+p &quot;data_bag is [#{hoge}]&quot;
+</code></pre>
+
+<p>でいける</p>
+
+<h3 id="あわせて読みたい">あわせて読みたい</h3>
+
+<p><a href="http://d.hatena.ne.jp/toritori0318/20130516/1368722444">アルパカchef日記３日目　data bagについて / またはユーザ管理クックブックなど &ndash; アルパカDiary</a><br />
+大変勉強になるエントリーだ</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <img class="avatar" src="http://blog.kenjiskywalker.org/images/avatar.png">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f05%2f20%2fchef-databag%2f - Chef%e3%81%a7%e5%85%ac%e9%96%8b%e3%81%97%e3%81%9f%e3%81%8f%e3%81%aa%e3%81%84JSON%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e6%9a%97%e5%8f%b7%e5%8c%96%e3%81%99%e3%82%8b%e3%81%9f%e3%82%81%e3%81%abDataBags%e3%82%92%e5%88%a9%e7%94%a8%e3%81%97%e3%81%a6%e3%81%bf%e3%81%9f%e8%a8%98%e9%8c%b2 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-status-fail-check/">EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/12/ec2-tag-describe-instances/">特定のインスタンスIDのタグのValueを出力する<aside class="dates">Jul 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/samsara-eip/">特定のRoleのEIPが付与されているEC2がTerminateされた時に新しく起動したEC2に浮いたEIPを付与させるスクリプト<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/08/mackerel-meets-fluentd-and-debug-it/">問題があったのでfluentdでsigdumpを使いstactraceしてmackerel-client-rubyにPRした話<aside class="dates">Jul 8</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/">Terraformを始める上でのresourceの命名規則について<aside class="dates">Jul 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/03/14/infrom-codedeploy-error-to-slack/">CodeDeployのfailをSlackに通知して原因までたどりやすくする<aside class="dates">Mar 14</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/02/25/slack-api-channel-to-group/">SlackのAPIでchannel.listやchannel.infoで取れない時はgroup.listやgroup.infoで取ろう<aside class="dates">Feb 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/21/codedeploy-applicationstop-failed/">CodeDeployでApplicationStopでどうしようもなくなったら<aside class="dates">Jan 21</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/19/awscli-put-metric-alarm-to-elb/">awscliでput-metric-alarmでELBのUnHealthyHostCountUpをモニタリングして増えたりしたらアラートとばすくん<aside class="dates">Jan 19</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/">iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った<aside class="dates">Jan 10</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2016 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="http://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>
