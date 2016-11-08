@@ -2,7 +2,6 @@ baseurl = "http://blog.kenjiskywalker.org/"
 title = "さよならインターネット"
 languageCode = "ja-jp"
 staticdir = "static"
-contentdir = "content"
 layoutdir = "layouts"
 publishdir = "public"
 [indexes]

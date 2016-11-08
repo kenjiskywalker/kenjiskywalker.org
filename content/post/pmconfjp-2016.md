@@ -1,7 +1,7 @@
 +++
 date = "2016-11-08T00:14:56+09:00"
-description = "#pmjconf に参加してきた"
-title = "#pmjconf に参加してきた"
+description = "#pmconfjp に参加してきた"
+title = "#pmconfjp に参加してきた"
 
 +++
 
