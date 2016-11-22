@@ -7,7 +7,7 @@
 		<meta name="author" content="kenjiskywalker">
 		<meta name="description" content="さよならインターネット">
 		<meta name="generator" content="Hugo 0.16" />
-		<title>ログファイルをS3にバックアップする &middot; さよならインターネット</title>
+		<title>A Film About CoffeeをVimeo On Demandで見た &middot; さよならインターネット</title>
 		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
 		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
 		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
@@ -29,92 +29,21 @@
         <section id="wrapper">
             <article class="post">
                 <header>
-                    <h1>ログファイルをS3にバックアップする</h1>
+                    <h1>A Film About CoffeeをVimeo On Demandで見た</h1>
                     <h2 class="headline">
-                    September 20, 2013
+                    November 22, 2016
                     <br>
                     
                     </h2>
                 </header>
                 <section id="post-body">
-                    
+                    <p><iframe src="https://player.vimeo.com/video/189791646" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+<p><a href="https://vimeo.com/189791646">『A FILM ABOUT COFFEE』</a> from <a href="https://vimeo.com/uplinkcloud">UPLINK Cloud</a> on <a href="https://vimeo.com">Vimeo</a>.</p></p>
 
-<p>デイリーのログファイルをS3へバックアップしたいという事案はよくあると思います。<br />
-一つの例として私の方法を載せますので、よりよい方法などあれば教えて頂きたいです。</p>
-
-<h2 id="backup-dir">backup dir</h2>
-
-<p><code>/var/log/backup/nginx/YYYYMMDD/</code><br />
-<code>/var/log/backup/app/YYYYMMDD/</code></p>
-
-<h2 id="backup-file">backup file</h2>
-
-<p><code>/var/log/backup/nginx/20130918/access.20130918-00.log.gz</code>
-<code>/var/log/backup/nginx/20130918/access.20130918-01.log.gz</code>
-<code>/var/log/backup/nginx/20130918/access.20130918-02.log.gz</code><br />
-&hellip;</p>
-
-<p><code>/var/log/backup/app/20130918/app.20130918-00.log.gz</code>
-<code>/var/log/backup/app/20130918/app.20130918-01.log.gz</code>
-<code>/var/log/backup/app/20130918/app.20130918-02.log.gz</code><br />
-&hellip;</p>
-
-<p>上記ディレクトリに、それぞれ<br />
-nginx、アプリケーションのログがあるとします。</p>
-
-<p>nginxのログはtd-agentによって</p>
-
-<pre><code>&lt;store&gt;
-  type file_alternative
-  time_slice_format %Y%m%d-%H
-  path /var/log/backup/nginx/access
-  output_data_type attr:msg
-  localtime
-  output_include_time false
-&lt;/store&gt;
-</code></pre>
-
-<p><code>/var/log/backup/nginx/access.20130919-00.log</code>
-<code>/var/log/backup/nginx/access.20130919-01.log</code>
-<code>/var/log/backup/nginx/access.20130919-02.log</code></p>
-
-<p>このように吐き出され、それを日付が変わったのち</p>
-
-<pre><code>#!/bin/sh
-
-# set -e
-DATE=`date --date '1 days ago' +%Y%m%d`
-BASE=&quot;/var/log/backup&quot;
-for type in nginx app;
-do
-  DIR=&quot;${BASE}/${type}/${DATE}&quot;
-  mkdir &quot;${DIR}&quot;
-  mv ${BASE}/${type}/*${DATE}*log &quot;${DIR}&quot;
-  nice gzip --fast ${DIR}/*log
-done
-</code></pre>
-
-<p>こちらのアーカイブスクリプトによって</p>
-
-<p><code>/var/log/backup/nginx/YYYYMMDD/</code></p>
-
-<p>というディレクトリを作成し、その配下へ昨日分のログファイルをgzip化し退避します。<br />
-そして、退避したログファイルをS3へバックアップします。</p>
-
-<p>バックアップは<a href="http://s3tools.org/s3cmd">s3cmd</a>を利用しても良いですが<br />
-先日1.0のリリースが行われた<a href="https://github.com/aws/aws-cli">awscli</a>を利用します。</p>
-
-<h2 id="backup-script">backup script</h2>
-
-<p>{% gist 6625841 %}</p>
-
-<p><code>aws s3 cp --recursive</code>によって昨日分のログファイルディレクトリを<br />
-再帰的にバックアップを行い、ファイルの整合性を担保する為に<br />
-ファイルサイズの比較を行っています。(可能であればMD5チェックを行いたい)</p>
-
-<p>このように、深夜に昨日分のログファイルをS3にバックアップするようにしています。</p>
-
-<p>以上、ご参考になれば幸いです。</p>
+<p>渋谷にある映画館、UPLINKがVimeoを利用した映画配信を開始した。<br />
+早速昔見逃した「A Film About Coffee」を見た。<br />
+大変良かった。こういう映画もオンデマンドで見れるようになると<br />
+本当にありがたい。</p>
 
                 </section>
             </article>
@@ -125,7 +54,7 @@ done
                         </div>
                     </a>
                 <section id="sharing">
-                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f09%2f20%2flogfile-backup-to-s3%2f - %e3%83%ad%e3%82%b0%e3%83%95%e3%82%a1%e3%82%a4%e3%83%ab%e3%82%92S3%e3%81%ab%e3%83%90%e3%83%83%e3%82%af%e3%82%a2%e3%83%83%e3%83%97%e3%81%99%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2016%2f11%2f22%2fa-film-about-coffee%2f - A%20Film%20About%20Coffee%e3%82%92Vimeo%20On%20Demand%e3%81%a7%e8%a6%8b%e3%81%9f by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(
