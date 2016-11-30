@@ -8,7 +8,7 @@ title = "courseraにてHuman-Centered Designを学んだ"
 ### TL,DR
 
 - [Web Content Accessibility Guidelines](http://waic.jp/docs/WCAG20/Overview.html)や[ニールセンのユーザビリティ10原則](http://tooljp.com/jyosho/docs/Jakob-Nielsen-s-10-general-principles-for-interaction-design/Jakob-Nielsen-s-10-general-principles-for-interaction-design.html)
-- 仮説の精度を上げてから手を動かす(プロトタイプ、ストーリーボード、インタビュー)
+- 暗中模索よりも仮説と実証、フィードバックを繰り返して手を動かす
 - 量は質を超える
 
 
