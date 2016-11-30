@@ -6,8 +6,222 @@
     <description>Recent content in Posts on さよならインターネット</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 22 Nov 2016 12:40:54 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 22 Nov 2016 20:56:56 +0900</lastBuildDate>
     <atom:link href="http://blog.kenjiskywalker.org/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>courseraにてHuman-Centered Designを学んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/11/22/human-centerd-design/</link>
+      <pubDate>Tue, 22 Nov 2016 20:56:56 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/11/22/human-centerd-design/</guid>
+      <description>
+
+&lt;h3 id=&#34;tl-dr&#34;&gt;TL,DR&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://waic.jp/docs/WCAG20/Overview.html&#34;&gt;Web Content Accessibility Guidelines&lt;/a&gt;や&lt;a href=&#34;http://tooljp.com/jyosho/docs/Jakob-Nielsen-s-10-general-principles-for-interaction-design/Jakob-Nielsen-s-10-general-principles-for-interaction-design.html&#34;&gt;ニールセンのユーザビリティ10原則&lt;/a&gt;という体系的にまとめられたものを知る&lt;/li&gt;
+&lt;li&gt;仮説の精度を上げてから手を動かす(プロトタイプ、ストーリーボード、インタビュー)&lt;/li&gt;
+&lt;li&gt;量は質を超える&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;本文&#34;&gt;本文&lt;/h1&gt;
+
+&lt;h2 id=&#34;動機&#34;&gt;動機&lt;/h2&gt;
+
+&lt;p&gt;興味本位&lt;/p&gt;
+
+&lt;h2 id=&#34;どのように学んだか&#34;&gt;どのように学んだか&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.coursera.org&#34;&gt;coursera&lt;/a&gt;というMOOCsのサービスを利用して&lt;br /&gt;
+UCSDのScott Klemmer氏の&lt;a href=&#34;https://www.coursera.org/learn/human-computer-interaction&#34;&gt;Human-Centered Design&lt;/a&gt;の授業を受けた。&lt;/p&gt;
+
+&lt;p&gt;この授業は日本語字幕もあり、3 weeks となってはいるが&lt;br /&gt;
+1回の講義が10~20分程度のものなので、比較的無理なく続けられる。&lt;br /&gt;
+(と言っても私は3回目のチャンレジでやっと完走したが&amp;hellip;)&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以下学びのメモ&lt;/p&gt;
+
+&lt;h1 id=&#34;デザインのアプローチ&#34;&gt;デザインのアプローチ&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ユーザが本当に必要なもの&lt;/li&gt;
+&lt;li&gt;チームの認識を合わせるためのもの&lt;/li&gt;
+&lt;li&gt;画面に見えるものだけがデザインではない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;チームの認識の齟齬に対してのアプローチ&#34;&gt;チームの認識の齟齬に対してのアプローチ&lt;/h2&gt;
+
+&lt;p&gt;私の環境では、&lt;br /&gt;
+企画、営業、開発の3つの役割を持った組織が同じ製品をあつかっていても&lt;br /&gt;
+認識が上手く合わせられず、要件や実装の手戻りが多発してしまっていた。&lt;br /&gt;
+この解決方法としては、とにかく&lt;strong&gt;&lt;em&gt;目に見えて動くもの&lt;/em&gt;&lt;/strong&gt;をつくり、&lt;br /&gt;
+そのものを見ながらはなすべきである。&lt;/p&gt;
+
+&lt;p&gt;必要なのは、その場面では精度が必要なのか、&lt;br /&gt;
+ざっくりとでも動くものが必要なのかを判断し、&lt;br /&gt;
+できうる速度でものをつくり、そのものを見ながら関係者で認識を合わせる。&lt;br /&gt;
+こうすることで、&lt;strong&gt;&lt;em&gt;思い違い&lt;/em&gt;&lt;/strong&gt;や&lt;strong&gt;&lt;em&gt;勘違い&lt;/em&gt;&lt;/strong&gt;などを極力減らせる(はず)。&lt;/p&gt;
+
+&lt;h1 id=&#34;プロトタイプについて&#34;&gt;プロトタイプについて&lt;/h1&gt;
+
+&lt;p&gt;本講義で印象に残った3つのプロトタイプについて記述しておく&lt;/p&gt;
+
+&lt;h3 id=&#34;walter-dorwin-teague氏のboeing社でのprototyping&#34;&gt;Walter Dorwin Teague氏のBoeing社でのPrototyping&lt;/h3&gt;
+
+&lt;p&gt;倉庫で飛行機のプロトタイプをつくり、実際に&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;旅行用の荷物を持った人を連れて体験のテストをした&lt;/li&gt;
+&lt;li&gt;大陸横断と同じ時間席に座るテスト&lt;/li&gt;
+&lt;li&gt;客室乗務員が食べ物などを運ぶ際テスト&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;このテストを行うことで、シートの快適さや、通路の幅、荷物の棚の大きさなど&lt;br /&gt;
+あらゆる項目を確認することができた。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想像とやってみることは全然違うので、  想定されるペルソナや&lt;br /&gt;
+利用する環境が決まっているなら、実際にそのユーザに、&lt;br /&gt;
+その環境(もしくは限りなく近い状況)でサービスを利用してもらうべき。&lt;br /&gt;
+呼び出して使い勝手を確認する方法も利点はあるが、可能であれば&lt;br /&gt;
+実際に利用される環境で試す方がより正確なフィードバックが得られる。&lt;/p&gt;
+
+&lt;h2 id=&#34;video-prototyping&#34;&gt;Video Prototyping&lt;/h2&gt;
+
+&lt;p&gt;例：&lt;a href=&#34;https://www.youtube.com/watch?v=kWsBvUnvCmg&#34;&gt;https://www.youtube.com/watch?v=kWsBvUnvCmg&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;プロモーションビデオのようなもの&lt;/p&gt;
+
+&lt;h3 id=&#34;利点&#34;&gt;利点&lt;/h3&gt;
+
+&lt;p&gt;ペーパープロトタイピングよりも素早く試行できる。&lt;br /&gt;
+動かなくても良いところが良い。エンジニアは動画を見て、どのような機能があれば良いか
+判断しやすくなる。工数的に大勢のサポートが必要な場合や、経営者や投資家などに&lt;br /&gt;
+対するプレゼンとしても有効である。&lt;/p&gt;
+
+&lt;h3 id=&#34;video-prototypingで必要なこと&#34;&gt;Video Prototypingで必要なこと&lt;/h3&gt;
+
+&lt;p&gt;・動機を説明する&lt;br /&gt;
+・ゴールを説明する&lt;br /&gt;
+・必要な作業を説明する&lt;/p&gt;
+
+&lt;p&gt;進め方&lt;/p&gt;
+
+&lt;p&gt;・概要、背景を演説する&lt;br /&gt;
+・即興でやってもいい、ビデオで回しても良い&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想像でシチュエーションを話し出すと&lt;br /&gt;
+ある人は通学中であったり、ある人は授業中であったり、ある人は放課後であったり&lt;br /&gt;
+認識がズレていることにさえ気づけない場合があるので大変効果的である。&lt;br /&gt;
+関係者の想像に頼る部分を極力なくしていく方法としては&lt;br /&gt;
+ベストに近い印象があるが実際はどうなのだろうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;paper-prototyping&#34;&gt;Paper Prototyping&lt;/h2&gt;
+
+&lt;p&gt;私が在籍したチームや会社はやったことがないのだが、知り合いに聞く限り&lt;br /&gt;
+よく利用されているテスト方式であり、ビデオプロトタイピングの次に認識を合わせやすい。&lt;/p&gt;
+
+&lt;h3 id=&#34;paper-prototypingで気をつけること&#34;&gt;Paper Prototypingで気をつけること&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;素早くやり、再利用できるものをつくろう&lt;/li&gt;
+&lt;li&gt;つくったものはまとめておく、壊れたりなくしたりしないようにする&lt;/li&gt;
+&lt;li&gt;プログレスバーやinteractiveな状態をシュミレートも一旦書いてみよう&lt;/li&gt;
+&lt;li&gt;重要なところは太く、重要でないところは細く書こう&lt;/li&gt;
+&lt;li&gt;スライディングウィンドウ・画面の深さを持たせよう&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;その他に、オズの魔法使いという方法もあった。&lt;br /&gt;
+ペーパープロトタイピング実践するならやったことある人に教えを請いたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;parallel-prototyping&#34;&gt;Parallel Prototyping&lt;/h2&gt;
+
+&lt;p&gt;並行プロトタイピングはひとつのプロトタイピングを行うより合理的で経済的でおすすめとのこと&lt;/p&gt;
+
+&lt;h3 id=&#34;利点-1&#34;&gt;利点&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;平行で作っているもの同士を比較しフィードバックを得ることができる&lt;/li&gt;
+&lt;li&gt;ビジネスの学習を2つ平行で学ぶと、双方を比較したり類似点を発見したりすることができ結果的に3倍の知識量になる&lt;/li&gt;
+&lt;li&gt;複数のものを共有すると敵対心がなくなる、意見が複数出てくる&lt;/li&gt;
+&lt;li&gt;複数つくることはボキャブラリーを生む&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ
+並行プロトタイプやりたいわ〜、無理矢理にでもやってみたいわこれ。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&#34;デザインの落とし込み&#34;&gt;デザインの落とし込み&lt;/h1&gt;
+
+&lt;p&gt;試行したものから得られるフィードバックについての注意点&lt;/p&gt;
+
+&lt;h2 id=&#34;エクストリームユーザに気をつけろ&#34;&gt;エクストリームユーザに気をつけろ&lt;/h2&gt;
+
+&lt;p&gt;質問と観察、観察、そして観察&lt;/p&gt;
+
+&lt;h3 id=&#34;エクストリームユーザ-リードユーザ&#34;&gt;エクストリームユーザ、リードユーザ&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;利用する大多数は中流なのだからトップのユーザではなく中流から始める&lt;/li&gt;
+&lt;li&gt;トップは自意識過剰、保護する立場と権限を持っている&lt;/li&gt;
+&lt;li&gt;リードユーザーは巧妙な解決策を思いつく、デザイナーはそのイマジネーションを参考にできるがマジョリティではない&lt;/li&gt;
+&lt;li&gt;電子メールの例でいうと、平均よりもメールを多く受け取っているユーザがエクストリームユーザである。&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;山奥で月に一度メールを受け取るユーザもそうだし、シリコンバレーのスタートアップのCEOのように&lt;br /&gt;
+毎日数千のメールを受け取っているユーザもそう、エクストリームユーザは実際のユーザではないことに気をつける。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;質問&#34;&gt;質問&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ログから質問してもいい。この機能を使っていないようですがなぜですかなど？&lt;/li&gt;
+&lt;li&gt;どれぐらい運動しますか？と聞いても被質問者は絶対多めに言ってくる&lt;/li&gt;
+&lt;li&gt;より具体的に、より最新の新鮮な記憶に頼る質問をする&lt;/li&gt;
+&lt;li&gt;絶対尺度で聞くのをやめる。10のうちの7はどういうことですか？など&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;観察&#34;&gt;観察&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ある機能について知りたければ質問するな、観察しろ&lt;/li&gt;
+&lt;li&gt;質問をした後回答を待つ。その沈黙こそがお金、silence is golden&lt;/li&gt;
+&lt;li&gt;素早い回答よりも、2度目の沈黙後の回答の方が興味深い&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;絶対尺度で聞くのをやめるとか、それ満足度調査のことか。&lt;br /&gt;
+そちらを学びたい。沈黙は金なりってのは本当にそうだよな。&lt;br /&gt;
+インタビューについてはインタビューのノウハウがあるので必要になったら&lt;br /&gt;
+都度学んでいきたい。&lt;/p&gt;
+
+&lt;h1 id=&#34;受講してみて&#34;&gt;受講してみて&lt;/h1&gt;
+
+&lt;p&gt;学びしかないが時間がかかる。&lt;br /&gt;
+今回は日本語字幕もあったので英語の補完が可能であったが、&lt;br /&gt;
+ネイティブ英語をひたすら聞く感じだと厳しいので&lt;br /&gt;
+引き続き色々やっていきたい。&lt;/p&gt;
+
+&lt;p&gt;これから関わる話は今回学んだプロトタイプを適用できないか試していきたい。&lt;br /&gt;
+並行プロトタイピングとビデオプロトタイピングはやっていきたいなー&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>A Film About CoffeeをVimeo On Demandで見た</title>
@@ -1279,53 +1493,6 @@ end
 &lt;/ul&gt;
 
 &lt;p&gt;色々と子供に求めがちな手法がよく聞こえるが、まずは自分たちから律していきたいものだ。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>「velocity」を読んだ</title>
-      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</link>
-      <pubDate>Sun, 20 Dec 2015 14:26:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%83%99%E3%83%AD%E3%82%B7%E3%83%86%E3%82%A3%E6%80%9D%E8%80%83-%E6%9C%80%E9%AB%98%E3%81%AE%E6%88%90%E6%9E%9C%E3%82%92%E4%B8%8A%E3%81%92%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AE%E3%82%AF%E3%83%AA%E3%82%A8%E3%82%A4%E3%83%86%E3%82%A3%E3%83%96%E8%A1%93-%E3%82%A2%E3%82%B8%E3%83%A3%E3%82%BA%E3%83%BB%E3%82%A2%E3%83%BC%E3%83%A1%E3%83%83%E3%83%89/dp/4756242898%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4756242898&#34; target=&#34;_blank&#34; title=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/31y4L6-%2BngL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;会社の本棚にあったので借りて読んだらめちゃくちゃおもしろかった。&lt;br /&gt;
-今自分がどうしたらいいもんか、と悩んでいるところに適切に回答してくれていた。&lt;/p&gt;
-
-&lt;h3 id=&#34;個人メモ&#34;&gt;個人メモ&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;評価を1年に1度では遅い&lt;/li&gt;
-&lt;li&gt;アシュトンテイトの悲劇(決済報告が品質より優先された結果)&lt;/li&gt;
-&lt;li&gt;経営幹部の役割は迅速な意思決定と実験の推奨、スリムな組織体系を維持する&lt;/li&gt;
-&lt;li&gt;カリフォルニアには前向きな風がある&lt;/li&gt;
-&lt;li&gt;どれだけの収益に貢献できるかよりり、どれだけ人々の生活を便利に快適にするかからスタートしよう&lt;/li&gt;
-&lt;li&gt;優れた企業は細部にこだわる&lt;/li&gt;
-&lt;li&gt;顧客が欲しいものを顧客が欲しいと思う前に見つける&lt;/li&gt;
-&lt;li&gt;インスピレーションを与え、貢献し、情報や知識を提供しない限りマーケティングは環境汚染だ&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;Keep it stupid simple&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;貝にアイフォーンが入っていて海の音が聞こえる。聴覚は味覚を高める。体験という価値&lt;/li&gt;
-&lt;li&gt;「だからなに？どんなメリットがあるの？それのどこがいいの？」を繰り返す&lt;/li&gt;
-&lt;li&gt;チームで決断することと正しい決断をすることは全く別&lt;/li&gt;
-&lt;li&gt;それはシンプルで人間らしくて欠かせないものか&lt;/li&gt;
-&lt;li&gt;AKQA優れた人は価値観に共感できない組織では働きたがらず、自らが信頼するチームには喜んで参加する&lt;/li&gt;
-&lt;li&gt;常にアスリートだ&lt;/li&gt;
-&lt;li&gt;チャンスは無限にあるがリソースには限りがある&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;冒頭の&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;変化は「酸素」である。変化があるからこそ、ビジネスに活力が生まれ、ビジネスへの熱意が生まれる。
-確立された方法が崩壊する時こそ、新しいエネルギーが入り込む余地が生まれ、従来の方法よりも&lt;br /&gt;
-さらに良い方法で成功できるチャンスをつかめるのだ&amp;rdquo;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;これが全てだった。思考停止してあの頃は良かったなぁ〜ってならないように&lt;br /&gt;
-変化を楽しめるようにしてこう。&lt;/p&gt;
 </description>
     </item>
     
