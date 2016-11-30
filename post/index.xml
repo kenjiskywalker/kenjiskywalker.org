@@ -6,8 +6,292 @@
     <description>Recent content in Posts on さよならインターネット</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 08 Nov 2016 00:14:56 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 22 Nov 2016 20:56:56 +0900</lastBuildDate>
     <atom:link href="http://blog.kenjiskywalker.org/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>courseraにてHuman-Centered Designを学んだ</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/11/22/human-centerd-design/</link>
+      <pubDate>Tue, 22 Nov 2016 20:56:56 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/11/22/human-centerd-design/</guid>
+      <description>
+
+&lt;h3 id=&#34;tl-dr&#34;&gt;TL,DR&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://waic.jp/docs/WCAG20/Overview.html&#34;&gt;Web Content Accessibility Guidelines&lt;/a&gt;や&lt;a href=&#34;http://tooljp.com/jyosho/docs/Jakob-Nielsen-s-10-general-principles-for-interaction-design/Jakob-Nielsen-s-10-general-principles-for-interaction-design.html&#34;&gt;ニールセンのユーザビリティ10原則&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;暗中模索よりも仮説と実証、フィードバックを繰り返して手を動かす&lt;/li&gt;
+&lt;li&gt;量は質を超える&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;本文&#34;&gt;本文&lt;/h1&gt;
+
+&lt;h2 id=&#34;動機&#34;&gt;動機&lt;/h2&gt;
+
+&lt;p&gt;興味本位&lt;/p&gt;
+
+&lt;h2 id=&#34;どのように学んだか&#34;&gt;どのように学んだか&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.coursera.org&#34;&gt;coursera&lt;/a&gt;というMOOCsのサービスを利用して&lt;br /&gt;
+UCSDのScott Klemmer氏の&lt;a href=&#34;https://www.coursera.org/learn/human-computer-interaction&#34;&gt;Human-Centered Design&lt;/a&gt;の授業を受けた。&lt;/p&gt;
+
+&lt;p&gt;この授業は日本語字幕もあり、3 weeks となってはいるが&lt;br /&gt;
+1回の講義が10~20分程度のものなので、比較的無理なく続けられる。&lt;br /&gt;
+(と言っても私は3回目のチャンレジでやっと完走したが&amp;hellip;)&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以下学びのメモ&lt;/p&gt;
+
+&lt;h1 id=&#34;デザインのアプローチ&#34;&gt;デザインのアプローチ&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ユーザが本当に必要なもの&lt;/li&gt;
+&lt;li&gt;チームの認識を合わせるためのもの&lt;/li&gt;
+&lt;li&gt;画面に見えるものだけがデザインではない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;チームの認識の齟齬に対してのアプローチ&#34;&gt;チームの認識の齟齬に対してのアプローチ&lt;/h2&gt;
+
+&lt;p&gt;私の環境では、&lt;br /&gt;
+企画、営業、開発の3つの役割を持った組織が同じ製品をあつかっていても&lt;br /&gt;
+認識が上手く合わせられず、要件や実装の手戻りが多発してしまっていた。&lt;br /&gt;
+この解決方法としては、とにかく&lt;strong&gt;&lt;em&gt;目に見えて動くもの&lt;/em&gt;&lt;/strong&gt;をつくり、&lt;br /&gt;
+そのものを見ながらはなすべきである。&lt;/p&gt;
+
+&lt;p&gt;必要なのは、その場面では精度が必要なのか、&lt;br /&gt;
+ざっくりとでも動くものが必要なのかを判断し、&lt;br /&gt;
+できうる速度でものをつくり、そのものを見ながら関係者で認識を合わせる。&lt;br /&gt;
+こうすることで、&lt;strong&gt;&lt;em&gt;思い違い&lt;/em&gt;&lt;/strong&gt;や&lt;strong&gt;&lt;em&gt;勘違い&lt;/em&gt;&lt;/strong&gt;などを極力減らせる(はず)。&lt;/p&gt;
+
+&lt;h1 id=&#34;プロトタイプについて&#34;&gt;プロトタイプについて&lt;/h1&gt;
+
+&lt;p&gt;本講義で印象に残った3つのプロトタイプについて記述しておく&lt;/p&gt;
+
+&lt;h3 id=&#34;walter-dorwin-teague氏のboeing社でのprototyping&#34;&gt;Walter Dorwin Teague氏のBoeing社でのPrototyping&lt;/h3&gt;
+
+&lt;p&gt;倉庫で飛行機のプロトタイプをつくり、実際に&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;旅行用の荷物を持った人を連れて体験のテストをした&lt;/li&gt;
+&lt;li&gt;大陸横断と同じ時間席に座るテスト&lt;/li&gt;
+&lt;li&gt;客室乗務員が食べ物などを運ぶ際テスト&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;このテストを行うことで、シートの快適さや、通路の幅、荷物の棚の大きさなど&lt;br /&gt;
+あらゆる項目を確認することができた。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想像とやってみることは全然違うので、  想定されるペルソナや&lt;br /&gt;
+利用する環境が決まっているなら、実際にそのユーザに、&lt;br /&gt;
+その環境(もしくは限りなく近い状況)でサービスを利用してもらうべき。&lt;br /&gt;
+呼び出して使い勝手を確認する方法も利点はあるが、可能であれば&lt;br /&gt;
+実際に利用される環境で試す方がより正確なフィードバックが得られる。&lt;/p&gt;
+
+&lt;h2 id=&#34;video-prototyping&#34;&gt;Video Prototyping&lt;/h2&gt;
+
+&lt;p&gt;例：&lt;a href=&#34;https://www.youtube.com/watch?v=kWsBvUnvCmg&#34;&gt;https://www.youtube.com/watch?v=kWsBvUnvCmg&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;プロモーションビデオのようなもの&lt;/p&gt;
+
+&lt;h3 id=&#34;利点&#34;&gt;利点&lt;/h3&gt;
+
+&lt;p&gt;ペーパープロトタイピングよりも素早く試行できる。&lt;br /&gt;
+動かなくても良いところが良い。エンジニアは動画を見て、どのような機能があれば良いか
+判断しやすくなる。工数的に大勢のサポートが必要な場合や、経営者や投資家などに&lt;br /&gt;
+対するプレゼンとしても有効である。&lt;/p&gt;
+
+&lt;h3 id=&#34;video-prototypingで必要なこと&#34;&gt;Video Prototypingで必要なこと&lt;/h3&gt;
+
+&lt;p&gt;・動機を説明する&lt;br /&gt;
+・ゴールを説明する&lt;br /&gt;
+・必要な作業を説明する&lt;/p&gt;
+
+&lt;p&gt;進め方&lt;/p&gt;
+
+&lt;p&gt;・概要、背景を演説する&lt;br /&gt;
+・即興でやってもいい、ビデオで回しても良い&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;想像でシチュエーションを話し出すと&lt;br /&gt;
+ある人は通学中であったり、ある人は授業中であったり、ある人は放課後であったり&lt;br /&gt;
+認識がズレていることにさえ気づけない場合があるので大変効果的である。&lt;br /&gt;
+関係者の想像に頼る部分を極力なくしていく方法としては&lt;br /&gt;
+ベストに近い印象があるが実際はどうなのだろうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;paper-prototyping&#34;&gt;Paper Prototyping&lt;/h2&gt;
+
+&lt;p&gt;私が在籍したチームや会社はやったことがないのだが、知り合いに聞く限り&lt;br /&gt;
+よく利用されているテスト方式であり、ビデオプロトタイピングの次に認識を合わせやすい。&lt;/p&gt;
+
+&lt;h3 id=&#34;paper-prototypingで気をつけること&#34;&gt;Paper Prototypingで気をつけること&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;素早くやり、再利用できるものをつくろう&lt;/li&gt;
+&lt;li&gt;つくったものはまとめておく、壊れたりなくしたりしないようにする&lt;/li&gt;
+&lt;li&gt;プログレスバーやinteractiveな状態をシュミレートも一旦書いてみよう&lt;/li&gt;
+&lt;li&gt;重要なところは太く、重要でないところは細く書こう&lt;/li&gt;
+&lt;li&gt;スライディングウィンドウ・画面の深さを持たせよう&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;その他に、オズの魔法使いという方法もあった。&lt;br /&gt;
+ペーパープロトタイピング実践するならやったことある人に教えを請いたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;parallel-prototyping&#34;&gt;Parallel Prototyping&lt;/h2&gt;
+
+&lt;p&gt;並行プロトタイピングはひとつのプロトタイピングを行うより合理的で経済的でおすすめとのこと&lt;/p&gt;
+
+&lt;h3 id=&#34;利点-1&#34;&gt;利点&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;平行で作っているもの同士を比較しフィードバックを得ることができる&lt;/li&gt;
+&lt;li&gt;ビジネスの学習を2つ平行で学ぶと、双方を比較したり類似点を発見したりすることができ結果的に3倍の知識量になる&lt;/li&gt;
+&lt;li&gt;複数のものを共有すると敵対心がなくなる、意見が複数出てくる&lt;/li&gt;
+&lt;li&gt;複数つくることはボキャブラリーを生む&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ
+並行プロトタイプやりたいわ〜、無理矢理にでもやってみたいわこれ。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h1 id=&#34;デザインの落とし込み&#34;&gt;デザインの落とし込み&lt;/h1&gt;
+
+&lt;p&gt;試行したものから得られるフィードバックについての注意点&lt;/p&gt;
+
+&lt;h2 id=&#34;エクストリームユーザに気をつけろ&#34;&gt;エクストリームユーザに気をつけろ&lt;/h2&gt;
+
+&lt;p&gt;質問と観察、観察、そして観察&lt;/p&gt;
+
+&lt;h3 id=&#34;エクストリームユーザ-リードユーザ&#34;&gt;エクストリームユーザ、リードユーザ&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;利用する大多数は中流なのだからトップのユーザではなく中流から始める&lt;/li&gt;
+&lt;li&gt;トップは自意識過剰、保護する立場と権限を持っている&lt;/li&gt;
+&lt;li&gt;リードユーザーは巧妙な解決策を思いつく、デザイナーはそのイマジネーションを参考にできるがマジョリティではない&lt;/li&gt;
+&lt;li&gt;電子メールの例でいうと、平均よりもメールを多く受け取っているユーザがエクストリームユーザである。&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;山奥で月に一度メールを受け取るユーザもそうだし、シリコンバレーのスタートアップのCEOのように&lt;br /&gt;
+毎日数千のメールを受け取っているユーザもそう、エクストリームユーザは実際のユーザではないことに気をつける。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;質問&#34;&gt;質問&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ログから質問してもいい。この機能を使っていないようですがなぜですかなど？&lt;/li&gt;
+&lt;li&gt;どれぐらい運動しますか？と聞いても被質問者は絶対多めに言ってくる&lt;/li&gt;
+&lt;li&gt;より具体的に、より最新の新鮮な記憶に頼る質問をする&lt;/li&gt;
+&lt;li&gt;絶対尺度で聞くのをやめる。10のうちの7はどういうことですか？など&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;観察&#34;&gt;観察&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ある機能について知りたければ質問するな、観察しろ&lt;/li&gt;
+&lt;li&gt;質問をした後回答を待つ。その沈黙こそがお金、silence is golden&lt;/li&gt;
+&lt;li&gt;素早い回答よりも、2度目の沈黙後の回答の方が興味深い&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;メモ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;絶対尺度で聞くのをやめるとか、それ満足度調査のことか。&lt;br /&gt;
+そちらを学びたい。沈黙は金なりってのは本当にそうだよな。&lt;br /&gt;
+インタビューについてはインタビューのノウハウがあるので必要になったら&lt;br /&gt;
+都度学んでいきたい。&lt;/p&gt;
+
+&lt;h1 id=&#34;受講してみて&#34;&gt;受講してみて&lt;/h1&gt;
+
+&lt;p&gt;学びしかないが時間がかかる。&lt;br /&gt;
+今回は日本語字幕もあったので英語の補完が可能であったが、&lt;br /&gt;
+ネイティブ英語をひたすら聞く感じだと厳しいので&lt;br /&gt;
+引き続き色々やっていきたい。&lt;/p&gt;
+
+&lt;p&gt;これから関わる話は今回学んだプロトタイプを適用できないか試していきたい。&lt;br /&gt;
+並行プロトタイピングとビデオプロトタイピングはやっていきたいなー&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>A Film About CoffeeをVimeo On Demandで見た</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/11/22/a-film-about-coffee/</link>
+      <pubDate>Tue, 22 Nov 2016 12:40:54 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/11/22/a-film-about-coffee/</guid>
+      <description>&lt;p&gt;&lt;iframe src=&#34;https://player.vimeo.com/video/189791646&#34; width=&#34;640&#34; height=&#34;360&#34; frameborder=&#34;0&#34; webkitallowfullscreen mozallowfullscreen allowfullscreen&gt;&lt;/iframe&gt;
+&lt;p&gt;&lt;a href=&#34;https://vimeo.com/189791646&#34;&gt;『A FILM ABOUT COFFEE』&lt;/a&gt; from &lt;a href=&#34;https://vimeo.com/uplinkcloud&#34;&gt;UPLINK Cloud&lt;/a&gt; on &lt;a href=&#34;https://vimeo.com&#34;&gt;Vimeo&lt;/a&gt;.&lt;/p&gt;&lt;/p&gt;
+
+&lt;p&gt;渋谷にある映画館、UPLINKがVimeoを利用した映画配信を開始した。&lt;br /&gt;
+早速昔見逃した「A Film About Coffee」を見た。&lt;br /&gt;
+大変良かった。こういう映画もオンデマンドで見れるようになると&lt;br /&gt;
+本当にありがたい。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/11/21/watching-national-high-school-finaltournament-in-chiba/</link>
+      <pubDate>Mon, 21 Nov 2016 00:33:23 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/11/21/watching-national-high-school-finaltournament-in-chiba/</guid>
+      <description>&lt;p&gt;&lt;blockquote class=&#34;instagram-media&#34; data-instgrm-captioned data-instgrm-version=&#34;7&#34; style=&#34; background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:658px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);&#34;&gt;&lt;div style=&#34;padding:8px;&#34;&gt; &lt;div style=&#34; background:#F8F8F8; line-height:0; margin-top:40px; padding:50.0% 0; text-align:center; width:100%;&#34;&gt; &lt;div style=&#34; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAMAAAApWqozAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAMUExURczMzPf399fX1+bm5mzY9AMAAADiSURBVDjLvZXbEsMgCES5/P8/t9FuRVCRmU73JWlzosgSIIZURCjo/ad+EQJJB4Hv8BFt+IDpQoCx1wjOSBFhh2XssxEIYn3ulI/6MNReE07UIWJEv8UEOWDS88LY97kqyTliJKKtuYBbruAyVh5wOHiXmpi5we58Ek028czwyuQdLKPG1Bkb4NnM+VeAnfHqn1k4+GPT6uGQcvu2h2OVuIf/gWUFyy8OWEpdyZSa3aVCqpVoVvzZZ2VTnn2wU8qzVjDDetO90GSy9mVLqtgYSy231MxrY6I2gGqjrTY0L8fxCxfCBbhWrsYYAAAAAElFTkSuQmCC); display:block; height:44px; margin:0 auto -44px; position:relative; top:-22px; width:44px;&#34;&gt;&lt;/div&gt;&lt;/div&gt; &lt;p style=&#34; margin:8px 0 0 0; padding:0 4px;&#34;&gt; &lt;a href=&#34;https://www.instagram.com/p/BNBDHT3hdyL/&#34; style=&#34; color:#000; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none; word-wrap:break-word;&#34; target=&#34;_blank&#34;&gt;高校サッカー選手権千葉県決勝、きちゃった❤️&lt;/a&gt;&lt;/p&gt; &lt;p style=&#34; color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;&#34;&gt;A photo posted by kenjiskywalker (@kenjiskywalker) on &lt;time style=&#34; font-family:Arial,sans-serif; font-size:14px; line-height:17px;&#34; datetime=&#34;2016-11-20T03:10:49+00:00&#34;&gt;Nov 19, 2016 at 7:10pm PST&lt;/time&gt;&lt;/p&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;script async defer src=&#34;//platform.instagram.com/en_US/embeds.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;画像は暗いけどめちゃくちゃ天気よくて暖かった(20度ぐらいあったかな？)&lt;br /&gt;
+今年の千葉大会決勝は夏の全国の決勝と同カードであったので&lt;br /&gt;
+(&lt;a href=&#34;http://www.jfa.jp/match/prince_takamado_trophy_u18_2016/premier_2016/east/standings/&#34;&gt;プレミアリーグ&lt;/a&gt;では流経大柏は厳しそう)&lt;br /&gt;
+この2チームのうち、1チームは全国に行けないのか、もったいないな〜という気持ちと&lt;br /&gt;
+千葉代表をかけた戦いの熱量ってどんなもんなんだろう、ということで1人で会場の蘇我まで行ってきた。&lt;/p&gt;
+
+&lt;p&gt;座席の後ろがジェフのコアサポおじさんたちで、流経大柏の応援が柏レイソルの応援を多用していて&lt;br /&gt;
+何故だか俺は市船を応援したくなってきたぜ&amp;hellip;と言っていて面白かった。&lt;/p&gt;
+
+&lt;p&gt;どうやら屋台も観客も、J2よりも下手したら多い？などと賑わっていて、&lt;br /&gt;
+スタジアムも大変活気づいていた。会場であるフクダ電子アリーナは初めてだったが、&lt;br /&gt;
+噂通りの大変良いスタジアムだった。専用スタジアムはいいなぁ。&lt;/p&gt;
+
+&lt;p&gt;試合内容は最高に面白かった。実況の様子を記載しておく&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;市立船橋太田くんのドリブルは面白い、好きだわ&amp;hellip;&lt;/li&gt;
+&lt;li&gt;菊池くんのシュートゴールラインでクリアされた！！！&lt;/li&gt;
+&lt;li&gt;市船の原杉岡のJ内定CB vs 流経のロングスローヤバい&amp;hellip;&lt;/li&gt;
+&lt;li&gt;市船の原くん普通に上手い&lt;/li&gt;
+&lt;li&gt;流経の菊池くん上手い&amp;hellip;&lt;/li&gt;
+&lt;li&gt;やってるサッカーは流経大柏の方が好きだわ&lt;/li&gt;
+&lt;li&gt;市船の真瀬くんが地味に効いている、この時間であの運動量は脅威だわ&amp;hellip;&lt;/li&gt;
+&lt;li&gt;おわった、市船、王者感があるけど流経大柏も全国で見てみたかった&lt;/li&gt;
+&lt;li&gt;流経の関くんはサッカー続けるならプロで活躍できそう&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;など色々興奮してた。高校サッカーは観客も、小学生の親御さんや引率の地域のコーチ、&lt;br /&gt;
+中学生や高校生、大学でサッカーを続けている大学生、大学でサッカーをやめて&lt;br /&gt;
+彼女と一緒に観戦しに来ているイケメン大学生(個人的にはこの引退して彼女を連れてくるヤツが好き)、&lt;br /&gt;
+地元のサッカー好きのおじさんやおばさん、ただのサッカー好きなど、多種多様な人が観戦しに来ていた。&lt;/p&gt;
+
+&lt;p&gt;1人で行ったので、試合中は黙ってようと思ったけど、&lt;br /&gt;
+無意識に「うぉおお！！」「マジか&amp;hellip;」「すげぇ&amp;hellip;」&lt;br /&gt;
+などと連呼していてヤバいおじさんだったに違いない。&lt;/p&gt;
+
+&lt;p&gt;帰り道、サッカー好きのおじさんたちが、何故高校サッカーはこれだけ1vs1で仕掛けるのに&lt;br /&gt;
+Jだとチンタラしているんだろうと話してた。&lt;br /&gt;
+私は基本的に海外厨なので意識したことはあまりないが&lt;br /&gt;
+この高校サッカー選手権の熱量だけは、特別に好きだ。&lt;/p&gt;
+
+&lt;p&gt;次は毎年恒例の1回戦三ツ沢と準決勝埼スタで見るぞ〜&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>#pmconfjp に参加してきた</title>
@@ -1209,257 +1493,6 @@ end
 &lt;/ul&gt;
 
 &lt;p&gt;色々と子供に求めがちな手法がよく聞こえるが、まずは自分たちから律していきたいものだ。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>「velocity」を読んだ</title>
-      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</link>
-      <pubDate>Sun, 20 Dec 2015 14:26:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/velocity/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%83%99%E3%83%AD%E3%82%B7%E3%83%86%E3%82%A3%E6%80%9D%E8%80%83-%E6%9C%80%E9%AB%98%E3%81%AE%E6%88%90%E6%9E%9C%E3%82%92%E4%B8%8A%E3%81%92%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AE%E3%82%AF%E3%83%AA%E3%82%A8%E3%82%A4%E3%83%86%E3%82%A3%E3%83%96%E8%A1%93-%E3%82%A2%E3%82%B8%E3%83%A3%E3%82%BA%E3%83%BB%E3%82%A2%E3%83%BC%E3%83%A1%E3%83%83%E3%83%89/dp/4756242898%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4756242898&#34; target=&#34;_blank&#34; title=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/31y4L6-%2BngL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;ベロシティ思考-最高の成果を上げるためのクリエイティブ術-&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;会社の本棚にあったので借りて読んだらめちゃくちゃおもしろかった。&lt;br /&gt;
-今自分がどうしたらいいもんか、と悩んでいるところに適切に回答してくれていた。&lt;/p&gt;
-
-&lt;h3 id=&#34;個人メモ&#34;&gt;個人メモ&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;評価を1年に1度では遅い&lt;/li&gt;
-&lt;li&gt;アシュトンテイトの悲劇(決済報告が品質より優先された結果)&lt;/li&gt;
-&lt;li&gt;経営幹部の役割は迅速な意思決定と実験の推奨、スリムな組織体系を維持する&lt;/li&gt;
-&lt;li&gt;カリフォルニアには前向きな風がある&lt;/li&gt;
-&lt;li&gt;どれだけの収益に貢献できるかよりり、どれだけ人々の生活を便利に快適にするかからスタートしよう&lt;/li&gt;
-&lt;li&gt;優れた企業は細部にこだわる&lt;/li&gt;
-&lt;li&gt;顧客が欲しいものを顧客が欲しいと思う前に見つける&lt;/li&gt;
-&lt;li&gt;インスピレーションを与え、貢献し、情報や知識を提供しない限りマーケティングは環境汚染だ&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;Keep it stupid simple&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;貝にアイフォーンが入っていて海の音が聞こえる。聴覚は味覚を高める。体験という価値&lt;/li&gt;
-&lt;li&gt;「だからなに？どんなメリットがあるの？それのどこがいいの？」を繰り返す&lt;/li&gt;
-&lt;li&gt;チームで決断することと正しい決断をすることは全く別&lt;/li&gt;
-&lt;li&gt;それはシンプルで人間らしくて欠かせないものか&lt;/li&gt;
-&lt;li&gt;AKQA優れた人は価値観に共感できない組織では働きたがらず、自らが信頼するチームには喜んで参加する&lt;/li&gt;
-&lt;li&gt;常にアスリートだ&lt;/li&gt;
-&lt;li&gt;チャンスは無限にあるがリソースには限りがある&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;冒頭の&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;変化は「酸素」である。変化があるからこそ、ビジネスに活力が生まれ、ビジネスへの熱意が生まれる。
-確立された方法が崩壊する時こそ、新しいエネルギーが入り込む余地が生まれ、従来の方法よりも&lt;br /&gt;
-さらに良い方法で成功できるチャンスをつかめるのだ&amp;rdquo;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;これが全てだった。思考停止してあの頃は良かったなぁ〜ってならないように&lt;br /&gt;
-変化を楽しめるようにしてこう。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>2016年を質の高いものにするために集中力を高められそうな本をいくつか読んだ</title>
-      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/for-the-mind/</link>
-      <pubDate>Sun, 20 Dec 2015 12:14:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/for-the-mind/</guid>
-      <description>
-
-&lt;p&gt;もうすぐ今年も終わるということで&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;子供がいるとなかなかまとまった時間がつくれない&lt;/li&gt;
-&lt;li&gt;業務時間の時間の密度を上げたい&lt;/li&gt;
-&lt;li&gt;効率的に物事にあたりたい
-&lt;br /&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;この3点が今年の主な課題だった。&lt;br /&gt;
-来年も今年と同じ感じで過ごすと職を失う可能性があるので&lt;br /&gt;
-時間毎の質の向上を目指したい。&lt;/p&gt;
-
-&lt;p&gt;個人的な課題としては集中力と自制心、その場の自己の客観性が大きく欠けていると理解したので&lt;br /&gt;
-来年はそれをどう改善するかということに注力していきたいのだが、&lt;br /&gt;
-根本的には集中力の向上が全体的な生活の質の向上に繋がるんじゃあないかと思って&lt;br /&gt;
-一旦本を何冊か読んでみた。&lt;/p&gt;
-
-&lt;p&gt;その個人的なメモ&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E7%8F%BE%E4%BB%A3%E4%BA%BA%E3%81%AE%E3%81%9F%E3%82%81%E3%81%AE%E7%9E%91%E6%83%B3%E6%B3%95%E2%80%95%E5%BD%B9%E7%AB%8B%E3%81%A4%E5%88%9D%E6%9C%9F%E4%BB%8F%E6%95%99%E6%B3%95%E8%A9%B1%E3%80%884%E3%80%89-%E3%82%B5%E3%83%B3%E3%82%AC%E6%96%B0%E6%9B%B8-%E3%82%A2%E3%83%AB%E3%83%9C%E3%83%A0%E3%83%83%E3%83%AC%E3%83%BB%E3%82%B9%E3%83%9E%E3%83%8A%E3%82%B5%E3%83%BC%E3%83%A9-ebook/dp/B00BAO0HJE%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00BAO0HJE&#34; target=&#34;_blank&#34; title=&#34;現代人のための瞑想法―役立つ初期仏教法話〈4〉 (サンガ新書)&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/412PsQac9cL.jpg&#34; width=&#34;375&#34; height=&#34;500&#34; alt=&#34;現代人のための瞑想法―役立つ初期仏教法話〈4〉 (サンガ新書)&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;この本が一番おもしろかったです。&lt;br /&gt;
-マインドフルネスも源流は同じかと。&lt;/p&gt;
-
-&lt;p&gt;そして、スマナサーラさんの本は全体的に面白い印象だ。&lt;br /&gt;
-何故面白いのか、原始仏教は宗教である以前に精神の鍛錬や物事の観方を訓練するものであって&lt;br /&gt;
-スマナサーラさんの本はその実践とその為の理解を助けてくれるので&lt;br /&gt;
-読んだ後、自分でやってみようと思えるとこに面白さを感じるのかもしれない。&lt;/p&gt;
-
-&lt;h3 id=&#34;いまだけをみる&#34;&gt;いまだけをみる&lt;/h3&gt;
-
-&lt;p&gt;将来のことや過去のことのことにとらわれて今が見えなくならないように&lt;br /&gt;
-今その瞬間を生きる&lt;/p&gt;
-
-&lt;h3 id=&#34;やりたくないこととやりたいこと&#34;&gt;やりたくないこととやりたいこと&lt;/h3&gt;
-
-&lt;p&gt;嫌だなって思う時点で怒りにとらわれている。これは本当に多いので反省点&lt;/p&gt;
-
-&lt;h3 id=&#34;心というものは放っておくとどんどん悪くなる&#34;&gt;心というものは放っておくとどんどん悪くなる&lt;/h3&gt;
-
-&lt;p&gt;自然体なんてウソ。律しないとダメ&lt;/p&gt;
-
-&lt;h3 id=&#34;ヴィパッサナー瞑想&#34;&gt;ヴィパッサナー瞑想&lt;/h3&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;ヴィパッサナーというのは、パーリ語で、「ヴィ（vi）」は「明確に」の意味で、「パッサティ（passati）」は「観察する、見る」という意味です。「明確に観察する」とは、どういうことでしょう？&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;ヴィパッサナー瞑想の初歩的な解説が載っていた&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.jp.dhamma.org/940.html&#34;&gt;日本ヴィパッサナー協会&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;友人がこれに参加したことがあるので知っていた。いつか行ってみたい。&lt;/p&gt;
-
-&lt;h3 id=&#34;事象に対して主観を取りのぞく&#34;&gt;事象に対して主観を取りのぞく&lt;/h3&gt;
-
-&lt;p&gt;主観「嫌いなヤツが嫌なこと言っているな〜」&lt;br /&gt;
-客観「あの人が発音している」&lt;/p&gt;
-
-&lt;p&gt;雑音があっても「音」「音」「音」と認識することで&lt;br /&gt;
-事象と自分の感情の結びつきをなくして心が事象に依存することをやめさせる。&lt;br /&gt;
-これは瞑想系や仏教系の基本的な姿勢でよく見るものだ。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E3%83%96%E3%83%83%E3%83%80%E3%81%AE%E9%9B%86%E4%B8%AD%E5%8A%9B-%E5%BD%B9%E7%AB%8B%E3%81%A4%E5%88%9D%E6%9C%9F%E4%BB%8F%E6%95%99%E6%B3%95%E8%A9%B1-%E3%82%A2%E3%83%AB%E3%83%9C%E3%83%A0%E3%83%83%E3%83%AC%E3%83%BB%E3%82%B9%E3%83%9E%E3%83%8A%E3%82%B5%E3%83%BC%E3%83%A9-ebook/dp/B00LSURB5I%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00LSURB5I&#34; target=&#34;_blank&#34; title=&#34;ブッダの集中力 役立つ初期仏教法話&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51S428EvVPL.jpg&#34; width=&#34;306&#34; height=&#34;500&#34; alt=&#34;ブッダの集中力 役立つ初期仏教法話&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h3 id=&#34;たのしむこと&#34;&gt;たのしむこと&lt;/h3&gt;
-
-&lt;p&gt;極力無関心になった方が良いけど、批判的な無関心ではなく&lt;br /&gt;
-楽しみをもって試みるべし。楽しみを持ってあたれば集中力は自然と増し&lt;br /&gt;
-効率や能率を求めても結果はあまり付いてこない。&lt;/p&gt;
-
-&lt;h3 id=&#34;やらないことをきめる&#34;&gt;やらないことをきめる&lt;/h3&gt;
-
-&lt;p&gt;仕事でもそうだけど、やること、やらなければならないことは無限にあるが&lt;br /&gt;
-その中で理性的な無関心を育てていこうと。興味が起こった時は&lt;br /&gt;
-貪瞋癡のいずれかによって生まれていないか、もしそうなっていたら&lt;br /&gt;
-理性的な無関心によって捨ててこう。&lt;/p&gt;
-
-&lt;h3 id=&#34;なににもとらわれていないという境地&#34;&gt;なににもとらわれていないという境地&lt;/h3&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;つまり、「いま、こころに、欲もなく、怒りもなく、無知もありません。なにに対しても執着していません。ですから、究極に楽しいのです」&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;ご飯を食べている時に幸福と感じることはあるが、隣りの人が怒鳴り声を上げて喧嘩したり&lt;br /&gt;
-虫が出てきたりしたら一瞬で終わっちゃうので、そういうところに楽しみを見出すと疲れちゃうから&lt;br /&gt;
-なにものにもとらわれていない最高の状態があることに気付いて、それを最良としよう。&lt;/p&gt;
-
-&lt;h3 id=&#34;やりたいやりたくないではなく-必要か必要でないか&#34;&gt;やりたいやりたくないではなく、必要か必要でないか&lt;/h3&gt;
-
-&lt;p&gt;きになること、やりたいことがあった時に「貪瞋癡」から来ているものでないか&lt;br /&gt;
-確認しよう。そうであるなら理性的な無関心で捨てよう、そうでないなら楽しもう。&lt;br /&gt;
-また、やりたい、やりたくないで選ぶのではなく、必要か必要ではないかで決めよう。&lt;/p&gt;
-
-&lt;h3 id=&#34;肉体をそとからみる&#34;&gt;肉体をそとからみる&lt;/h3&gt;
-
-&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;「みなさいごはうんちになるのだから、あまり腹を立てたりだとか、期待をしたりだとかすることを止めてみてはどうかね？キミの言うそれも、キミも、また、僭越ながらわたくしも、うんちなりに今を精一杯生きているのだから。けんじ」&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/670023871462928384&#34;&gt;November 26, 2015&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
-
-&lt;p&gt;これと似たようなことが書いてあった。&lt;br /&gt;
-ここまで品が悪くはもちろんない。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E4%B8%96%E7%95%8C%E3%81%AE%E3%83%88%E3%83%83%E3%83%97%E3%82%A8%E3%83%AA%E3%83%BC%E3%83%88%E3%81%8C%E5%AE%9F%E6%88%A6%E3%81%99%E3%82%8B%E9%9B%86%E4%B8%AD%E5%8A%9B%E3%81%AE%E9%8D%9B%E3%81%88%E6%96%B9-%E3%83%8F%E3%83%BC%E3%83%90%E3%83%BC%E3%83%89%E3%80%81Google%E3%80%81Facebook%E3%81%8C%E5%8F%96%E3%82%8A%E3%81%8F%E3%82%80%E3%83%9E%E3%82%A4%E3%83%B3%E3%83%89%E3%83%95%E3%83%AB%E3%83%8D%E3%82%B9%E5%85%A5%E9%96%80-%E8%8D%BB%E9%87%8E%E6%B7%B3%E4%B9%9F-ebook/dp/B015XS6RRI%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB015XS6RRI&#34; target=&#34;_blank&#34; title=&#34;世界のトップエリートが実戦する集中力の鍛え方　ハーバード、Google、Facebookが取りくむマインドフルネス入門&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51D-yS7QLvL.jpg&#34; width=&#34;309&#34; height=&#34;500&#34; alt=&#34;世界のトップエリートが実戦する集中力の鍛え方　ハーバード、Google、Facebookが取りくむマインドフルネス入門&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;我々もアスリート。心を整えること。力まないこと。だらだらと続けずに準備をすること。&lt;/li&gt;
-&lt;li&gt;モンキーマインド、マインドフル・ウォーキング、ラベリング&lt;/li&gt;
-&lt;li&gt;言葉と脳の関係。言葉を選ぶことの大切さ&lt;/li&gt;
-&lt;li&gt;「あなたが仕事をしていくうえで、また生きていくうえで、最も大切にしたいと思っていることはなんですか」&lt;/li&gt;
-&lt;li&gt;瞬間を生きる&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;基本的にはスマナサーラさんの法話と同じ。&lt;/p&gt;
-
-&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
-
-&lt;p&gt;モンキーマインドという言葉を知れてよかった。自分はいつもこの状態にある。&lt;br /&gt;
-ので、何かをやる時は必ず終わりを設けて、それが終わるまでは音や思考を、&lt;br /&gt;
-外に置いて集中するようにしてみようと思う。&lt;br /&gt;
-また、もう少し悪い言葉を発するときは2秒ぐらい置いて選べるようにする。&lt;br /&gt;
-情報と行動の選択、やりたくないことではなくやらないといけないものを選んで進んでいく。&lt;br /&gt;
-未来と過去ではなく、今その瞬間に集中する。&lt;/p&gt;
-
-&lt;p&gt;この点を注意して生きていければと思った。&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E9%9B%86%E4%B8%AD%E5%8A%9B-%E3%82%BB%E3%83%AD%E3%83%B3%E3%83%BBQ%E3%83%BB%E3%83%87%E3%83%A5%E3%83%A2%E3%83%B3-ebook/dp/B008BCCLQU%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB008BCCLQU&#34; target=&#34;_blank&#34; title=&#34;集中力&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/41qk06z2hQL.jpg&#34; width=&#34;342&#34; height=&#34;500&#34; alt=&#34;集中力&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;この本はあんまり得られるものはなかった。&lt;br /&gt;
-本当になかったかKindleのハイライト見なおしてみたけどあまりなかった。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>もうやんカレーお持ち帰りという解脱の境地</title>
-      <link>http://blog.kenjiskywalker.org/blog/2015/12/08/curry-2015/</link>
-      <pubDate>Tue, 08 Dec 2015 17:48:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2015/12/08/curry-2015/</guid>
-      <description>&lt;p&gt;この記事は&lt;a href=&#34;http://www.adventar.org/calendars/725&#34;&gt;カレー Advent Calendar 2015&lt;/a&gt;の9日目の記事です。&lt;/p&gt;
-
-&lt;p&gt;今、とある事情で都庁前で働いているが、都庁前、空間設計が素晴らしく&lt;br /&gt;
-まるで洗練された欧州の町並みを感じさせる(実際は地上と地下という概念があってファンタジー)。&lt;/p&gt;
-
-&lt;p&gt;そんな都庁前では、多種多様な飲食店があり、食べることにはまず困ることはない。&lt;br /&gt;
-しかし、どうしても1000円前後の出費がかかってしまう。&lt;br /&gt;
-それを避けたければ牛丼屋か、コンビニ、ビル内にある弁当屋で食べるという選択肢もあるが&lt;br /&gt;
-どうも満たされない。そんな経験は誰にでもあるだろう。&lt;/p&gt;
-
-&lt;p&gt;そこで私がおすすめしたいのは&lt;a href=&#34;http://www.moyan.jp&#34;&gt;もうやんカレー&lt;/a&gt;である。&lt;br /&gt;
-もうやん？あそこはランチ1,000円だろ？何書いちゃってんのコイツ？&lt;br /&gt;
-などと思われる方は題名を読んでくれ。お持ち帰りの話をしたいんだ。&lt;/p&gt;
-
-&lt;p&gt;お持ち帰り？カレー食べ放題のビュッフェという楽園を捨てて&lt;br /&gt;
-貴様は何をほざいているんだ？と思われる方は年末年始は是非お寺に行って&lt;br /&gt;
-煩悩を取り払ってくれ。&lt;/p&gt;
-
-&lt;p&gt;個人的にもうやんカレーの唯一のデメリットは「食べ過ぎてしまうこと」だった。&lt;br /&gt;
-何故ならもうやんカレーはビュッフェスタイルを取っており、カレーが飲み放題なのだ。&lt;br /&gt;
-これは仏教でいう三毒の中のひとつ、「貪」に該当するものだ。&lt;/p&gt;
-
-&lt;p&gt;何故、薬膳カレーのもうやんカレーをたべたのに毒を得る必要があるのか。&lt;br /&gt;
-私はもうやんカレーを食べる度に悩み苦しんでいた。&lt;/p&gt;
-
-&lt;p&gt;そして、食べ終わった後オフィスに帰ると、食べ過ぎた反動で頭が働かなくなっているのだ。&lt;br /&gt;
-私は怒りに震え、キーボードで頭を何度も叩き割ろうとした。「瞋」だ。&lt;/p&gt;
-
-&lt;p&gt;壊れたキーボードを眺めながら、冷静になった時に激しい後悔に襲わる。&lt;br /&gt;
-「俺は地獄へ行く必要があるんだ。俺みたいなどうしようもない奴はどうせ地獄行きだ」&lt;br /&gt;
-と愚痴り続け、仕事さえもままならない状態に至ってしまう。「癡」だ。&lt;/p&gt;
-
-&lt;p&gt;本来最高の食物であるもうやんカレーを食べることで、自己の制御ができず&lt;br /&gt;
-貪り、怒り、愚痴り、私はいつも三毒の中心で悩み苦しんでいた。&lt;/p&gt;
-
-&lt;p&gt;そんなある日、同僚のエンジニア(仏陀)が言った。&lt;br /&gt;
-「おもちかえりしましょう。630円で箱に詰めるだけなんで食べ過ぎないですよ」&lt;/p&gt;
-
-&lt;p&gt;これは悟りであり、解であった。目の前は大いなる光に包まれ&lt;br /&gt;
-祝福の鐘は鳴り響き、心はどこまでも高く舞い上がっていった。&lt;/p&gt;
-
-&lt;p&gt;ということでもうやんカレーのおもちかえり630円、おすすめです。&lt;br /&gt;
-個人的に米なし大量チキンでやらせて頂いています。&lt;/p&gt;
-
-&lt;p&gt;&lt;blockquote class=&#34;instagram-media&#34; data-instgrm-captioned data-instgrm-version=&#34;6&#34; style=&#34; background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:658px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);&#34;&gt;&lt;div style=&#34;padding:8px;&#34;&gt; &lt;div style=&#34; background:#F8F8F8; line-height:0; margin-top:40px; padding:50.0% 0; text-align:center; width:100%;&#34;&gt; &lt;div style=&#34; background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAMAAAApWqozAAAAGFBMVEUiIiI9PT0eHh4gIB4hIBkcHBwcHBwcHBydr+JQAAAACHRSTlMABA4YHyQsM5jtaMwAAADfSURBVDjL7ZVBEgMhCAQBAf//42xcNbpAqakcM0ftUmFAAIBE81IqBJdS3lS6zs3bIpB9WED3YYXFPmHRfT8sgyrCP1x8uEUxLMzNWElFOYCV6mHWWwMzdPEKHlhLw7NWJqkHc4uIZphavDzA2JPzUDsBZziNae2S6owH8xPmX8G7zzgKEOPUoYHvGz1TBCxMkd3kwNVbU0gKHkx+iZILf77IofhrY1nYFnB/lQPb79drWOyJVa/DAvg9B/rLB4cC+Nqgdz/TvBbBnr6GBReqn/nRmDgaQEej7WhonozjF+Y2I/fZou/qAAAAAElFTkSuQmCC); display:block; height:44px; margin:0 auto -44px; position:relative; top:-22px; width:44px;&#34;&gt;&lt;/div&gt;&lt;/div&gt; &lt;p style=&#34; margin:8px 0 0 0; padding:0 4px;&#34;&gt; &lt;a href=&#34;https://www.instagram.com/p/_BnizDpqs9/&#34; style=&#34; color:#000; font-family:Arial,sans-serif; font-size:14px; font-style:normal; font-weight:normal; line-height:17px; text-decoration:none; word-wrap:break-word;&#34; target=&#34;_blank&#34;&gt;解脱が具現化された様子です🍛&lt;/a&gt;&lt;/p&gt; &lt;p style=&#34; color:#c9c8cd; font-family:Arial,sans-serif; font-size:14px; line-height:17px; margin-bottom:0; margin-top:8px; overflow:hidden; padding:8px 0 7px; text-align:center; text-overflow:ellipsis; white-space:nowrap;&#34;&gt;A photo posted by kenjiskywalker (@kenjiskywalker) on &lt;time style=&#34; font-family:Arial,sans-serif; font-size:14px; line-height:17px;&#34; datetime=&#34;2015-12-08T09:09:38+00:00&#34;&gt;Dec 8, 2015 at 1:09am PST&lt;/time&gt;&lt;/p&gt;&lt;/div&gt;&lt;/blockquote&gt; &lt;script async defer src=&#34;//platform.instagram.com/en_US/embeds.js&#34;&gt;&lt;/script&gt;&lt;/p&gt;
 </description>
     </item>
     
