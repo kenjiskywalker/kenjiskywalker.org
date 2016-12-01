@@ -6,8 +6,123 @@
     <description>Recent content on さよならインターネット</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Tue, 22 Nov 2016 20:56:56 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 01 Dec 2016 05:26:05 +0900</lastBuildDate>
     <atom:link href="http://blog.kenjiskywalker.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>「チームが機能するとはどういうことか」を少し読んだこととpmconfでDavid氏から聞いた話について</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/12/01/how-organizations-learn/</link>
+      <pubDate>Thu, 01 Dec 2016 05:26:05 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/12/01/how-organizations-learn/</guid>
+      <description>
+
+&lt;p&gt;この記事は&lt;a href=&#34;http://qiita.com/advent-calendar/2016/classi&#34;&gt;Classi Advent Calendar 2016&lt;/a&gt; 2日目の記事です。&lt;br /&gt;
+多様な文化や職能の人と一緒に仕事を進める中で感じた、課題と学びについてのメモです。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.co.jp/%E3%83%81%E3%83%BC%E3%83%A0%E3%81%8C%E6%A9%9F%E8%83%BD%E3%81%99%E3%82%8B%E3%81%A8%E3%81%AF%E3%81%A9%E3%81%86%E3%81%84%E3%81%86%E3%81%93%E3%81%A8%E3%81%8B-%E2%80%95-%E3%80%8C%E5%AD%A6%E7%BF%92%E5%8A%9B%E3%80%8D%E3%81%A8%E3%80%8C%E5%AE%9F%E8%A1%8C%E5%8A%9B%E3%80%8D%E3%82%92%E9%AB%98%E3%82%81%E3%82%8B%E5%AE%9F%E8%B7%B5%E3%82%A2%E3%83%97%E3%83%AD%E3%83%BC%E3%83%81-%E3%82%A8%E3%82%A4%E3%83%9F%E3%83%BC%E3%83%BB%EF%BC%A3%E3%83%BB%E3%82%A8%E3%83%89%E3%83%A2%E3%83%B3%E3%83%89%E3%82%BD%E3%83%B3-ebook/dp/B00N8J1NPQ%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3DB00N8J1NPQ&#34; target=&#34;_blank&#34; title=&#34;チームが機能するとはどういうことか ― 「学習力」と「実行力」を高める実践アプローチ&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51LLWrUphuL.jpg&#34; width=&#34;220&#34; height=&#34;300&#34; alt=&#34;チームが機能するとはどういうことか ― 「学習力」と「実行力」を高める実践アプローチ&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;参考&#34;&gt;参考&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.sushi.money/entry/2016/11/21/114407&#34;&gt;「チームが機能するとはどういうことか」を読んでておもしろかったところ - hitode909の日記&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.shibayu36.org/entry/2016/09/24/235335&#34;&gt;「チームが機能するとはどういうことか」を読んだ - $shibayu36-&amp;gt;blog;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;要点&#34;&gt;要点&lt;/h2&gt;
+
+&lt;p&gt;みんなでメシ行って仲良くなって学習しながら挑戦してこ&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.kenjiskywalker.org/images/pmconf-david.jpg&#34;&gt;&lt;br /&gt;
+上の写真は&lt;a href=&#34;http://pmconf.jp&#34;&gt;Japan Product Manager Conference 2016&lt;/a&gt;に参加した時に&lt;br /&gt;
+DevJamのDavid氏のスプリントの話の中で「学習」という項目があったので&lt;br /&gt;
+よくわからずAsk the speakerで色々話した時のDavid氏から頂いたメモです。&lt;/p&gt;
+
+&lt;p&gt;「何をするか」ではなく「何を届けたか」にフォーカスすることと&lt;br /&gt;
+そのスプリント期間の中で「何を学んだ」のかを話し合うみたいなことを話してたと思っていたけど&lt;br /&gt;
+今このエントリーを書いていて、あれ、違うんじゃね？と気が付いた。&lt;/p&gt;
+
+&lt;p&gt;つまりDavid氏の学びは&lt;strong&gt;&lt;em&gt;施策での&lt;/em&gt;&lt;/strong&gt;学びであり、私が期待したのは&lt;br /&gt;
+その期間で&lt;strong&gt;&lt;em&gt;メンバーが&lt;/em&gt;&lt;/strong&gt;何を学んだのかという点であった。&lt;br /&gt;
+(もし解釈が間違っていたら教えてください)&lt;/p&gt;
+
+&lt;h2 id=&#34;学び&#34;&gt;学び&lt;/h2&gt;
+
+&lt;p&gt;私はサッカーが好きで、よくサッカーの試合を見るのだけれど、&lt;br /&gt;
+こういう戦術でいこうとチームの監督が決めて試合に挑んだとしても&lt;br /&gt;
+やはり試合をはじめてみると全然うまく行かなかったり、&lt;br /&gt;
+当初想定していたものと違う状態になったりする。本当に強いチームは&lt;br /&gt;
+監督や選手が状況を学習し、適応して状況を打開していく。&lt;/p&gt;
+
+&lt;p&gt;仕事も似たようなもので、特に背景や文化の異なるメンバーが集まって&lt;br /&gt;
+答えがなかなか見えないものに挑戦する場合には&lt;br /&gt;
+冒頭の「チームが機能するとはどういうことか」に記載されているように&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;簡単に言えば、チーミングとは、新たなアイデアを生み、答えを探し、問題を解決するために人々を団結させる働き方のことだ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;こういうものが必要不可欠になってくる。&lt;/p&gt;
+
+&lt;p&gt;特に、何故こうしないのか、こうあるべき、など今までの頭の使い方では&lt;br /&gt;
+何も物事は進まなくなり、相互理解が欠落してひたすら仲が悪い組織になってしまう。&lt;/p&gt;
+
+&lt;p&gt;話している相手の世界はどういう文脈なのか、何故そうしたいのか、本当に解決したい課題は何か？&lt;br /&gt;
+新卒からひたすら学校営業を続けてきた人や製本一筋の人、問題作成のプロの人や&lt;br /&gt;
+会社に限らず、学校の先生、生徒、親御さんなど本当に色々な方とお話をする時に&lt;br /&gt;
+例えばエンジニアとしての立場だけで物事を見てしまうと物事のあるひとつの側面でしか&lt;br /&gt;
+物事が見れなくなってしまい、相互理解の機会を失ってしまうことがある。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;特定のタイプのリーダーシップがなければ、不確実性や不明確さに取り組むための適切な学習行動はなかなか生まれない。チーミングには、率直に述べたり質問したり考えを共有したりすることを後押しする新しいタイプのリーダーシップが必要なのだ。ひとことで言うなら、チーミングに不可欠なリーダーシップの考え方とは、学習を促す環境をつくろうとするものだ&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;この話や&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;仕事の成功に欠かせない知識は多様で、さまざまな場所に存在する。成功するには、グループは知識に近づき、その知識の最良の使い方について共通の理解を深め、新たな洞察を反映する方法で一体となって行動しなければならない。これはつまり、グループでの仕事はしばしば集団的学習を必要とするということである&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;この話のように、&lt;br /&gt;
+一部コミュニティで流行っている「心理的安全」というキーワードもそれに関連するもので&lt;br /&gt;
+いかに関係するメンバー同士が忌憚なく議論をぶつけ合える場を提供するかが大事になってくる。&lt;br /&gt;
+（もちろんめちゃくちゃ偉い人や社外の人などとの意見の出し合いでは特にそれは難しくなるが）&lt;/p&gt;
+
+&lt;p&gt;私は性格が悪いのでリーダーシップとは無縁な世界で生きているけど、&lt;br /&gt;
+運良く会社の人たちが当事者意識持った人が多いので、課題意識がある人たちに集まってもらって&lt;br /&gt;
+課題を共有してどうしたらいいすかね？みたいな感じで雑なことを聞くと&lt;br /&gt;
+いい感じに議論が発生していい感じの答えが出てひたすら最高という状態になっている。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;最近主体的に動こうと思うようになれたのは、元同僚がそのように主体的に行動し、&lt;br /&gt;
+人を巻き込む力を持っていた人で、大変参考になるロールモデルになった。&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;で-結局今は何に挑戦してるの&#34;&gt;で、結局今は何に挑戦してるの？&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;朝会やめてSlackで今日やることを共有して朝の良い時間に効率よく集中できるように&lt;/li&gt;
+&lt;li&gt;開発チームの定例会議で議題が発散してしまっていたので完全に技術だけに焦点を絞るようにした&lt;/li&gt;
+&lt;li&gt;極力経営層レベルから技術的観点を入れる為に&lt;a href=&#34;https://www.wantedly.com/companies/classi/projects&#34;&gt;社員さんたち&lt;/a&gt;が偉い人会議に参加する&lt;/li&gt;
+&lt;li&gt;カスタマーサポートの人たちの課題をヒアリングする&lt;/li&gt;
+&lt;li&gt;先生や生徒の話を聞きに行く（これは前からずっとやっている）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;偉そうなこと書いている割にはやってることが地味で面白い。&lt;br /&gt;
+挙げると他にも地味なことを色々やっている。とにかく細かくて地味なことをひたすら改善し続けている。&lt;br /&gt;
+目的は文化や職能が違う人同士がいかに無駄なくいい感じに仕事ができるようにするかに注力している。&lt;/p&gt;
+
+&lt;p&gt;俺なんかがこんな偉い人とガチトークして良いんだろうか？と思うぐらい職場の通気性良すぎて&lt;br /&gt;
+やることは無限にあるんだけど、やっぱり子どもたちの可能性はわけのわからないことで潰してはいけないし&lt;br /&gt;
+それがテクノロジーで多少なりとも貢献できるならどんどんやっていきたいし&lt;a href=&#34;https://www.wantedly.com/companies/classi/projects&#34;&gt;新しい社員さん&lt;/a&gt;来てくれ！&lt;/p&gt;
+
+&lt;h3 id=&#34;色々書いたけど&#34;&gt;色々書いたけど&lt;/h3&gt;
+
+&lt;p&gt;みんなでメシ行ってしょーもない話して理解してこ&lt;/p&gt;
+
+&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;結局相互理解が足りなくて仲悪いのが悪いみたいなしょーもないオチなんじゃないかって最近感じてる / “なぜあなたのチームの プロダクトは太ってしまうのか &lt;a href=&#34;https://twitter.com/hashtag/postudy?src=hash&#34;&gt;#postudy&lt;/a&gt; // Speaker Deck” &lt;a href=&#34;https://t.co/CY8pD8xqt7&#34;&gt;https://t.co/CY8pD8xqt7&lt;/a&gt;&lt;/p&gt;&amp;mdash; ブラッド・ピット (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/803617958056427522&#34;&gt;November 29, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>courseraにてHuman-Centered Designを学んだ</title>
@@ -1446,53 +1561,6 @@ end
 &lt;p&gt;神谷くんは我らが湘南ベルマーレに来てくれるのでこれからが楽しみだ。&lt;br /&gt;
 見終わった後はおじさんたちで赤羽の町で飲み歩いた。話題は最初から最後まで最低だったが良い夜だった。&lt;br /&gt;
 ただ、iPhoneはこわれたままなので明日修理屋持って行ってみようと思う。&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>「学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命」を読んだ</title>
-      <link>http://blog.kenjiskywalker.org/blog/2015/12/20/broken-class/</link>
-      <pubDate>Sun, 20 Dec 2015 15:16:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2015/12/20/broken-class/</guid>
-      <description>
-
-&lt;p&gt;&lt;a href=&#34;http://www.amazon.co.jp/%E5%AD%A6%E7%B4%9A%E5%B4%A9%E5%A3%8A%E7%AB%8B%E3%81%A6%E7%9B%B4%E3%81%97%E8%AB%8B%E8%B2%A0%E4%BA%BA-%E5%A4%A7%E4%BA%BA%E3%81%A8%E5%AD%90%E3%81%A9%E3%82%82%E3%81%A7%E5%8F%96%E3%82%8A%E7%B5%84%E3%82%80%E3%80%8C%E8%A8%80%E8%91%89%E3%80%8D%E6%95%99%E8%82%B2%E9%9D%A9%E5%91%BD-%E8%8F%8A%E6%B1%A0-%E7%9C%81%E4%B8%89/dp/4103343613%3FSubscriptionId%3D0AVSM5SVKRWTFMG7ZR82%26tag%3D13nightcrows-22%26linkCode%3Dxm2%26camp%3D2025%26creative%3D165953%26creativeASIN%3D4103343613&#34; target=&#34;_blank&#34; title=&#34;学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命&#34;&gt;&lt;img src=&#34;http://ecx.images-amazon.com/images/I/51p52cuC7NL.jpg&#34; width=&#34;344&#34; height=&#34;500&#34; alt=&#34;学級崩壊立て直し請負人: 大人と子どもで取り組む「言葉」教育革命&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;ちょうど知り合いのおうちに遊びに行った時に&lt;br /&gt;
-テレビでやっていて、興味が湧いたので読んでみた。&lt;/p&gt;
-
-&lt;p&gt;学校に関係するサービスをやっていて、詳しい人から色々な話は聞くが&lt;br /&gt;
-実際に問題を解決している人はどのような方法で対処しているのかを知れてよかった。&lt;/p&gt;
-
-&lt;h2 id=&#34;メモ&#34;&gt;メモ&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;ほめ言葉のシャワー&lt;/li&gt;
-&lt;li&gt;成長を約束する&lt;/li&gt;
-&lt;li&gt;1年後に具体的にどこが成長できたか、成長ノートで確認をする&lt;/li&gt;
-&lt;li&gt;安心できる場を与える&lt;/li&gt;
-&lt;li&gt;子供ではなく人間を育てる&lt;/li&gt;
-&lt;li&gt;対話ノート。年百六十個のテーマについて&lt;/li&gt;
-&lt;li&gt;「父性」の欠如 = 「モンスターペアレンツ」&lt;/li&gt;
-&lt;li&gt;八対二」で止まらないようにする。「八」の中でスーパーＡをつくる&lt;/li&gt;
-&lt;li&gt;子供は褒められたい&lt;/li&gt;
-&lt;li&gt;「対話とは、話すことと聞くことの掛け算」&lt;/li&gt;
-&lt;li&gt;習慣化しない場合は自己責任で説明する。約束したよね、と&lt;/li&gt;
-&lt;li&gt;危ないな、というクラスはだいたい先生の目が下がっている。声が届いていない、教卓にしがみついているなど&lt;/li&gt;
-&lt;li&gt;今の時代、一人の大人が「Ｍ（mother＝母性）」「Ｆ（father＝父性）」「Ｃ（child＝無邪気さ）」を持たなくてはならない&lt;/li&gt;
-&lt;li&gt;厳しくやった後は、再び「眺める」という方法が有効になる&lt;/li&gt;
-&lt;li&gt;怒るとは、「自分中心の感情で相手に接すること」。叱るとは、「相手の存在を認め成長を願って強く意見すること」&lt;/li&gt;
-&lt;li&gt;一生懸命だと知恵が出る、中途半端だと愚痴が出る&lt;/li&gt;
-&lt;li&gt;全てに主語を入れて責任を持つようにする&lt;/li&gt;
-&lt;li&gt;家族でも絶対に譲れないものを３つつくる&lt;/li&gt;
-&lt;li&gt;反省ではなく内省ができるように&lt;/li&gt;
-&lt;li&gt;つねに全国レベルを意識しろ&lt;/li&gt;
-&lt;li&gt;「いいよ、頑張ってるからね。ずっと見守ってるからね、先生は」は効果がある。叱る時にも、「よくなるためのもの」とはっきりと伝える&lt;/li&gt;
-&lt;li&gt;現状の変化に対応できなかった先生が心の病で入院しがち&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;色々と子供に求めがちな手法がよく聞こえるが、まずは自分たちから律していきたいものだ。&lt;/p&gt;
 </description>
     </item>
     
