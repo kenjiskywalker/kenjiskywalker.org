@@ -370,9 +370,8 @@ thead th,th {
 }
 
 img {
-	width: 100%;
-	max-width: 100%;
-	border-radius: 3px;
+		max-width:80%;
+		margin:1em 0;
 }
 
 /* Made with Cactus Badge */
