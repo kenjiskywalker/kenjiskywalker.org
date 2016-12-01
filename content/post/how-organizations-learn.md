@@ -1,7 +1,7 @@
 +++
 date = "2016-12-01T05:26:05+09:00"
 description = "I've read a bit the book is thick"
-title = "「チームが機能するとはどういうことか」を少し読んだこととpmconfでDavid氏から聞いた話について"
+title = "「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について"
 
 +++
 
