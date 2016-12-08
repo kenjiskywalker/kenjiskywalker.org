@@ -6,8 +6,338 @@
     <description>Recent content in Posts on さよならインターネット</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Thu, 01 Dec 2016 05:26:05 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 07 Dec 2016 22:01:16 +0900</lastBuildDate>
     <atom:link href="http://blog.kenjiskywalker.org/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて</title>
+      <link>http://blog.kenjiskywalker.org/blog/2016/12/07/nigiru/</link>
+      <pubDate>Wed, 07 Dec 2016 22:01:16 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2016/12/07/nigiru/</guid>
+      <description>
+
+&lt;p&gt;このエントリは &lt;a href=&#34;http://qiita.com/advent-calendar/2016/classi&#34;&gt;Classi Advent Calendar 2016&lt;/a&gt; 9日目の記事です。&lt;/p&gt;
+
+&lt;h1 id=&#34;itamaeについて&#34;&gt;itamaeについて&lt;/h1&gt;
+
+&lt;h2 id=&#34;http-itamae-kitchen-http-itamae-kitchen&#34;&gt;&lt;a href=&#34;http://itamae.kitchen&#34;&gt;http://itamae.kitchen&lt;/a&gt;&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Configuration management tool inspired by Chef,&lt;br /&gt;
+but simpler and lightweight. Formerly known as Lightchef.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;chefに疲れた人類は一縷の望みを懐き向かった先こそがitamae。&lt;/p&gt;
+
+&lt;h2 id=&#34;使い方&#34;&gt;使い方&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://itamae.kitchen&#34;&gt;ここ&lt;/a&gt;を見てもらえばわかる通り、chefを利用したことがある人は特に迷いなく利用できる。&lt;br /&gt;
+利用したことがなくても第一歩については一瞬で実行可能なのでとにかくチャレンジしてみてほしい。&lt;br /&gt;
+itamaeは裏側で&lt;a href=&#34;https://githunob.com/mizzy/specinfra&#34;&gt;Specinfra&lt;/a&gt;を利用していたりしてそれもかわいい。&lt;br /&gt;
+コード全体の見通しがよく、問題があっても（今まで問題はない）コード見て特定できる。&lt;br /&gt;
+見通しが良いコードは、あらゆる面において最高なので、とにかくitamaeは最高ということがわかる。&lt;/p&gt;
+
+&lt;h2 id=&#34;provisioning-is-dead&#34;&gt;provisioning is dead ?&lt;/h2&gt;
+
+&lt;p&gt;時代はコンテナでアプリケーションをポン置き。&lt;br /&gt;
+まだプロビジョニングで疲弊しているの？という世界はまぁわかる。&lt;/p&gt;
+
+&lt;h1 id=&#34;nigiru-rb-について&#34;&gt;nigiru.rb について&lt;/h1&gt;
+
+&lt;p&gt;itamaeを利用している各社においては、各々のitamae管理ツールなるものを運用していると思う。&lt;br /&gt;
+弊社もそれ相応のものを運用しているのでこの場をお借りして軽く紹介したい。&lt;/p&gt;
+
+&lt;h2 id=&#34;構成&#34;&gt;構成&lt;/h2&gt;
+
+&lt;p&gt;基本は&lt;a href=&#34;https://github.com/itamae-kitchen/itamae/wiki/Best-Practice&#34;&gt;Best Practice&lt;/a&gt;を参考にしている&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;.
+├── REAME.md
+├── bootstrap.rb
+├── cookbooks
+├── initializer.rb
+├── nigiru.rb
+├── recipe_helper.rb
+├── roles
+└── tools
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;nigiruの内部処理&#34;&gt;nigiruの内部処理&lt;/h2&gt;
+
+&lt;h3 id=&#34;option設定周りとec2タグの確認&#34;&gt;option設定周りとEC2タグの確認&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-n&lt;/code&gt; で itamae の &lt;code&gt;--dry-run&lt;/code&gt; を呼び出し&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-r&lt;/code&gt; で role の指定&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--init&lt;/code&gt; で &lt;code&gt;initializer&lt;/code&gt;(OS起動時のみ実行したい処理)を指定&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;EC2は&lt;code&gt;EC2_TAG_ROLE&lt;/code&gt;と&lt;code&gt;EC2_TAG_STAGE&lt;/code&gt;という環境変数を持っており&lt;br /&gt;
+その環境変数を見て色々と処理を分けている。&lt;br /&gt;
+&lt;code&gt;EC2_TAG_ROLE&lt;/code&gt;はitamaeの&lt;code&gt;roles&lt;/code&gt;の部分と対を成している。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;opt = OptionParser.new
+
+@options = {
+  dry_run: false,
+  init: false
+}
+
+@logfile = &#39;/var/log/itamae.log&#39;
+
+opt.on(&#39;-n&#39;, &#39;--dry-run&#39;)   { @options[:dry_run] = true }
+opt.on(&#39;-r ROLE&#39;, &#39;--role&#39;) { @options[:role] = v }
+opt.on(&#39;--init&#39;)            { @options[:init] = true }
+opt.parse!(ARGV)
+
+def before_check_ec2_tag
+  if ENV[&#39;EC2_TAG_ROLE&#39;].nil?
+    puts &amp;quot;ENV[&#39;EC2_TAG_ROLE&#39;] が設定されていません&amp;quot;
+    exit 1
+  end
+  if ENV[&#39;EC2_TAG_STAGE&#39;].nil?
+    puts &amp;quot;ENV[&#39;EC2_TAG_STAGE&#39;] が設定されていません&amp;quot;
+    exit 1
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;itamaeの実行コマンドを生成&#34;&gt;itamaeの実行コマンドを生成&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;def make_itamae_command
+  # itamaeの実行ファイルを指定
+  itamae_bin = `which itamae`.chomp
+
+  # --init であれば initializer.rb を指定する
+  if @options[:init]
+    # initializer は role とは関係がないので before_check_ec2_tag は不要
+    command = &amp;quot;#{itamae_bin} local --no-color --ohai #{__dir__}/initializer.rb&amp;quot;
+  else
+    before_check_ec2_tag
+    command = &amp;quot;#{itamae_bin} local --no-color --ohai #{__dir__}/bootstrap.rb&amp;quot;
+  end
+
+  # dyr-runの確認
+  command += &#39; -n&#39; if @options[:dry_run]
+
+  command
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;itamaeの実行&#34;&gt;itamaeの実行　&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;# itamae実行箇所
+def exec_itamae
+  # itamaeの実行
+  stdout, status = Open3.capture2(itamae_command)
+
+  # nigiru 自身の exit code として itamaeの exit status を利用
+  itamae_exit_status = status.exitstatus
+
+  # 標準出力に出力する
+  puts stdout
+
+  # ファイルにアウトプットする
+  write_out_file(stdout)
+
+  itamae_exit_status
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;itamaeの実行ログをファイルに出力している&#34;&gt;itamaeの実行ログをファイルに出力している&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;def write_out_file(stdout)
+  return if @options[:dry_run]
+
+  File.open(@logfile, &#39;w&#39;) do |file|
+    file.puts stdout
+  end
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;nigiruの通知周り&#34;&gt;nigiruの通知周り&lt;/h3&gt;
+
+&lt;p&gt;メールの通知はログとして冗長であってもそこまで問題ではないにしろ、&lt;br /&gt;
+Slackへの通知は情報量が多すぎるのでもう少し整理したい。&lt;br /&gt;
+この辺の通知周りについての知見を知りたい。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def notify_log_to_slack(message)
+  return if @options[:dry_run]
+
+  # --init だとわかるように情報を付与
+  message += &amp;quot; INITIALIZE&amp;quot; if @options[:init]
+
+  if ENV[&#39;EC2_TAG_STAGE&#39;] == &amp;quot;production&amp;quot;
+    slack_channel = &#39;#CHANNEL&#39;
+  else
+    slack_channel = &#39;#CHANNEL&#39;
+  end
+
+  now = `date +%Y/%m/%d:%H:%M`.chomp
+  hostname = `hostname`.chomp
+
+  `curl -s https://slack.com/api/chat.postMessage \
+     -X POST -d &#39;link_names=1&#39; \
+             -d &#39;channel=#{slack_channel}&#39; \
+             -d &#39;text=#{now}: HOSTNAME: *#{hostname}* : #{message} :sushi: &#39; \
+             -d &#39;username=itamae&#39; \
+             -d &#39;icon_emoji=:itamae:&#39; \
+             -d &#39;token=#{ENV[&#39;SLACK_TOKEN&#39;]}&#39;`
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;hostname&lt;/code&gt;全体で持てばいいな&amp;hellip;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def notify_log_to_mail
+  return if @options[:dry_run]
+
+  now      = `date +%Y/%m/%d:%H:%M`.chomp
+  hostname = `hostname`.chomp
+
+  `cat #{@logfile} | col -b | mail -s &amp;quot;ITAMAE LOG #{hostname} : #{now}&amp;quot; #{mail_to}`
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;mainの処理&#34;&gt;mainの処理&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;# itamaeの実行の通知
+notice_log_by_slack(&amp;quot;ITAMAE START&amp;quot;)
+
+# itamaeを実行して実行ステータスをitamae_exit_status に入れる
+itamae_exit_status = exec_command
+
+# 実行した内容をメールで送る
+notice_log_by_mail
+
+# 実行内容をSlackへ通知
+notice_log_by_slack(File.read(@logfile))
+
+# 完了後の通知実行箇所
+if itamae_exit_status != 0
+  notice_log_by_slack(&amp;quot;:anger: ITAMAE ERROR!!!&amp;quot;)
+else
+  notice_log_by_slack(&amp;quot;ITAMAE DONE&amp;quot;)
+end
+
+exit itamae_exit_status
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;initializer-rbとbootstrap-rbについて&#34;&gt;initializer.rbとbootstrap.rbについて&lt;/h1&gt;
+
+&lt;h2 id=&#34;initializer-rb&#34;&gt;initializer.rb&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;./cookbooks/initializer/default.rb&lt;/code&gt;と&lt;br /&gt;
+&lt;code&gt;./cookbooks/common/default.rb&lt;/code&gt;を読み込んでいる。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#!/usr/bin/env ruby
+
+require File.join(__dir__, &amp;quot;./recipe_helper.rb&amp;quot;)
+
+# Roleのattributeを優先する
+include_attributes :role, &amp;quot;initializer&amp;quot;
+include_attributes :role, &amp;quot;common&amp;quot;
+
+# 何も指定しない場合は ENV[&#39;EC2_TAG_ROLE&#39;] のroleを実行するようにしよう
+include_recipe File.join(&#39;roles&#39;, &#39;initializer&#39;, &#39;default.rb&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;recipe_helper.rb&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;include_cookbook&lt;/code&gt;と&lt;code&gt;include_attributes&lt;/code&gt;をhelperで実装。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;module RecipeHelper
+  def include_cookbook(name)
+    include_recipe File.join(__dir__, &amp;quot;cookbooks&amp;quot;, name, &amp;quot;default.rb&amp;quot;)
+  end
+
+  # type: :roles or :cookbooks
+  def include_attributes(type, name)
+    unless %i(role cookbook).include?(type)
+      raise &amp;quot;type must be #{type}&amp;quot;
+    end
+
+    filepath =File.join(__dir__, &amp;quot;#{type}s&amp;quot;, name, &amp;quot;attributes.rb&amp;quot;)
+    if File.exists?(filepath)
+      include_recipe filepath
+    else
+      Itamae.logger.warn &amp;quot;attribute not found: #{filepath}&amp;quot;
+    end
+  end
+end
+
+Itamae::Recipe::EvalContext.include(RecipeHelper)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;./cookbooks/initializer/default.rb&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;OS起動時に必要な処理を色々とやっている&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;include_recipe &#39;./boot_file.rb&#39;
+include_recipe &#39;./directorys.rb&#39;
+include_recipe &#39;./os_settings.rb&#39;
+include_recipe &#39;./swap.rb&#39;
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;bootstrap-rb&#34;&gt;bootstrap.rb&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;roles/ROLE/default.rb&lt;/code&gt;を読み込むための設定。&lt;br /&gt;
+各種インストールパッケージや、agent周りの設定は&lt;code&gt;common&lt;/code&gt;に記載している。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;require File.join(__dir__, &amp;quot;./recipe_helper.rb&amp;quot;)
+
+# Roleのattributeを優先する
+include_attributes :role, ENV[&#39;EC2_TAG_ROLE&#39;]
+include_attributes :role, &amp;quot;common&amp;quot;
+
+# 共通のrecipeはここで読み込む
+include_recipe File.join(&#39;roles/common/default.rb&#39;)
+
+# 何も指定しない場合は ENV[&#39;EC2_TAG_ROLE&#39;] のroleを実行する
+include_recipe File.join(&#39;roles&#39;, ENV[&#39;EC2_TAG_ROLE&#39;], &#39;default.rb&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;nigiruをどうやって実行しているか&#34;&gt;nigiruをどうやって実行しているか&lt;/h1&gt;
+
+&lt;h2 id=&#34;ciに連動したプロビジョニング&#34;&gt;CIに連動したプロビジョニング&lt;/h2&gt;
+
+&lt;p&gt;CircleCI + CodeDeployでpull型のdeployを実装している。&lt;br /&gt;
+しかし、逐次処理の処理速度の遅さと、一括処理による失敗時のリスクのバランスの取り方が&lt;br /&gt;
+適切ではない。全体のn%に対してプロビジョニングを行うなども感がているが&lt;br /&gt;
+みんなどうやっているのか知見を知りたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;インスタンス起動時に実行&#34;&gt;インスタンス起動時に実行&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;/var/lib/cloud/scripts/per-boot/002_itamae.sh&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;というファイルを用意しておき、インスタンス起動時には&lt;br /&gt;
+最新のmasterをpullし、&lt;code&gt;nigiru&lt;/code&gt;ようにしている。&lt;br /&gt;
+ご覧の通り、001や003、004など色々な処理をインスタンス起動時にしているが&lt;br /&gt;
+数字に特に意味はない。&lt;/p&gt;
+
+&lt;h1 id=&#34;おわりに&#34;&gt;おわりに&lt;/h1&gt;
+
+&lt;p&gt;全体的な流れをつらつらと書いたが、雰囲気だけでも理解してもらえればありがたい。&lt;br /&gt;
+また、この記事を元に、いや、うちではこうしている、その処理はこうすべき、と&lt;br /&gt;
+議論に発展すればなおありがたい💪☺️&lt;/p&gt;
+
+&lt;p&gt;COOKPAD社の方のソフトウェアには色々とお世話になってはいるが、&lt;br /&gt;
+物理的にお会いしたことがないので、お会いした際には是非感謝の意を伝えたい🙏&lt;/p&gt;
+
+&lt;p&gt;また、itamaeに関しては、chef -&amp;gt; ansible -&amp;gt; itamaeという&lt;br /&gt;
+プロビジョニングツールを利用してきた遍歴から、多少はプロビジョニングについての&lt;br /&gt;
+ノウハウのようなものを習得したかもしれない前提であっても、&lt;br /&gt;
+自分で細かい処理が実装できる点において、itamaeは最高としか言いようがない。&lt;br /&gt;
+&lt;a href=&#34;https://github.com/ryotarai&#34;&gt;ryotaarai&lt;/a&gt;さんありがとうございます🙏&lt;/p&gt;
+
+&lt;p&gt;明日はkitaharamikiyaさんの「Appiumを使ってみた話」です。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について</title>
@@ -1543,24 +1873,6 @@ loadbalancers.each_line do |lb|
   --comparison-operator GreaterThanOrEqualToThreshold`
 end
 &lt;/code&gt;&lt;/pre&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>iPhone水没した。高校サッカー準決勝見に行った。赤羽に飲みに行った</title>
-      <link>http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/</link>
-      <pubDate>Sun, 10 Jan 2016 00:11:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2016/01/10/iphone-soccer/</guid>
-      <description>&lt;p&gt;iPhone水没した。人生で二度目だ。トイレで諸所の動作をする時はスマホいじくるのやめよう。&lt;br /&gt;
-高校サッカーの準決勝を見に行った。高校サッカー、本当に面白い。&lt;/p&gt;
-
-&lt;p&gt;東福岡の藤川虎太朗くんがとても良かった。&lt;br /&gt;
-国学院久我山の澁谷雅也くんと名倉巧くんがとても魅力的だった。&lt;/p&gt;
-
-&lt;p&gt;神谷くんは我らが湘南ベルマーレに来てくれるのでこれからが楽しみだ。&lt;br /&gt;
-見終わった後はおじさんたちで赤羽の町で飲み歩いた。話題は最初から最後まで最低だったが良い夜だった。&lt;br /&gt;
-ただ、iPhoneはこわれたままなので明日修理屋持って行ってみようと思う。&lt;/p&gt;
 </description>
     </item>
     
