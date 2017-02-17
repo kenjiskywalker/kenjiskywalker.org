@@ -7,7 +7,7 @@
 		<meta name="author" content="kenjiskywalker">
 		<meta name="description" content="さよならインターネット">
 		<meta name="generator" content="Hugo 0.16" />
-		<title>serverspecでchefのjsonを読み込む &middot; さよならインターネット</title>
+		<title>アンパンチが許されるのは &middot; さよならインターネット</title>
 		<link rel="shortcut icon" href="http://blog.kenjiskywalker.org/images/favicon.ico">
 		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/style.css">
 		<link rel="stylesheet" href="http://blog.kenjiskywalker.org/css/highlight.css">
@@ -29,9 +29,9 @@
         <section id="wrapper">
             <article class="post">
                 <header>
-                    <h1>serverspecでchefのjsonを読み込む</h1>
+                    <h1>アンパンチが許されるのは</h1>
                     <h2 class="headline">
-                    July 31, 2013
+                    February 17, 2017
                     <br>
                     
                     </h2>
@@ -39,42 +39,66 @@
                 <section id="post-body">
                     
 
-<blockquote>
-<p>2013/12/25 update</p>
-</blockquote>
-
-<p><a href="http://blog.kenjiskywalker.org/blog/2013/07/13/serverspec-chef-cookbook/">Testing #chef Cookbook by #serverspec #devops</a>の続きみたいなものですが<br />
-Chefのjsonファイルでフラグ立てたりしてると、そのフラグによって<br />
-テスト対象が変化する場合があるかと思います。<br />
-その場合、<a href="http://serverspec.org/">serverspec</a>にはpropertyの機能があるのでそれを利用します。</p>
-
-<h2 id="spec-spec-helper-rb">spec/spec_helper.rb</h2>
-
-<p>{% gist 6118553 spec_helper.rb %}</p>
-
-<p><code>set_property</code>の項目を追加します。</p>
-
-<h2 id="nodes-host-json">nodes/host.json</h2>
-
-<p>{% gist 6118553 nodes_host.json %}</p>
-
-<p>こんな感じでこのMySQLはSlaveですみたいなフラグがあって</p>
-
-<h2 id="cookbooks-mysql-templates-default-my-cnf-erb">cookbooks/mysql/templates/default/my.cnf.erb</h2>
-
-<p>{% gist 6118553 cookbooks_mysql_templates_default_my.cnf.erb %}</p>
-
-<p>こんなテンプレートがあったら</p>
-
-<h2 id="cookbooks-mysql-spec-is-slave-spec-rb">cookbooks/mysql/spec/is_slave_spec.rb</h2>
-
-<p>{% gist 6118553 cookbooks_mysql_spec_is_slave_spec.rb %}</p>
-
-<p>このように<code>property[&quot;mysql&quot;][&quot;is_slave&quot;]</code>として値を利用することができます。</p>
+<p>2歳半の息子が、私がカミさんに嫌がらせ</p>
 
 <blockquote>
-<p>specファイル、<code>if ~ end</code>で囲ってるのがモサいので、良案をお待ちしております</p>
+<p>例:<br />
+- 風呂に入る前に、あえてカミさんの前で服を脱ぐ<br />
+- 良いおならが出そうな時に大きな声を出して注意を向けて放屁する<br />
+- 大きいうんちが出た時に、大きいうんちが出たと報告する</p>
 </blockquote>
+
+<p>などを行い、カミさんが「やめて」と発音すると<br />
+それに気付いた息子が即座に反応し「やめて！アーンパーンチ！」と私に暴力をふるってくる。</p>
+
+<p>彼の中ではその行いこそ正義であり、<br />
+マザコン野郎の守るべき最愛のものが傷付けられた時に選択する</p>
+
+<blockquote>
+<p>アンパンマンという正義の象徴から繰り出される<br />
+アンパンチという正義の鉄槌を食らわす</p>
+</blockquote>
+
+<p>という方針は実に正しい所作に見える。</p>
+
+<p>少なくとも息子の同年代の子どもたち（2歳後半から3歳前半）は、<br />
+皆、何かあるたびに自分の守るべきものを守るために「アンパンチ」を利用している。</p>
+
+<h2 id="アンパンチはいつまで許されるのか">アンパンチはいつまで許されるのか</h2>
+
+<p>少なくともこの世界には、正義と言う名のついた暴力は<br />
+毎日のように、世界中のあらゆるところで繰り返されているように思う。</p>
+
+<p>そもそも、この世界に明確な正義や明確な悪などという概念はあるのだろうか？<br />
+銀河英雄伝説やパトレイバー2が好きな私の好むところである。</p>
+
+<p>人はわかりやすいものが好きだ。<br />
+私も日々インターネットで炎上案件を見てほくそ笑む1人である。</p>
+
+<p>難解な正しい情報より、わかりやすい、自分の期待値に沿った話が好きだ。<br />
+それが妄誕無稽のフェイクな情報であっても。</p>
+
+<p>情報化が加速した現代では、その情報は脱頭を使わず快楽を得る為の良い道具だ。<br />
+脱泡ドラッグなどより安全であり、なにしろ求めればすぐに手に入る。危険性も皆無だ。</p>
+
+<p>（少なくとも当事者にならない限りは）</p>
+
+<p>情報の海の中で生きる現代だからこそ、正義や事実に関しては冷静にいたいものだ。</p>
+
+<hr />
+
+<blockquote>
+<p>「正義を唱えるものがいたら気をつけろ、<br />
+　その相手の背景に何があって、何故そうしているのかを理解することだ。」</p>
+</blockquote>
+
+<p>2歳半の息子にそう諭したとて、返ってくる言葉はこうだ。</p>
+
+<blockquote>
+<p>「お父さん、いっぱいたべたからいーーっぱいウンチ出た！」</p>
+</blockquote>
+
+<p>あぁ、生命のなんたる偉大さよ！！！</p>
 
                     <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
@@ -94,7 +118,7 @@ Chefのjsonファイルでフラグ立てたりしてると、そのフラグに
                         </div>
                     </a>
                 <section id="sharing">
-                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2013%2f07%2f31%2fserverspec-attribute%2f - serverspec%e3%81%a7chef%e3%81%aejson%e3%82%92%e8%aa%ad%e3%81%bf%e8%be%bc%e3%82%80 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.kenjiskywalker.org%2fblog%2f2017%2f02%2f17%2fjustice-and-violence%2f - %e3%82%a2%e3%83%b3%e3%83%91%e3%83%b3%e3%83%81%e3%81%8c%e8%a8%b1%e3%81%95%e3%82%8c%e3%82%8b%e3%81%ae%e3%81%af by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(

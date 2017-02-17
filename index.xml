@@ -6,8 +6,79 @@
     <description>Recent content on さよならインターネット</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Mon, 06 Feb 2017 20:33:02 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 17 Feb 2017 07:50:54 +0900</lastBuildDate>
     <atom:link href="http://blog.kenjiskywalker.org/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>アンパンチが許されるのは</title>
+      <link>http://blog.kenjiskywalker.org/blog/2017/02/17/justice-and-violence/</link>
+      <pubDate>Fri, 17 Feb 2017 07:50:54 +0900</pubDate>
+      
+      <guid>http://blog.kenjiskywalker.org/blog/2017/02/17/justice-and-violence/</guid>
+      <description>
+
+&lt;p&gt;2歳半の息子が、私がカミさんに嫌がらせ&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;例:&lt;br /&gt;
+- 風呂に入る前に、あえてカミさんの前で服を脱ぐ&lt;br /&gt;
+- 良いおならが出そうな時に大きな声を出して注意を向けて放屁する&lt;br /&gt;
+- 大きいうんちが出た時に、大きいうんちが出たと報告する&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;などを行い、カミさんが「やめて」と発音すると&lt;br /&gt;
+それに気付いた息子が即座に反応し「やめて！アーンパーンチ！」と私に暴力をふるってくる。&lt;/p&gt;
+
+&lt;p&gt;彼の中ではその行いこそ正義であり、&lt;br /&gt;
+マザコン野郎の守るべき最愛のものが傷付けられた時に選択する&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;アンパンマンという正義の象徴から繰り出される&lt;br /&gt;
+アンパンチという正義の鉄槌を食らわす&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;という方針は実に正しい所作に見える。&lt;/p&gt;
+
+&lt;p&gt;少なくとも息子の同年代の子どもたち（2歳後半から3歳前半）は、&lt;br /&gt;
+皆、何かあるたびに自分の守るべきものを守るために「アンパンチ」を利用している。&lt;/p&gt;
+
+&lt;h2 id=&#34;アンパンチはいつまで許されるのか&#34;&gt;アンパンチはいつまで許されるのか&lt;/h2&gt;
+
+&lt;p&gt;少なくともこの世界には、正義と言う名のついた暴力は&lt;br /&gt;
+毎日のように、世界中のあらゆるところで繰り返されているように思う。&lt;/p&gt;
+
+&lt;p&gt;そもそも、この世界に明確な正義や明確な悪などという概念はあるのだろうか？&lt;br /&gt;
+銀河英雄伝説やパトレイバー2が好きな私の好むところである。&lt;/p&gt;
+
+&lt;p&gt;人はわかりやすいものが好きだ。&lt;br /&gt;
+私も日々インターネットで炎上案件を見てほくそ笑む1人である。&lt;/p&gt;
+
+&lt;p&gt;難解な正しい情報より、わかりやすい、自分の期待値に沿った話が好きだ。&lt;br /&gt;
+それが妄誕無稽のフェイクな情報であっても。&lt;/p&gt;
+
+&lt;p&gt;情報化が加速した現代では、その情報は脱頭を使わず快楽を得る為の良い道具だ。&lt;br /&gt;
+脱泡ドラッグなどより安全であり、なにしろ求めればすぐに手に入る。危険性も皆無だ。&lt;/p&gt;
+
+&lt;p&gt;（少なくとも当事者にならない限りは）&lt;/p&gt;
+
+&lt;p&gt;情報の海の中で生きる現代だからこそ、正義や事実に関しては冷静にいたいものだ。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;「正義を唱えるものがいたら気をつけろ、&lt;br /&gt;
+　その相手の背景に何があって、何故そうしているのかを理解することだ。」&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;2歳半の息子にそう諭したとて、返ってくる言葉はこうだ。&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;「お父さん、いっぱいたべたからいーーっぱいウンチ出た！」&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;あぁ、生命のなんたる偉大さよ！！！&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った</title>
@@ -1720,127 +1791,6 @@ Starting td-agent:                                         [  OK  ]
 
 &lt;p&gt;サービスを利用させてもらっている側もこのように地味なところで貢献できるので&lt;br /&gt;
 何かあったら色々とやってみよう💪&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Terraformを始める上でのresourceの命名規則について</title>
-      <link>http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/</link>
-      <pubDate>Wed, 06 Jul 2016 09:52:00 +0900</pubDate>
-      
-      <guid>http://blog.kenjiskywalker.org/blog/2016/07/06/terraform-newbie/</guid>
-      <description>
-
-&lt;h2 id=&#34;terraformとは&#34;&gt;Terraformとは&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.terraform.io&#34;&gt;https://www.terraform.io&lt;/a&gt;ここ見てください。&lt;br /&gt;
-&lt;code&gt;INFRASTRUCTURE AS CODE&lt;/code&gt;と書いてあります。&lt;/p&gt;
-
-&lt;h2 id=&#34;何が便利か&#34;&gt;何が便利か&lt;/h2&gt;
-
-&lt;p&gt;たとえばAWSの新規VPCの作成など画面ポチポチで設定していくオペレーションをコードに落とせる。&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;それってAPI叩けば同じでは？&lt;br /&gt;
-PaaSが&lt;a href=&#34;https://www.terraform.io/docs/providers/index.html&#34;&gt;色々&lt;/a&gt;対応している。MySQLにも対応しているの&amp;hellip;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&#34;伝えたいこと&#34;&gt;伝えたいこと&lt;/h2&gt;
-
-&lt;p&gt;たとえばVPCを構築するとして&lt;/p&gt;
-
-&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;Terraformの有識者にどうにかしてresourceの名前にvariableの値を入れる方法を教えてほしい🤔&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750200917312417792&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;resource &amp;quot;aws_vpc&amp;quot; &amp;quot;${var.prefix}-${var.environment_name}-vpc&amp;quot; {
-    cidr_block           = &amp;quot;${var.vpc.cidr_block}&amp;quot;
-    enable_dns_hostnames = true
-    enable_dns_support   = true
-    instance_tenancy     = &amp;quot;default&amp;quot;
-
-    tags {
-        &amp;quot;Name&amp;quot; = &amp;quot;${var.environment_name}-vpc&amp;quot;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;などと&lt;code&gt;resource&lt;/code&gt;名をユニークな感じでやろうとしたのだけれど&lt;/p&gt;
-
-&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;so this is by design.と言われればそれまでだ &lt;a href=&#34;https://t.co/Im2kwIqiQa&#34;&gt;https://t.co/Im2kwIqiQa&lt;/a&gt;&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750218349884301313&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;by design&lt;/code&gt;と言われていたので、なんだか使いづらいな〜と考えていた。が&lt;/p&gt;
-
-&lt;p&gt;&lt;blockquote class=&#34;twitter-tweet&#34; data-lang=&#34;en&#34;&gt;&lt;p lang=&#34;ja&#34; dir=&#34;ltr&#34;&gt;そもそもresourceは固有な名前を設定すべきではないという思想が理解できていなかった、例えばpublicであればfoo-development-publicなどとうい名前を付けるべきではなかった&lt;/p&gt;&amp;mdash; kenjiskywalker (@kenjiskywalker) &lt;a href=&#34;https://twitter.com/kenjiskywalker/status/750243305481396224&#34;&gt;July 5, 2016&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&#34;//platform.twitter.com/widgets.js&#34; charset=&#34;utf-8&#34;&gt;&lt;/script&gt;&lt;/p&gt;
-
-&lt;p&gt;そうなのだ。そもそもこの発想で良く、&lt;code&gt;resource&lt;/code&gt;はあくまでTerraform内での管理するためだけの命名であるので&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;vpc.tf&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;resource &amp;quot;aws_vpc&amp;quot; &amp;quot;main-vpc&amp;quot; {
-    cidr_block           = &amp;quot;${var.vpc.cidr_block}&amp;quot;
-    enable_dns_hostnames = true
-    enable_dns_support   = true
-    instance_tenancy     = &amp;quot;default&amp;quot;
-
-    tags {
-        &amp;quot;Name&amp;quot; = &amp;quot;${var.environment_name}-vpc&amp;quot;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;このように&lt;code&gt;Name Tags&lt;/code&gt;でユニークな情報を付与すれば良かった。&lt;br /&gt;
-このことに気付かず&lt;code&gt;resource&lt;/code&gt;にひたすら&lt;code&gt;variable&lt;/code&gt;の値を入れようと頑張っていた。&lt;/p&gt;
-
-&lt;p&gt;結局、上記のように&lt;code&gt;resource&lt;/code&gt;にユニークな情報を入れない仕組みで汎用性は担保できた。&lt;br /&gt;
-これで似たような環境も&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;vpc.tf&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;# Create Subnet
-# - ec2:CreateSubnet
-resource &amp;quot;aws_subnet&amp;quot; &amp;quot;some-subnet-a&amp;quot; {
-    vpc_id            = &amp;quot;${aws_vpc.main-vpc.id}&amp;quot;
-    cidr_block        = &amp;quot;${var.vpc.public_subnet_a}&amp;quot;
-    availability_zone = &amp;quot;${var.availability_zone.a}&amp;quot;
-    tags {
-        Name = &amp;quot;${var.environment_name}-some-subnet-a&amp;quot;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;ul&gt;
-&lt;li&gt;variables.tf&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;pre&gt;&lt;code&gt;variable &amp;quot;region&amp;quot; {
-    default = &amp;quot;ap-northeast-1&amp;quot;
-}
-
-variable &amp;quot;environment_name&amp;quot; {
-    default = &amp;quot;development&amp;quot;
-}
-
-variable &amp;quot;availability_zone&amp;quot; {
-    default = {
-        a = &amp;quot;ap-northeast-1a&amp;quot;
-        c = &amp;quot;ap-northeast-1c&amp;quot;
-    }
-}
-
-variable &amp;quot;vpc&amp;quot; {
-    default = {
-        cidr_block    = &amp;quot;10.200.0.0/16&amp;quot;
-        some_subnet_a = &amp;quot;10.200.210.0/24&amp;quot;
-        some_subnet_c = &amp;quot;10.200.211.0/24&amp;quot;
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;上記のように&lt;code&gt;variables.tf&lt;/code&gt;などと値を別のファイルに分けておくことで&lt;br /&gt;
-汎用的なテンプレートが作成可能となる。しかし便利だな〜&lt;/p&gt;
 </description>
     </item>
     
