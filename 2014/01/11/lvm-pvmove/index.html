@@ -1,0 +1,480 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>pvmoveを利用して物理ディスクのデータを別の物理ディスクへオンラインで移設する &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>pvmoveを利用して物理ディスクのデータを別の物理ディスクへオンラインで移設する</h1>
+                    <h2 class="headline">
+                    January 11, 2014
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>AWSとLVMを利用することによって、オンラインで<br />
+EBSをアタッチして、pvmoveでデータを新しいEBSへ移行し<br />
+元のEBSを切り離すことができる。</p>
+
+<h2 id="参考">参考</h2>
+
+<p><a href="https://access.redhat.com/site/documentation/ja-JP/Red_Hat_Enterprise_Linux/6/html/Logical_Volume_Manager_Administration/disk_remove_ex.html">redhat カスタマーポータル - 6 5.4. 論理ボリュームからのディスクの削除</a></p>
+
+<p><blockquote class="twitter-tweet" lang="ja"><p>pvmoveは同一VG内の空きPVに移動するのか。ということは旧ディスクから新ディスクへの移行は 1.新ディスクをLVMフォーマットで作成して 2.新ディスクをPV化して 3.旧ディスクがアサインされいるVGにvgexendでPVを追加して 4.pvmoveか</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/420484347779489792">2014, 1月 7</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="ja"><p>pvremoveするときはVGにアサインされているからまずvgreduceで対象のPVを切り離してからpvremoveか。当たり前っちゃあ当たり前か</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/420486502531874816">2014, 1月 7</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>とのことです。</p>
+
+<h2 id="検証環境">検証環境</h2>
+
+<pre><code>- ルートパーティション
+/dev/xvda1 16GB 
+
+- EBS
+/dev/xvdb  64GB EBS
+
+- RAID0用EBS
+/dev/xvdc  16GB EBS
+/dev/xvdd  16GB EBS
+/dev/xvde  16GB EBS
+/dev/xvdf  16GB EBS
+</code></pre>
+
+<p>xvdbに既存データが存在していており<br />
+そのデータをmd127に移設する。</p>
+
+<pre><code>[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# fdisk -l
+
+Disk /dev/xvda1: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/xvde: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/xvdd: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/xvdc: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/xvdb: 68.7 GB, 68719476736 bytes
+255 heads, 63 sectors/track, 8354 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+
+Disk /dev/xvdf: 17.2 GB, 17179869184 bytes
+255 heads, 63 sectors/track, 2088 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x00000000
+
+[root@lvm-test-server ~]#
+</code></pre>
+
+<h3 id="ebs-x4をまとめてraid0を組む">EBS x4をまとめてRAID0を組む</h3>
+
+<pre><code>[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# yes | mdadm --create /dev/md127 --level=0 --raid-devices=4 /dev/xvd[cdef]
+mdadm: /dev/xvdc appears to be part of a raid array:
+    level=raid0 devices=4 ctime=Tue Jan  7 09:36:58 2014
+mdadm: /dev/xvdd appears to be part of a raid array:
+    level=raid0 devices=4 ctime=Tue Jan  7 09:36:58 2014
+mdadm: /dev/xvdf appears to be part of a raid array:
+    level=raid0 devices=4 ctime=Tue Jan  7 09:36:58 2014
+Continue creating array? mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md127 started.
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# cat /proc/mdstat
+Personalities : [raid0]
+md127 : active raid0 xvdf[3] xvde[2] xvdd[1] xvdc[0]
+      67106816 blocks super 1.2 512k chunks
+
+unused devices: &lt;none&gt;
+[root@lvm-test-server ~]#
+</code></pre>
+
+<h3 id="既存のvg-引っ越し元のディスクが入っているvg-にraid0のpvをアサイン">既存のVG（引っ越し元のディスクが入っているVG）にRAID0のPVをアサイン</h3>
+
+<pre><code>[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# pvcreate /dev/md127
+  Physical volume &quot;/dev/md127&quot; successfully created
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# vgdisplay
+  --- Volume group ---
+  VG Name               vgrp0
+  System ID
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  2
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                0
+  Open LV               0
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               63.99 GiB
+  PE Size               4.00 MiB
+  Total PE              16381
+  Alloc PE / Size       0 / 0
+  Free  PE / Size       16381 / 63.99 GiB
+  VG UUID               j4hcOI-hsYy-j8jL-Dnp7-wa44-ue4c-ZlMi5m
+
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# vgextend vgrp0 /dev/md127
+  Volume group &quot;vgrp0&quot; successfully extended
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# vgdisplay
+  --- Volume group ---
+  VG Name               vgrp0
+  System ID
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  3
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               1
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               127.99 GiB
+  PE Size               4.00 MiB
+  Total PE              32766
+  Alloc PE / Size       16383 / 64.00 GiB
+  Free  PE / Size       16383 / 64.00 GiB
+  VG UUID               x6y3NX-WNwZ-8pOj-Ez0S-U7r4-fice-9CljNP
+
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# pvs -o+pv_used
+  PV         VG    Fmt  Attr PSize  PFree Used
+  /dev/md127 vgrp0 lvm2 a--  64.00g    0  64.00g
+  /dev/xvdb1 vgrp0 lvm2 a--  64.00g    0  64.00g
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]#
+</code></pre>
+
+<p>この時点でxvdb1(64GB)とmd127(128GB)がVGにアサインされている。</p>
+
+<h3 id="pvからpvへデータを移行">PVからPVへデータを移行</h3>
+
+<pre><code>[root@lvm-test-server ~]# pvmove /dev/xvdb1
+  /dev/xvdb1: Moved: 0.0%
+  /dev/xvdb1: Moved: 0.4%
+  /dev/xvdb1: Moved: 0.7%
+  /dev/xvdb1: Moved: 1.1%
+  /dev/xvdb1: Moved: 1.4%
+  /dev/xvdb1: Moved: 1.8%
+  /dev/xvdb1: Moved: 2.1%
+  /dev/xvdb1: Moved: 2.5%
+  /dev/xvdb1: Moved: 2.8%
+  /dev/xvdb1: Moved: 3.2%
+
+  ...
+
+  /dev/xvdb1: Moved: 99.1%
+  /dev/xvdb1: Moved: 99.5%
+  /dev/xvdb1: Moved: 99.8%
+  /dev/xvdb1: Moved: 100.0%
+    Found volume group &quot;vgrp0&quot;
+    Found volume group &quot;vgrp0&quot;
+    Loading vgrp0-lvol0 table (253:0)
+    Loading vgrp0-pvmove0 table (253:2)
+    Suspending vgrp0-lvol0 (253:0) with device flush
+    Suspending vgrp0-pvmove0 (253:2) with device flush
+    Found volume group &quot;vgrp0&quot;
+    Resuming vgrp0-pvmove0 (253:2)
+    Found volume group &quot;vgrp0&quot;
+    Resuming vgrp0-lvol0 (253:0)
+    Found volume group &quot;vgrp0&quot;
+    Removing vgrp0-pvmove0 (253:2)
+    Removing temporary pvmove LV
+    Writing out final volume group after pvmove
+    Creating volume group backup &quot;/etc/lvm/backup/vgrp0&quot; (seqno 6).
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# pvs -o+pv_used
+  PV         VG    Fmt  Attr PSize  PFree  Used
+  /dev/md127 vgrp0 lvm2 a--  64.00g     0  64.00g
+  /dev/xvdb1 vgrp0 lvm2 a--  64.00g 64.00g     0
+[root@lvm-test-server ~]#
+</code></pre>
+
+<p>PFreeになっていることを確認</p>
+
+<pre><code>[root@lvm-test-server ~]# vgdisplay
+  --- Volume group ---
+  VG Name               vgrp0
+  System ID
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  6
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               1
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               127.99 GiB
+  PE Size               4.00 MiB
+  Total PE              32766
+  Alloc PE / Size       16383 / 64.00 GiB
+  Free  PE / Size       16383 / 64.00 GiB
+  VG UUID               x6y3NX-WNwZ-8pOj-Ez0S-U7r4-fice-9CljNP
+
+[root@lvm-test-server ~]#
+</code></pre>
+
+<h3 id="xvdb1をvgから切り離す">xvdb1をVGから切り離す</h3>
+
+<pre><code>[root@lvm-test-server ~]# vgreduce vgrp0 /dev/xvdb1
+  Removed &quot;/dev/xvdb1&quot; from volume group &quot;vgrp0&quot;
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]#
+[root@lvm-test-server ~]# vgdisplay
+  --- Volume group ---
+  VG Name               vgrp0
+  System ID
+  Format                lvm2
+  Metadata Areas        1
+  Metadata Sequence No  7
+  VG Access             read/write
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                1
+  Open LV               1
+  Max PV                0
+  Cur PV                1
+  Act PV                1
+  VG Size               64.00 GiB
+  PE Size               4.00 MiB
+  Total PE              16383
+  Alloc PE / Size       16383 / 64.00 GiB
+  Free  PE / Size       0 / 0
+  VG UUID               x6y3NX-WNwZ-8pOj-Ez0S-U7r4-fice-9CljNP
+
+[root@lvm-test-server ~]#
+</code></pre>
+
+<p>Allocサイズが変わっていることを確認。<br />
+この後はPVを削除してEBSをデタッチすればデータの移設が完了します。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2014%2f01%2f11%2flvm-pvmove%2f - pvmove%e3%82%92%e5%88%a9%e7%94%a8%e3%81%97%e3%81%a6%e7%89%a9%e7%90%86%e3%83%87%e3%82%a3%e3%82%b9%e3%82%af%e3%81%ae%e3%83%87%e3%83%bc%e3%82%bf%e3%82%92%e5%88%a5%e3%81%ae%e7%89%a9%e7%90%86%e3%83%87%e3%82%a3%e3%82%b9%e3%82%af%e3%81%b8%e3%82%aa%e3%83%b3%e3%83%a9%e3%82%a4%e3%83%b3%e3%81%a7%e7%a7%bb%e8%a8%ad%e3%81%99%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

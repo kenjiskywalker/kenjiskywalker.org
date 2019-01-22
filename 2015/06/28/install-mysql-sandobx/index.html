@@ -1,0 +1,493 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>大変便利なMySQL::Sandboxのインストールメモ(GTID有効編) &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>大変便利なMySQL::Sandboxのインストールメモ(GTID有効編)</h1>
+                    <h2 class="headline">
+                    June 28, 2015
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>以前MySQLの師匠のyoku0825さんに教えてもらったMySQL::Sandboxが<br />
+大変便利だったので改めてインストール方法をメモしておく</p>
+
+<p>参考URL</p>
+
+<ul>
+<li><a href="http://d.conma.me/entry/20100616/1276683437">MySQL Sandboxを使ってみる - まめ畑</a><br /></li>
+<li><a href="http://datacharmer.blogspot.jp/2013/01/easily-testing-mysql-56-gtid-in-sandbox.html">Easily testing MySQL 5.6 GTID in a sandbox - The Data Charmer</a></li>
+</ul>
+
+<blockquote>
+<p>環境<br />
+OS X 10.10.3<br />
+MySQL-Sandbox v3.0.50</p>
+</blockquote>
+
+<h2 id="cpanmでmysql-sandboxをインストール">cpanmでMySQL::Sandboxをインストール</h2>
+
+<pre><code>['-']% cpanm MySQL::Sandbox
+--&gt; Working on MySQL::Sandbox
+Fetching http://www.cpan.org/authors/id/G/GM/GMAX/MySQL-Sandbox-3.0.50.tar.gz ... OK
+Configuring MySQL-Sandbox-v3.0.50 ... OK
+Building and testing MySQL-Sandbox-v3.0.50 ... OK
+Successfully installed MySQL-Sandbox-v3.0.50
+1 distribution installed
+['-']% 
+</code></pre>
+
+<h2 id="mysql-5-6-25のレプリケーションを作成する">MySQL 5.6.25のレプリケーションを作成する</h2>
+
+<p><code>$HOME/mysqls</code>というディレクトリにMySQLをインストールする</p>
+
+<pre><code>['-']% mkdir ~/mysqls
+['-']% cd ~/mysqls
+</code></pre>
+
+<pre><code>['-']% make_replication_sandbox 5.6.25
+installing and starting master
+installing slave 1
+installing slave 2
+starting slave 1
+.. sandbox server started
+starting slave 2
+.. sandbox server started
+initializing slave 1
+initializing slave 2
+replication directory installed in $HOME/sandboxes/rsandbox_5_6_25
+['-']%
+</code></pre>
+
+<p>これだけでインストールとレプリケーションが完了。</p>
+
+<p>ちゃんと入っているか確認</p>
+
+<pre><code>['-']% cd ~/sandboxes/rsandbox_5_6_25/
+['-']%
+['-']% ./check_slaves
+master
+             File: mysql-bin.000001
+         Position: 2696
+slave # 1
+              Master_Log_File: mysql-bin.000001
+          Read_Master_Log_Pos: 2696
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 2696
+slave # 2
+              Master_Log_File: mysql-bin.000001
+          Read_Master_Log_Pos: 2696
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 2696
+['-']%
+</code></pre>
+
+<h2 id="gtidモードに変更">GTIDモードに変更</h2>
+
+<pre><code>['-']%
+['-']% ./enable_gtid
+# option 'master-info-repository=table' added to master configuration file
+# option 'relay-log-info-repository=table' added to master configuration file
+# option 'gtid_mode=ON' added to master configuration file
+# option 'log-slave-updates' added to master configuration file
+# option 'enforce-gtid-consistency' added to master configuration file
+# option 'master-info-repository=table' added to node1 configuration file
+# option 'relay-log-info-repository=table' added to node1 configuration file
+# option 'gtid_mode=ON' added to node1 configuration file
+# option 'log-slave-updates' added to node1 configuration file
+# option 'enforce-gtid-consistency' added to node1 configuration file
+# option 'master-info-repository=table' added to node2 configuration file
+# option 'relay-log-info-repository=table' added to node2 configuration file
+# option 'gtid_mode=ON' added to node2 configuration file
+# option 'log-slave-updates' added to node2 configuration file
+# option 'enforce-gtid-consistency' added to node2 configuration file
+# executing &quot;stop&quot; on /Users/kenjiskywalker/sandboxes/rsandbox_5_6_25
+executing &quot;stop&quot; on slave 1
+executing &quot;stop&quot; on slave 2
+executing &quot;stop&quot; on master
+# executing &quot;start&quot; on /Users/kenjiskywalker/sandboxes/rsandbox_5_6_25
+executing &quot;start&quot; on master
+. sandbox server started
+executing &quot;start&quot; on slave 1
+.. sandbox server started
+executing &quot;start&quot; on slave 2
+. sandbox server started
+['-']%
+</code></pre>
+
+<p>これだけでGTIDモードへ変更される。<br />
+何をやったかはコメントアウトで出力されていて大変便利。</p>
+
+<p>先ほどと同様にレプリケーションのチェック</p>
+
+<pre><code>['-']% ./check_slaves
+master
+             File: mysql-bin.000002
+         Position: 151
+slave # 1
+              Master_Log_File: mysql-bin.000002
+          Read_Master_Log_Pos: 151
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 151
+slave # 2
+              Master_Log_File: mysql-bin.000002
+          Read_Master_Log_Pos: 151
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 151
+['-']%
+</code></pre>
+
+<p>正常にレプリケーションがされいているようだ。</p>
+
+<h2 id="テストデータの投入とgtidのチェック">テストデータの投入とGTIDのチェック</h2>
+
+<ul>
+<li>m = master</li>
+<li>s1 = slave 1</li>
+<li>s2 = slave 2</li>
+</ul>
+
+<pre><code>['-']% ./m -e 'CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)'
+['-']%
+['-']% ./m -e 'INSERT INTO test.t1 VALUES (1)'
+['-']% ./m -e 'INSERT INTO test.t1 VALUES (2)'
+['-']%
+['-']% ./m -e 'SHOW MASTER STATUS;'
++------------------+----------+--------------+------------------+------------------------------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set                        |
++------------------+----------+--------------+------------------+------------------------------------------+
+| mysql-bin.000002 |      825 |              |                  | c924fe80-1cda-11e5-89ae-14d803869455:1-3 |
++------------------+----------+--------------+------------------+------------------------------------------+
+['-']%
+['-']% ./m -e 'SHOW BINLOG EVENTS IN &quot;mysql-bin.000002&quot;'
++------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+| Log_name         | Pos | Event_type     | Server_id | End_log_pos | Info                                                              |
++------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+| mysql-bin.000002 |   4 | Format_desc    |         1 |         120 | Server ver: 5.6.25-log, Binlog ver: 4                             |
+| mysql-bin.000002 | 120 | Previous_gtids |         1 |         151 |                                                                   |
+| mysql-bin.000002 | 151 | Gtid           |         1 |         199 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:1' |
+| mysql-bin.000002 | 199 | Query          |         1 |         317 | CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)                  |
+| mysql-bin.000002 | 317 | Gtid           |         1 |         365 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:2' |
+| mysql-bin.000002 | 365 | Query          |         1 |         440 | BEGIN                                                             |
+| mysql-bin.000002 | 440 | Query          |         1 |         540 | INSERT INTO test.t1 VALUES (1)                                    |
+| mysql-bin.000002 | 540 | Xid            |         1 |         571 | COMMIT /* xid=29 */                                               |
+| mysql-bin.000002 | 571 | Gtid           |         1 |         619 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:3' |
+| mysql-bin.000002 | 619 | Query          |         1 |         694 | BEGIN                                                             |
+| mysql-bin.000002 | 694 | Query          |         1 |         794 | INSERT INTO test.t1 VALUES (2)                                    |
+| mysql-bin.000002 | 794 | Xid            |         1 |         825 | COMMIT /* xid=32 */                                               |
++------------------+-----+----------------+-----------+-------------+-------------------------------------------------------------------+
+['-']%
+['-']%
+</code></pre>
+
+<h2 id="slaveの状態チェック">SLAVEの状態チェック</h2>
+
+<pre><code>['-']% ./check_slaves
+master
+             File: mysql-bin.000002
+         Position: 825
+slave # 1
+              Master_Log_File: mysql-bin.000002
+          Read_Master_Log_Pos: 825
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 825
+slave # 2
+              Master_Log_File: mysql-bin.000002
+          Read_Master_Log_Pos: 825
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+          Exec_Master_Log_Pos: 825
+['-']%
+</code></pre>
+
+<h2 id="gtidのチェック">GTIDのチェック</h2>
+
+<pre><code>['-']% ./s1 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+['-']% ./s2 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-3
+['-']%
+</code></pre>
+
+<h1 id="更にテストデータを追加">更にテストデータを追加</h1>
+
+<pre><code>['-']% ./m -e 'INSERT INTO test.t1 VALUES (3)'
+['-']% ./m -e 'SHOW MASTER STATUS;'
++------------------+----------+--------------+------------------+------------------------------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set                        |
++------------------+----------+--------------+------------------+------------------------------------------+
+| mysql-bin.000002 |     1079 |              |                  | c924fe80-1cda-11e5-89ae-14d803869455:1-4 |
++------------------+----------+--------------+------------------+------------------------------------------+
+['-']% ./m -e 'SHOW BINLOG EVENTS IN &quot;mysql-bin.000002&quot;'
++------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+| Log_name         | Pos  | Event_type     | Server_id | End_log_pos | Info                                                              |
++------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+| mysql-bin.000002 |    4 | Format_desc    |         1 |         120 | Server ver: 5.6.25-log, Binlog ver: 4                             |
+| mysql-bin.000002 |  120 | Previous_gtids |         1 |         151 |                                                                   |
+| mysql-bin.000002 |  151 | Gtid           |         1 |         199 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:1' |
+| mysql-bin.000002 |  199 | Query          |         1 |         317 | CREATE TABLE test.t1(i INT NOT NULL PRIMARY KEY)                  |
+| mysql-bin.000002 |  317 | Gtid           |         1 |         365 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:2' |
+| mysql-bin.000002 |  365 | Query          |         1 |         440 | BEGIN                                                             |
+| mysql-bin.000002 |  440 | Query          |         1 |         540 | INSERT INTO test.t1 VALUES (1)                                    |
+| mysql-bin.000002 |  540 | Xid            |         1 |         571 | COMMIT /* xid=29 */                                               |
+| mysql-bin.000002 |  571 | Gtid           |         1 |         619 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:3' |
+| mysql-bin.000002 |  619 | Query          |         1 |         694 | BEGIN                                                             |
+| mysql-bin.000002 |  694 | Query          |         1 |         794 | INSERT INTO test.t1 VALUES (2)                                    |
+| mysql-bin.000002 |  794 | Xid            |         1 |         825 | COMMIT /* xid=32 */                                               |
+| mysql-bin.000002 |  825 | Gtid           |         1 |         873 | SET @@SESSION.GTID_NEXT= 'c924fe80-1cda-11e5-89ae-14d803869455:4' |
+| mysql-bin.000002 |  873 | Query          |         1 |         948 | BEGIN                                                             |
+| mysql-bin.000002 |  948 | Query          |         1 |        1048 | INSERT INTO test.t1 VALUES (3)                                    |
+| mysql-bin.000002 | 1048 | Xid            |         1 |        1079 | COMMIT /* xid=44 */                                               |
++------------------+------+----------------+-----------+-------------+-------------------------------------------------------------------+
+['-']%
+['-']% ./s1 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+['-']% ./s2 -e 'SHOW SLAVE STATUS\G' | egrep 'Running|Gtid'
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for the slave I/O thread to update it
+           Retrieved_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+            Executed_Gtid_Set: c924fe80-1cda-11e5-89ae-14d803869455:1-4
+['-']%
+</code></pre>
+
+<p>これでテスト環境が完成した</p>
+
+<h2 id="高速に検証が可能になる">高速に検証が可能になる</h2>
+
+<pre><code>['-']%
+['-']% ./s2 -e 'SELECT i FROM test.t1'
++---+
+| i |
++---+
+| 1 |
+| 2 |
+| 3 |
++---+
+['-']%
+['-']% ./use_all 'SELECT i FROM test.t1'
+# master
+i
+1
+2
+3
+# server: 1:
+i
+1
+2
+3
+# server: 2:
+i
+1
+2
+3
+['-']%
+</code></pre>
+
+<p>うーむ、便利だ。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2015%2f06%2f28%2finstall-mysql-sandobx%2f - %e5%a4%a7%e5%a4%89%e4%be%bf%e5%88%a9%e3%81%aaMySQL%3a%3aSandbox%e3%81%ae%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e3%83%a1%e3%83%a2%28GTID%e6%9c%89%e5%8a%b9%e7%b7%a8%29 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

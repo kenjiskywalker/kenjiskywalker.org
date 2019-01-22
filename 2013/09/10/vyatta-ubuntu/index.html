@@ -1,0 +1,494 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>自宅ルータをVyattaにして快適になった &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>自宅ルータをVyattaにして快適になった</h1>
+                    <h2 class="headline">
+                    September 10, 2013
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>市販のルータ兼無線アクセスポイント君が<br />
+2日に1回再起動しないとAirPlayできなくなってしまったので<br />
+この際自宅のネットワーク環境を一新すべく<br />
+Vyattaを導入した。その際のメモ。</p>
+
+<h4 id="参考url">参考URL</h4>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/mikeda/20120331/1333172105">自宅ルータをVyattaに移行しました - IT 東京 楽しいと思うこと</a></li>
+<li><a href="http://www.vyatta.com//sites/vyatta.com/files/pdfs/Vyatta_QuickStart_R6.1_v02_1.pdf">Vyatta_QuickStart_R6.1_v02_1.pdf</a></li>
+</ul>
+
+<h2 id="環境">環境</h2>
+
+<ul>
+<li>Ubuntu: 12.04.3 LTS (KVM HOST)</li>
+<li>Vyatta: VC6.6R1</li>
+</ul>
+
+<h2 id="ネットワーク">ネットワーク</h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/Network_diagram.png" alt="https://dl.dropboxusercontent.com/u/5390179/Network_diagram.png" /></p>
+
+<h2 id="買ったもの">買ったもの</h2>
+
+<p>追加NIC用に「Intel Gigabit CT Desktop Adapter EXPI9301CT」<br />
+<a href="http://www.amazon.co.jp/gp/product/B001CXWWBE/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B001CXWWBE&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B001CXWWBE&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B001CXWWBE" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<hr />
+
+<p>無線LAN用に「PLANEX FFP-PKA04D」<br />
+<a href="http://www.amazon.co.jp/gp/product/B005GHZ1GU/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B005GHZ1GU&linkCode=as2&tag=13nightcrows-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B005GHZ1GU&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=13nightcrows-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=13nightcrows-22&l=as2&o=9&a=B005GHZ1GU" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /></p>
+
+<hr />
+
+<p>スイッチは前職で頂いた8ポートのスイッチングハブを利用</p>
+
+<h1 id="構築">構築</h1>
+
+<h3 id="ブリッジのインタフェースを２つつくる">ブリッジのインタフェースを２つつくる</h3>
+
+<ul>
+<li>eth0 Internal</li>
+<li>eth1 External</li>
+</ul>
+
+<h3 id="etc-network-interfaces">/etc/network/interfaces</h3>
+
+<pre><code>auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+iface eth1 inet manual
+
+auto br0
+iface br0 inet static
+        address 192.168.0.3
+        network 192.168.0.0
+        netmask 255.255.255.0
+        broadcast 192.168.0.255
+        gateway 192.168.0.1
+        bridge_ports eth0
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+        dns-nameservers 192.168.0.1
+
+auto br1
+iface br1 inet static
+        address 0.0.0.0
+        bridge_ports eth1
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+</code></pre>
+
+<p>気が付いたらvnetがアサインされていた。
+ここらへんまだ理解していない。</p>
+
+<h3 id="brctl-show">brctl show</h3>
+
+<pre><code>bridge name     bridge id               STP enabled     interfaces
+br0             8000.20cf30ea8178       no              eth0
+br0             8000.XXXXXXXXXXXX       no              eth0
+                                                        vnet0
+                                                        vnet1
+                                                        vnet2
+br1             8000.XXXXXXXXXXXX       no              eth1
+                                                        vnet3
+lxcbr0          8000.000000000000       no
+</code></pre>
+
+<h3 id="vyattaのisoファイルを落としてくる">VyattaのISOファイルを落としてくる</h3>
+
+<pre><code>$ curl -O http://www.vyatta.com/downloads/vc6.6/vyatta-livecd_VC6.6R1_amd64.iso
+</code></pre>
+
+<h3 id="vyatta用のディスクイメージを作成する">Vyatta用のディスクイメージを作成する</h3>
+
+<pre><code>$ qemu-img create -f raw /var/lib/libvirt/images/vyatta01-2G.img 2G
+</code></pre>
+
+<h3 id="kvmでインストールする">KVMでインストールする</h3>
+
+<pre><code>$ virt-install  --connect qemu:///system  \
+--name vyatta01 \
+--ram 512  \
+--vcpus=1  \
+--disk path=/var/lib/libvirt/images/vyatta01-2G.img \
+--nographics  \
+--network=bridge:br0 --network=bridge:br1 \
+--cdrom=/tmp/vyatta-livecd_VC6.6R1_amd64.iso
+</code></pre>
+
+<p>Install Default setting</p>
+
+<ul>
+<li>login: vyatta</li>
+<li>Password: vyatta</li>
+</ul>
+
+<pre><code>
+$ virsh console Vyatta01
+
+
+boot:
+
+Welcome to Vyatta - vyatta ttyS0
+
+vyatta login: vyatta
+Password:
+Linux vyatta 3.3.8-1-amd64-vyatta #1 SMP Wed Mar 13 10:35:28 PDT 2013 x86_64
+Welcome to Vyatta.
+This system is open-source software. The exact distribution terms for
+each module comprising the full system are described in the individual
+files in /usr/share/doc/*/copyright.
+
+vyatta@vyatta:~$ install image
+Welcome to the Vyatta install program.  This script
+will walk you through the process of installing the
+Vyatta image to a local hard drive.
+Would you like to continue? (Yes/No) [Yes]:
+Probing drives: OK
+Looking for pre-existing RAID groups...none found.
+The Vyatta image will require a minimum 1000MB root.
+Would you like me to try to partition a drive automatically
+or would you rather partition it manually with parted?  If
+you have already setup your partitions, you may skip this step
+
+Partition (Auto/Parted/Skip) [Auto]:
+</code></pre>
+
+<p>のようにインストールがはじまります。<br />
+基本的にチュートリアルに乗って行けば問題ないかと。</p>
+
+<p>新しいパスワードを設定して、再起動</p>
+
+<pre><code>This will destroy all data on /dev/sda.
+Continue? (Yes/No) [No]: yes
+
+Enter password for administrator account
+Enter vyatta password:
+Retype vyatta password:
+</code></pre>
+
+<pre><code>vyatta@vyatta:~$ reboot now
+</code></pre>
+
+<h2 id="vyattaの設定">vyattaの設定</h2>
+
+<p>Vyattaは他のネットワーク機器と同じように<br />
+<code>set</code>, <code>show</code>, <code>delete</code> で全て行うことができる。</p>
+
+<ul>
+<li>setで値を設定し</li>
+<li>showで確認</li>
+<li>間違っていればdeleteで削除</li>
+<li>テストを行い、問題がなければcommit</li>
+<li>永続的に設定を保持するためにsave</li>
+</ul>
+
+<p>という一連のサイクルで設定を行う。</p>
+
+<h3 id="vyattaの内部ipを設定">Vyattaの内部IPを設定</h3>
+
+<pre><code># set interfaces ethernet eth0 address 192.168.0.1/24
+</code></pre>
+
+<h3 id="sshの許可">SSHの許可</h3>
+
+<pre><code># set service ssh listen-address 192.168.0.1
+</code></pre>
+
+<h3 id="ispと接続">ISPと接続</h3>
+
+<pre><code># set interfaces ethernet eth0 pppoe 0 user-id XXXXX@YYY.ZZZ
+# set interfaces ethernet eth0 pppoe 0 password XXXXX
+# set interfaces ethernet eth0 pppoe 0 default-route auto
+# commit
+# save
+</code></pre>
+
+<p>この時点で外部との接続が可能</p>
+
+<pre><code>$ ping 8.8.8.8 
+</code></pre>
+
+<p>などで pppoe0 =&gt; internet の疎通確認を行う</p>
+
+<h3 id="マスカレードの設定">マスカレードの設定</h3>
+
+<pre><code># set nat source rule 1 source address 192.168.0.0/24
+# set nat source rule 1 outbound-interface pppoe0
+# set nat source rule 1 translation address masquerade
+</code></pre>
+
+<p>試しにクライアントPCを</p>
+
+<ul>
+<li>IP: 192.168.0.100</li>
+<li>NETWORK: 255.255.255.0/24</li>
+<li>GATEWAY: 192.168.0.1</li>
+</ul>
+
+<p>と設定して、外部に疎通ができるか確認する。疎通ができればまずはOK。</p>
+
+<h3 id="sshを許可する">SSHを許可する</h3>
+
+<p><code>ssh 192.168.0.1 -l vyatta</code> などとしてSSHで接続してみる</p>
+
+<h3 id="dhcpを振る">DHCPを振る</h3>
+
+<p>DHCPで192.168.0.200から192.168.0.250までの<br />
+IPアドレスを割り振るように設定。</p>
+
+<pre><code># set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 start 192.168.0.200 stop 192.168.0.250
+# set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 default-router 192.168.0.1
+# set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 dns-server NTT DNS SERVER
+# set service dhcp-server shared-network-name vyatta subnet 192.168.0.0/24 dns-server NTT DNS SERVER
+</code></pre>
+
+<p>ここでハマったのが、PLANEXでもDHCPを振っていたせいで<br />
+DHCPでIPを付与されたクライアントPCのGATEWAYが<br />
+PLANEXを見に行ってしまっていていた。</p>
+
+<p>PLANEXの方のDHCP機能を無効化することで解決。<br />
+しかし今度はPLANEXの方の管理画面に入れなくなってて放置してる。</p>
+
+<h3 id="vyatta-6-6で画像が表示されない">Vyatta 6.6で画像が表示されない</h3>
+
+<p><a href="http://speed47.com/adiary/adiary.cgi/0145">Vyatta 6.6 画像が表示されない。 / 題名のないBlog（ｒｙ</a></p>
+
+<p>画像が永遠に読み込めない不具合があるので下記設定を導入</p>
+
+<pre><code>set policy route PPPOE-IN rule 10 destination address 0.0.0.0/0
+set policy route PPPOE-IN rule 10 protocol tcp
+set policy route PPPOE-IN rule 10 tcp flags 'SYN,!ACK,!FIN,!RST'
+set policy route PPPOE-IN rule 10 set tcp-mss 1360
+
+set interfaces ethernet eth0 policy route PPPOE-IN
+</code></pre>
+
+<h3 id="ポートフォワーディング">ポートフォワーディング</h3>
+
+<p>外部からアクセスできるようにフォワードする</p>
+
+<pre><code>set nat destination rule 1000 inbound-interface pppoe0
+set nat destination rule 1000 destination port 22
+set nat destination rule 1000 protocol tcp
+set nat destination rule 1000 translation port 22
+set nat destination rule 1000 translation address 192.168.0.11
+</code></pre>
+
+<pre><code>set nat destination rule 1001 inbound-interface pppoe0
+set nat destination rule 1001 destination port 60000-61000
+set nat destination rule 1001 protocol tcp_udp
+set nat destination rule 1001 translation port 60000-61000
+set nat destination rule 1001 translation address 192.168.0.12
+</code></pre>
+
+<p>こんな感じでつらつらと設定していく</p>
+
+<h3 id="まとめ">まとめ</h3>
+
+<p>ISPと接続してIPマスカレードができてDHCPが振れて<br />
+ポートフォワーディングができるVyatta最高です。</p>
+
+<p>設定変更する度に回線切れて60秒待つとかいう苦行もなくなったし<br />
+AirPlay毎日できて最高です。</p>
+
+<p>興味があれば、まずquick startのPDFだけでも見てみるといいかもです。<br />
+@mikedaさんも書かれていますが、上記設定をするだけなら簡単にできます。</p>
+
+<p>よかったらお試しください。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2013%2f09%2f10%2fvyatta-ubuntu%2f - %e8%87%aa%e5%ae%85%e3%83%ab%e3%83%bc%e3%82%bf%e3%82%92Vyatta%e3%81%ab%e3%81%97%e3%81%a6%e5%bf%ab%e9%81%a9%e3%81%ab%e3%81%aa%e3%81%a3%e3%81%9f by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

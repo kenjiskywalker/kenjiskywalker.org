@@ -1,0 +1,519 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて</h1>
+                    <h2 class="headline">
+                    December 7, 2016
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>このエントリは <a href="http://qiita.com/advent-calendar/2016/classi">Classi Advent Calendar 2016</a> 9日目の記事です。</p>
+
+<h1 id="itamaeについて">itamaeについて</h1>
+
+<h2 id="http-itamae-kitchen-http-itamae-kitchen"><a href="http://itamae.kitchen">http://itamae.kitchen</a></h2>
+
+<blockquote>
+<p>Configuration management tool inspired by Chef,<br />
+but simpler and lightweight. Formerly known as Lightchef.</p>
+</blockquote>
+
+<p>chefに疲れた人類は一縷の望みを懐き向かった先こそがitamae。</p>
+
+<h2 id="使い方">使い方</h2>
+
+<p><a href="http://itamae.kitchen">ここ</a>を見てもらえばわかる通り、chefを利用したことがある人は特に迷いなく利用できる。<br />
+利用したことがなくても第一歩については一瞬で実行可能なのでとにかくチャレンジしてみてほしい。<br />
+itamaeは裏側で<a href="https://githunob.com/mizzy/specinfra">Specinfra</a>を利用していたりしてそれもかわいい。<br />
+コード全体の見通しがよく、問題があっても（今まで問題はない）コード見て特定できる。<br />
+見通しが良いコードは、あらゆる面において最高なので、とにかくitamaeは最高ということがわかる。</p>
+
+<h2 id="provisioning-is-dead">provisioning is dead ?</h2>
+
+<p>時代はコンテナでアプリケーションをポン置き。<br />
+まだプロビジョニングで疲弊しているの？という世界はまぁわかる。</p>
+
+<h1 id="nigiru-rb-について">nigiru.rb について</h1>
+
+<p>itamaeを利用している各社においては、各々のitamae管理ツールなるものを運用していると思う。<br />
+弊社もそれ相応のものを運用しているのでこの場をお借りして軽く紹介したい。</p>
+
+<h2 id="構成">構成</h2>
+
+<p>基本は<a href="https://github.com/itamae-kitchen/itamae/wiki/Best-Practice">Best Practice</a>を参考にしている</p>
+
+<pre><code>.
+├── REAME.md
+├── bootstrap.rb
+├── cookbooks
+├── initializer.rb
+├── nigiru.rb
+├── recipe_helper.rb
+├── roles
+└── tools
+</code></pre>
+
+<h2 id="nigiruの内部処理">nigiruの内部処理</h2>
+
+<h3 id="option設定周りとec2タグの確認">option設定周りとEC2タグの確認</h3>
+
+<ul>
+<li><code>-n</code> で itamae の <code>--dry-run</code> を呼び出し</li>
+<li><code>-r</code> で role の指定</li>
+<li><code>--init</code> で <code>initializer</code>(OS起動時のみ実行したい処理)を指定</li>
+</ul>
+
+<p>EC2は<code>EC2_TAG_ROLE</code>と<code>EC2_TAG_STAGE</code>という環境変数を持っており<br />
+その環境変数を見て色々と処理を分けている。<br />
+<code>EC2_TAG_ROLE</code>はitamaeの<code>roles</code>の部分と対を成している。</p>
+
+<pre><code>opt = OptionParser.new
+
+@options = {
+  dry_run: false,
+  init: false
+}
+
+@logfile = '/var/log/itamae.log'
+
+opt.on('-n', '--dry-run')   { @options[:dry_run] = true }
+opt.on('-r ROLE', '--role') { @options[:role] = v }
+opt.on('--init')            { @options[:init] = true }
+opt.parse!(ARGV)
+
+def before_check_ec2_tag
+  if ENV['EC2_TAG_ROLE'].nil?
+    puts &quot;ENV['EC2_TAG_ROLE'] が設定されていません&quot;
+    exit 1
+  end
+  if ENV['EC2_TAG_STAGE'].nil?
+    puts &quot;ENV['EC2_TAG_STAGE'] が設定されていません&quot;
+    exit 1
+  end
+end
+</code></pre>
+
+<h3 id="itamaeの実行コマンドを生成">itamaeの実行コマンドを生成</h3>
+
+<pre><code>def make_itamae_command
+  # itamaeの実行ファイルを指定
+  itamae_bin = `which itamae`.chomp
+
+  # --init であれば initializer.rb を指定する
+  if @options[:init]
+    # initializer は role とは関係がないので before_check_ec2_tag は不要
+    command = &quot;#{itamae_bin} local --no-color --ohai #{__dir__}/initializer.rb&quot;
+  else
+    before_check_ec2_tag
+    command = &quot;#{itamae_bin} local --no-color --ohai #{__dir__}/bootstrap.rb&quot;
+  end
+
+  # dyr-runの確認
+  command += ' -n' if @options[:dry_run]
+
+  command
+end
+</code></pre>
+
+<h3 id="itamaeの実行">itamaeの実行　</h3>
+
+<pre><code># itamae実行箇所
+def exec_itamae
+  # itamaeの実行
+  stdout, status = Open3.capture2(itamae_command)
+
+  # nigiru 自身の exit code として itamaeの exit status を利用
+  itamae_exit_status = status.exitstatus
+
+  # 標準出力に出力する
+  puts stdout
+
+  # ファイルにアウトプットする
+  write_out_file(stdout)
+
+  itamae_exit_status
+end
+</code></pre>
+
+<h3 id="itamaeの実行ログをファイルに出力している">itamaeの実行ログをファイルに出力している</h3>
+
+<pre><code>def write_out_file(stdout)
+  return if @options[:dry_run]
+
+  File.open(@logfile, 'w') do |file|
+    file.puts stdout
+  end
+end
+</code></pre>
+
+<h3 id="nigiruの通知周り">nigiruの通知周り</h3>
+
+<p>メールの通知はログとして冗長であってもそこまで問題ではないにしろ、<br />
+Slackへの通知は情報量が多すぎるのでもう少し整理したい。<br />
+この辺の通知周りについての知見を知りたい。</p>
+
+<pre><code>def notify_log_to_slack(message)
+  return if @options[:dry_run]
+
+  # --init だとわかるように情報を付与
+  message += &quot; INITIALIZE&quot; if @options[:init]
+
+  if ENV['EC2_TAG_STAGE'] == &quot;production&quot;
+    slack_channel = '#CHANNEL'
+  else
+    slack_channel = '#CHANNEL'
+  end
+
+  now = `date +%Y/%m/%d:%H:%M`.chomp
+  hostname = `hostname`.chomp
+
+  `curl -s https://slack.com/api/chat.postMessage \
+     -X POST -d 'link_names=1' \
+             -d 'channel=#{slack_channel}' \
+             -d 'text=#{now}: HOSTNAME: *#{hostname}* : #{message} :sushi: ' \
+             -d 'username=itamae' \
+             -d 'icon_emoji=:itamae:' \
+             -d 'token=#{ENV['SLACK_TOKEN']}'`
+end
+</code></pre>
+
+<p><code>hostname</code>全体で持てばいいな&hellip;</p>
+
+<pre><code>def notify_log_to_mail
+  return if @options[:dry_run]
+
+  now      = `date +%Y/%m/%d:%H:%M`.chomp
+  hostname = `hostname`.chomp
+
+  `cat #{@logfile} | col -b | mail -s &quot;ITAMAE LOG #{hostname} : #{now}&quot; #{mail_to}`
+end
+</code></pre>
+
+<h3 id="mainの処理">mainの処理</h3>
+
+<pre><code># itamaeの実行の通知
+notice_log_by_slack(&quot;ITAMAE START&quot;)
+
+# itamaeを実行して実行ステータスをitamae_exit_status に入れる
+itamae_exit_status = exec_command
+
+# 実行した内容をメールで送る
+notice_log_by_mail
+
+# 実行内容をSlackへ通知
+notice_log_by_slack(File.read(@logfile))
+
+# 完了後の通知実行箇所
+if itamae_exit_status != 0
+  notice_log_by_slack(&quot;:anger: ITAMAE ERROR!!!&quot;)
+else
+  notice_log_by_slack(&quot;ITAMAE DONE&quot;)
+end
+
+exit itamae_exit_status
+</code></pre>
+
+<h1 id="initializer-rbとbootstrap-rbについて">initializer.rbとbootstrap.rbについて</h1>
+
+<h2 id="initializer-rb">initializer.rb</h2>
+
+<p><code>./cookbooks/initializer/default.rb</code>と<br />
+<code>./cookbooks/common/default.rb</code>を読み込んでいる。</p>
+
+<pre><code>#!/usr/bin/env ruby
+
+require File.join(__dir__, &quot;./recipe_helper.rb&quot;)
+
+# Roleのattributeを優先する
+include_attributes :role, &quot;initializer&quot;
+include_attributes :role, &quot;common&quot;
+
+# 何も指定しない場合は ENV['EC2_TAG_ROLE'] のroleを実行するようにしよう
+include_recipe File.join('roles', 'initializer', 'default.rb')
+</code></pre>
+
+<ul>
+<li>recipe_helper.rb</li>
+</ul>
+
+<p><code>include_cookbook</code>と<code>include_attributes</code>をhelperで実装。</p>
+
+<pre><code>module RecipeHelper
+  def include_cookbook(name)
+    include_recipe File.join(__dir__, &quot;cookbooks&quot;, name, &quot;default.rb&quot;)
+  end
+
+  # type: :roles or :cookbooks
+  def include_attributes(type, name)
+    unless %i(role cookbook).include?(type)
+      raise &quot;type must be #{type}&quot;
+    end
+
+    filepath =File.join(__dir__, &quot;#{type}s&quot;, name, &quot;attributes.rb&quot;)
+    if File.exists?(filepath)
+      include_recipe filepath
+    else
+      Itamae.logger.warn &quot;attribute not found: #{filepath}&quot;
+    end
+  end
+end
+
+Itamae::Recipe::EvalContext.include(RecipeHelper)
+</code></pre>
+
+<ul>
+<li>./cookbooks/initializer/default.rb</li>
+</ul>
+
+<p>OS起動時に必要な処理を色々とやっている</p>
+
+<pre><code>include_recipe './boot_file.rb'
+include_recipe './directorys.rb'
+include_recipe './os_settings.rb'
+include_recipe './swap.rb'
+...
+</code></pre>
+
+<h2 id="bootstrap-rb">bootstrap.rb</h2>
+
+<p><code>roles/ROLE/default.rb</code>を読み込むための設定。<br />
+各種インストールパッケージや、agent周りの設定は<code>common</code>に記載している。</p>
+
+<pre><code>require File.join(__dir__, &quot;./recipe_helper.rb&quot;)
+
+# Roleのattributeを優先する
+include_attributes :role, ENV['EC2_TAG_ROLE']
+include_attributes :role, &quot;common&quot;
+
+# 共通のrecipeはここで読み込む
+include_recipe File.join('roles/common/default.rb')
+
+# 何も指定しない場合は ENV['EC2_TAG_ROLE'] のroleを実行する
+include_recipe File.join('roles', ENV['EC2_TAG_ROLE'], 'default.rb')
+</code></pre>
+
+<h1 id="nigiruをどうやって実行しているか">nigiruをどうやって実行しているか</h1>
+
+<h2 id="ciに連動したプロビジョニング">CIに連動したプロビジョニング</h2>
+
+<p>CircleCI + CodeDeployでpull型のdeployを実装している。<br />
+しかし、逐次処理の処理速度の遅さと、一括処理による失敗時のリスクのバランスの取り方が<br />
+適切ではない。全体のn%に対してプロビジョニングを行うなども感がているが<br />
+みんなどうやっているのか知見を知りたい。</p>
+
+<h2 id="インスタンス起動時に実行">インスタンス起動時に実行</h2>
+
+<p><code>/var/lib/cloud/scripts/per-boot/002_itamae.sh</code></p>
+
+<p>というファイルを用意しておき、インスタンス起動時には<br />
+最新のmasterをpullし、<code>nigiru</code>ようにしている。<br />
+ご覧の通り、001や003、004など色々な処理をインスタンス起動時にしているが<br />
+数字に特に意味はない。</p>
+
+<h1 id="おわりに">おわりに</h1>
+
+<p>全体的な流れをつらつらと書いたが、雰囲気だけでも理解してもらえればありがたい。<br />
+また、この記事を元に、いや、うちではこうしている、その処理はこうすべき、と<br />
+議論に発展すればなおありがたい💪☺️</p>
+
+<p>COOKPAD社の方のソフトウェアには色々とお世話になってはいるが、<br />
+物理的にお会いしたことがないので、お会いした際には是非感謝の意を伝えたい🙏</p>
+
+<p>また、itamaeに関しては、chef -&gt; ansible -&gt; itamaeという<br />
+プロビジョニングツールを利用してきた遍歴から、多少はプロビジョニングについての<br />
+ノウハウのようなものを習得したかもしれない前提であっても、<br />
+自分で細かい処理が実装できる点において、itamaeは最高としか言いようがない。<br />
+<a href="https://github.com/ryotarai">ryotaarai</a>さんありがとうございます🙏</p>
+
+<p>明日はkitaharamikiyaさんの「Appiumを使ってみた話」です。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2016%2f12%2f07%2fnigiru%2f - itamae%20%e3%81%8c%20nigiru%20%e3%81%9f%e3%82%81%e3%81%ae%20nigiru.rb%20%e3%81%a8%e3%81%84%e3%81%86%e7%a4%be%e5%86%85%e3%83%97%e3%83%ad%e3%83%93%e3%82%b8%e3%83%a7%e3%83%8b%e3%83%b3%e3%82%b0%e3%83%84%e3%83%bc%e3%83%ab%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

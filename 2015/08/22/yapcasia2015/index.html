@@ -1,0 +1,240 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>YAPC::Asia 2015で冗長化に失敗した話をしてきました #yapcasia &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>YAPC::Asia 2015で冗長化に失敗した話をしてきました #yapcasia</h1>
+                    <h2 class="headline">
+                    August 22, 2015
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/moris-mirakui.png" alt="" /></p>
+
+<blockquote>
+<p>発表用資料の1ページ</p>
+</blockquote>
+
+<h2 id="我々はどのように冗長化を失敗したのか-yapc-asia-tokyo-2015-http-yapcasia-org-2015-talk-show-f2816038-10ec-11e5-89bf-d7f07d574c3a"><a href="http://yapcasia.org/2015/talk/show/f2816038-10ec-11e5-89bf-d7f07d574c3a">我々はどのように冗長化を失敗したのか / YAPC::Asia TOKYO 2015</a></h2>
+
+<p>この発表をしてきました。</p>
+
+<p>前日の<a href="http://hitode909.hatenablog.com/entry/2015/08/21/165932">hitode909さんの発表</a>や、<a href="https://speakerdeck.com/fujiwara3/consultozi-zuo-osswohuo-yong-sita100tai-gui-mo-falsewebsabisuyun-yong">fujiwaraさんの発表</a>を見て、</p>
+
+<p>ああ、自分はなんて見づらいスライドをつくってしまったんだ。という反省をして<br />
+154枚もあるし、後ろの人が見づらいだろうなと感じたので<br />
+(そもそもそれぐらい人が聞きに来てくれればだけど&hellip;)<br />
+先にスライドを公開しておいて、そちらを参照してもらうようにしました。</p>
+
+<p><blockquote class="twitter-tweet" lang="ja"><p lang="ja" dir="ltr">11:10からの話のスライド、見づらいものつくってしまって、後ろの席の人は見づらいと思うので先にスライドアップロードしています。見づらい場合はこちらを見て下さい🙏 <a href="https://t.co/jwYtO03jU1">https://t.co/jwYtO03jU1</a> <a href="https://twitter.com/hashtag/yapcasiaD?src=hash">#yapcasiaD</a></p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/status/634905926533644288">2015, 8月 22</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>この方法は良かった印象がある。<br />
+で、スライドはこちらになります</p>
+
+<div style="width: 65%">
+<script async class="speakerdeck-embed" data-id="cde37ad797ab49dd92584770e9798d9a" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>  
+</div>
+
+<p><blockquote class="twitter-tweet" data-cards="hidden" lang="en"><p lang="ja" dir="ltr">Nice try / SpeakerDeckでかい問題は <a href="http://t.co/MKonnBdKsX">http://t.co/MKonnBdKsX</a> で解決ですよ / “YAPC::Asia 2015で冗長化に失敗した話をしてきました <a href="https://twitter.com/hashtag/yapcasia?src=hash">#yapcasia</a> - さよならインター…” <a href="http://t.co/l3F9su5RCE">http://t.co/l3F9su5RCE</a></p>&mdash; Uchio KONDO (@udzura) <a href="https://twitter.com/udzura/status/635644624120340481">August 24, 2015</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<blockquote>
+<p>うづらさんありがとうございます！</p>
+</blockquote>
+
+<p>何回か発表の練習したんですが、何回やっても時間過ぎなくて、<br />
+本当かな〜って思ったんだけど緊張しながら話すとやっぱり色々うまく行かなくて<br />
+ちょくちょく時間を気にして早く話しちゃったところとか、上手く話せないところとかあって<br />
+ちゃんと伝えたかったことが上手く伝えられたか不安になったけど<br />
+去年よりかはまともにできたっぽくて、共感してもらえたところも結構あったようで発表できて良かった。<br />
+とてもたくさんの人が聞きに来てくれて嬉しかったです。聞きに来てくれてありがとうございました。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2015%2f08%2f22%2fyapcasia2015%2f - YAPC%3a%3aAsia%202015%e3%81%a7%e5%86%97%e9%95%b7%e5%8c%96%e3%81%ab%e5%a4%b1%e6%95%97%e3%81%97%e3%81%9f%e8%a9%b1%e3%82%92%e3%81%97%e3%81%a6%e3%81%8d%e3%81%be%e3%81%97%e3%81%9f%20%23yapcasia by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

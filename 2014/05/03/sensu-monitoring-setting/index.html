@@ -1,0 +1,463 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>Sensuの監視の設定 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Sensuの監視の設定</h1>
+                    <h2 class="headline">
+                    May 3, 2014
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><a href="http://blog.kenjiskywalker.org/blog/2014/05/02/newbie-sensu/">Sensu導入と初期設定について</a>の続きのエントリーになります。</p>
+
+<h3 id="pluginの書き方">pluginの書き方</h3>
+
+<p><a href="http://sensuapp.org/docs/0.12/checks">http://sensuapp.org/docs/0.12/checks</a><br />
+<a href="http://sensuapp.org/docs/0.12/adding_a_check">http://sensuapp.org/docs/0.12/adding_a_check</a></p>
+
+<p>上記ドキュメントを参考にして頂くとわかる通り</p>
+
+<ul>
+<li>status code が<code>0</code>であれば<code>OK</code><br /></li>
+<li>status code が<code>1</code>であれば<code>WARNING</code></li>
+<li>status code が<code>2</code>であれば<code>CRITICAL</code></li>
+<li>status code が<code>3</code>であれば<code>UNKNOWN</code></li>
+</ul>
+
+<p>という方法で監視を行います。</p>
+
+<p>コミュニティプラグインを確認すると、そのほとんどが<br />
+<code>require 'sensu-plugin/check/cli'</code>を呼び出していることがわかります。</p>
+
+<h3 id="https-github-com-sensu-sensu-plugin-https-github-com-sensu-sensu-plugin"><a href="https://github.com/sensu/sensu-plugin">https://github.com/sensu/sensu-plugin</a></h3>
+
+<p>check用のメソッド、metrics用のメソッドを<br />
+それぞれ利用することが可能になります。<br />
+まだ私はpluginを書いたことがないので、また書く機会があれば<br />
+その時に改めて詳細を書きたいと思います。</p>
+
+<h3 id="気を付けなければならないこと">気を付けなければならないこと</h3>
+
+<p>導入以前は、Sensuはアラートとメトリクスのデータを<br />
+同じデータを利用して監視を行うことができると考えていたのですが<br />
+これは誤りで、</p>
+
+<ul>
+<li>checkはcheck用のプラグイン</li>
+<li>metricsはmetircs用のプラグイン
+<br /></li>
+</ul>
+
+<p>と分かれています。なかなかZABBIXのように万能にはいかないようです。</p>
+
+<h2 id="checks">checks</h2>
+
+<pre><code>{
+  &quot;checks&quot;: {
+    &quot;check_cpu&quot;: {
+      &quot;command&quot;: &quot;/etc/sensu/plugins/check-cpu.rb -w 90 -c 100&quot;,
+      &quot;interval&quot;: 60,
+      &quot;occurrences&quot;: 5,
+      &quot;subscribers&quot;: [&quot;all&quot;],
+      &quot;handlers&quot;: [&quot;hipchat&quot;, &quot;mailer&quot;]
+    }
+  },
+  &quot;checks&quot;: {
+    &quot;check_cpu_nervous&quot;: {
+      &quot;command&quot;: &quot;/etc/sensu/plugins/check-cpu.rb -w 10 -c 30&quot;,
+      &quot;interval&quot;: 60,
+      &quot;subscribers&quot;: [&quot;admin&quot;],
+      &quot;handlers&quot;: [&quot;hipchat&quot;, &quot;mailer&quot;]
+    }
+  }
+}
+</code></pre>
+
+<ul>
+<li>&ldquo;check_cpu&rdquo;, &ldquo;check_cpu_nervous&rdquo;</li>
+</ul>
+
+<p>設定内容の名前です。<br />
+Sensuは設定内容のjsonがdeep_mergeされるので、ここはユニークな値にしてください。<br />
+よくあるミスとして、利用するプラグインは同じで<br />
+上記のように設定内容が微妙に違うという場合、元のファイルをコピーし<br />
+名前を変更するのを忘れて上書きされてしまい<br />
+設定ファイルを作成したのに上手く認識されない。ということがよくあります。</p>
+
+<ul>
+<li>&ldquo;commnand&rdquo;</li>
+</ul>
+
+<p>実行するコマンドです。status codeとSTDOUT,STDERRのどちらかが返ってくれば、<br />
+Rubyでなくとも、シェルスクリプトやGo、pythonなど何を利用しても問題ありません。<br />
+nagios pluginと設定を合わせている為、nagiosのpluginを利用することが可能です。</p>
+
+<ul>
+<li>&ldquo;interval&rdquo;</li>
+</ul>
+
+<p>コマンドを実行する間隔です。</p>
+
+<ul>
+<li>&ldquo;occurrences&rdquo;</li>
+</ul>
+
+<p>監視通知の閾値です。例えば<code>occurrences</code>が<code>3</code>に設定されていた場合<br />
+<em>3回継続してアラートの条件を満たした場合にアラート通知する。</em><br />
+という条件になります。デフォルトは<code>1</code>で、1回でも<br />
+アラートの条件を満たしたら通知が行われます。</p>
+
+<ul>
+<li>&ldquo;subscribers&rdquo;</li>
+</ul>
+
+<p>ここでホストとアラートの紐付けを行います。<br />
+client側で設定されている<code>subscriptions</code>を見て<br />
+<code>subscribers</code>と同じであれば、その監視を行う条件を満たし<br />
+監視コマンドが実行されるようになります。</p>
+
+<ul>
+<li>&ldquo;handlers&rdquo;</li>
+</ul>
+
+<p>アラートの条件を満たしていた場合の通知先の設定です。<br />
+上記設定例でいうと、HipChatとmailを利用します。<br />
+通知先の設定内容はSensu server側にて行います。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/hipchat.json</li>
+</ul>
+
+<pre><code>{
+  &quot;handlers&quot;: {
+    &quot;hipchat&quot;: {
+      &quot;type&quot;: &quot;pipe&quot;,
+      &quot;command&quot;: &quot;/etc/sensu/handlers/hipchat.rb&quot;
+    }
+  },
+  &quot;hipchat&quot;: {
+    &quot;apikey&quot;: &quot;APIKEY&quot;,
+    &quot;apiversion&quot;: &quot;v1&quot;,
+    &quot;room&quot;: &quot;ROOM_NAME&quot;,
+    &quot;from&quot;: &quot;FROM_NAME&quot;
+  }
+}
+</code></pre>
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/mailer.json</li>
+</ul>
+
+<pre><code>{
+  &quot;handlers&quot;: {
+    &quot;mailer&quot;: {
+      &quot;type&quot;: &quot;pipe&quot;,
+      &quot;command&quot;: &quot;/etc/sensu/handlers/mailer.rb&quot;
+    }
+  },
+  &quot;mailer&quot;: {
+    &quot;mail_from&quot;: &quot;sensu@example.com&quot;,
+    &quot;mail_to&quot;: &quot;alert@example.com&quot;,
+    &quot;smtp_address&quot;: &quot;192.0.2.100&quot;,
+    &quot;smtp_port&quot;: &quot;25&quot;,
+    &quot;smtp_domain&quot;: &quot;example.com&quot;
+  }
+}
+</code></pre>
+
+<p>上記のような設定を行います。</p>
+
+<h2 id="metircs">metircs</h2>
+
+<p>checkとの違いは<code>&quot;type&quot;: &quot;metric&quot;</code>の有無の違いのみ。<br />
+<code>&quot;type&quot;: &quot;metric&quot;</code>が存在すると_handle_event_メソッドを実行します。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/metrics/metrics-cpu.json</li>
+</ul>
+
+<pre><code>{
+  &quot;checks&quot;: {
+    &quot;metrics_cpu_pcnt-usage&quot;: {
+      &quot;type&quot;: &quot;metric&quot;,
+      &quot;command&quot;: &quot;/etc/sensu/plugins/cpu-pcnt-usage-metrics.rb --scheme stats.:::name:::.cpu&quot;,
+      &quot;interval&quot;: 60,
+      &quot;subscribers&quot;: [ &quot;all&quot; ],
+      &quot;handlers&quot;: [&quot;graphite&quot;]
+    }
+  }
+}
+</code></pre>
+
+<ul>
+<li>&ldquo;command&rdquo;</li>
+</ul>
+
+<p>基本的にmetircs系のプラグインはschemeの設定が可能になっている。<br />
+これは大変便利で、上記設定例でいうと<br />
+<code>stats.hostname.cpu.cpu_pcnt.*</code>のように
+スキーマを定義することが可能になります。</p>
+
+<ul>
+<li>/etc/sensu/conf.d/handlers/graphite.json</li>
+</ul>
+
+<pre><code>{
+  &quot;handlers&quot;: {
+    &quot;graphite&quot;: {
+      &quot;type&quot;: &quot;tcp&quot;,
+      &quot;socket&quot;: {
+        &quot;host&quot;: &quot;127.0.0.1&quot;,
+        &quot;port&quot;: 2003
+      },
+      &quot;mutator&quot;: &quot;only_check_output&quot;
+    }
+  }
+}
+</code></pre>
+
+<p>上記graphiteの設定は、_pipe_、_tcp_や_udp_などを利用し<br />
+handlerへ渡すことが可能なので、それを利用した設定内容になります。</p>
+
+<ul>
+<li>&ldquo;mutator&rdquo;: &ldquo;only_check_output&rdquo;</li>
+</ul>
+
+<p><code>only_check_output.rb</code>を見る限り、<br />
+<code>check</code>の結果を<code>0</code>で返す(checkを行わない)オプションのようです。</p>
+
+<h2 id="client">client</h2>
+
+<ul>
+<li>/etc/sensu/conf.d/client.json</li>
+</ul>
+
+<blockquote>
+<p>_/etc/sensu/conf.d/_ディレクトリ配下であれば<br />
+clientの設定のファイル名に決まりはありません。</p>
+</blockquote>
+
+<pre><code>{
+  &quot;client&quot;: {
+    &quot;name&quot;: &quot;client_name&quot;,
+    &quot;address&quot;: &quot;192.0.2.10&quot;,
+    &quot;subscriptions&quot;: [&quot;all&quot;, &quot;admin&quot;, &quot;foo&quot;]
+  }
+}
+</code></pre>
+
+<ul>
+<li>&ldquo;name&rdquo;</li>
+</ul>
+
+<p>Sensu clientの名前です。</p>
+
+<ul>
+<li>&ldquo;address&rdquo;</li>
+</ul>
+
+<p>Sensu clientのアドレスです。<br />
+IPアドレスでもDNS名でも何でも良いです。誤っていたからといって<br />
+Sensu serverと接続できなくなるということはありません。</p>
+
+<ul>
+<li>&ldquo;subscriptions&rdquo;</li>
+</ul>
+
+<p>Sensu server側で行ったcheck、metricsに対する関連付けです。<br />
+関連付けされる対象は<code>subscribers</code>です。</p>
+
+<h2 id="五月雨式ではありますが">五月雨式ではありますが</h2>
+
+<p>監視をする上での細かい設定内容の解説でした。<br />
+ドキュメントを読み進める上でのお役に立てれば幸いです。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2014%2f05%2f03%2fsensu-monitoring-setting%2f - Sensu%e3%81%ae%e7%9b%a3%e8%a6%96%e3%81%ae%e8%a8%ad%e5%ae%9a by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

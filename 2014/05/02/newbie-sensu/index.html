@@ -1,0 +1,458 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>Sensu導入と初期設定について &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Sensu導入と初期設定について</h1>
+                    <h2 class="headline">
+                    May 2, 2014
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<blockquote>
+<p>Chef: 11.8.0<br />
+sensu: 0.12.3<br />
+RabbitMQ: 3.1.5<br />
+erlang R14B-04.1.4<br />
+Redis :2.6.17</p>
+</blockquote>
+
+<h2 id="参考">参考 :</h2>
+
+<p><a href="http://blog.glidenote.com/blog/2013/11/26/sensu/">監視ソフトをNagiosからSensuに切り替えて2ヶ月経ったのでまとめた - Glide Note</a><br />
+<a href="http://inokara.hateblo.jp/entry/2014/03/03/013147">Amazon Linux 上に sensu-server を構築する（1）- ようへいの日々精進 XP</a></p>
+
+<p>特にようへいさんのブログはSensuのエントリーが多く、大変参考になります。<br />
+ありがとうございます。</p>
+
+<h2 id="sensu-server-sensu-client-のインストール">Sensu server + Sensu client のインストール</h2>
+
+<p>Chefを利用します。<br />
+インストール自体は<a href="http://blog.kenjiskywalker.org/blog/2014/01/05/sensu-centos6-4-erlang-install/">RabbitMQでコケる記事</a>を参考にして下さい。<br />
+2014/05/02 現在、RabbitMQのインストールで失敗することはなくなりました。
+また、下記に記載しますが、インストール先サーバのRubyのバージョンに環境が左右されないように<br />
+<code>&quot;use_embedded_ruby&quot;: true</code>としてembedded rubyを利用することをおすすめいたします。</p>
+
+<h4 id="tips">tips</h4>
+
+<p><a href="https://github.com/kenjiskywalker/sensu-chef/commit/9377295e8c5fabf9631104b52a84ee6d10683383">sensu-chef から include_recipe&rdquo;yum&rdquo; 外す</a></p>
+
+<p>基本的にsensuをインストールするのに既存のものを破壊することはないのですが<br />
+<code>sensu-chef</code>の中に<strong>include_recipe &ldquo;yum&rdquo;</strong>しているところがあり<br />
+この設定をよしなにしないと<code>yum.conf</code>が書き換えられてしまいます。</p>
+
+<p>sensuのインストールは<code>sensu.repo</code>を追加して行うので「include_recipe &ldquo;yum&rdquo;」は不要です。<br />
+既存のサーバにインストールするときは気を付けて下さい。</p>
+
+<p>この前<a href="https://github.com/sensu/sensu-chef/pull/235">ryuzeeさんのpull request</a>が取り込まれて<br />
+Amazon Linuxにインストールすることができるようになりました。</p>
+
+<ul>
+<li>sensu_server.json</li>
+</ul>
+
+<p>sensuとredisとrabbitmqをインストールしてください。</p>
+
+<ul>
+<li>sensu_server.json</li>
+</ul>
+
+<pre><code>{
+  &quot;sensu&quot;: {
+      &quot;use_embedded_ruby&quot;: true,
+      &quot;dashboard&quot;: {
+          &quot;user&quot;: &quot;foo&quot;,
+          &quot;password&quot;: &quot;bar&quot;
+      },
+       &quot;rabbitmq&quot;: {
+          &quot;host&quot;: &quot;localhost&quot;,
+          &quot;port&quot;: 5671,
+          &quot;vhost&quot;: &quot;/sensu&quot;,
+          &quot;password&quot;: &quot;baz&quot;
+      },
+      &quot;node_subscriptions&quot;: [
+          &quot;sensu_server&quot;
+      ]
+  },
+  &quot;run_list&quot;: [&quot;recipe[sensu]&quot;, &quot;recipe[sensu::redis]&quot;, &quot;recipe[sensu::rabbitmq]&quot;]
+}
+</code></pre>
+
+<p>上記内容でChefを廻せばインストールされるかと思います。<br />
+パスワードやポートなどデフォルトの設定のままで問題なければ指定は不要です。</p>
+
+<h2 id="sensu-client-のインストール">Sensu client のインストール</h2>
+
+<p>clientはsensu-clientだけが動いていれば大丈夫です。</p>
+
+<ul>
+<li>sensu_client.json</li>
+</ul>
+
+<pre><code>{
+  &quot;sensu&quot;: {
+        &quot;use_embedded_ruby&quot;: true,
+        &quot;node_subscriptions&quot;: [ &quot;sensu_client&quot; ],
+        &quot;use_embedded_ruby&quot;: true,
+        &quot;rabbitmq&quot;: {
+              &quot;host&quot;: &quot;sensu-server&quot;,
+              &quot;port&quot;: 5671,
+              &quot;vhost&quot;: &quot;/sensu&quot;,
+              &quot;password&quot;: &quot;baz&quot;
+          }
+
+    }
+  },
+  &quot;run_list&quot;: [&quot;recipe[sensu]&quot;]
+}
+</code></pre>
+
+<p>上記内容でChefを廻せばインストールされるかと思います。<br />
+パスワードやポートなどデフォルトの設定のままで問題なければ指定は不要です。</p>
+
+<h2 id="sensu-serverの設定">Sensu serverの設定</h2>
+
+<p>Chefの動作が問題なければ<code>/etc/sensu/config.json</code>のファイルが作成されているかと思います。</p>
+
+<pre><code>$ /etc/init.d/sensu-server start
+$ tail -F /var/log/sensu/sensu-server.log
+</code></pre>
+
+<p>起動できることを確認してください。<br />
+最初、すごい勘違いしていたのですが、sensu-apiはdashboardの為の機能で<br />
+sensu-serverには必要ないと思っていたのですが、基本的なミドルウェア間のやり取りは<br />
+sensu-apiを通して利用することになります。なので</p>
+
+<pre><code>$ /etc/init.d/sensu-api start
+$ tail -F /var/log/sensu/sensu-api.log
+</code></pre>
+
+<p>として、sensu-apiを起動してください。<br />
+これでsensu-clientからデータを受け付ける準備ができました。</p>
+
+<h2 id="sensu-clientの設定">Sensu clientの設定</h2>
+
+<p><a href="https://github.com/kenjiskywalker/sensu-client-plugin">https://github.com/kenjiskywalker/sensu-client-plugin</a></p>
+
+<p>多分みなさんこのような自前recipeを作成しているかと思いますが<br />
+上記のrecipeを利用して<code>/etc/sensu/conf.d/client.json</code>という<br />
+client用のjsonファイルを作成します。</p>
+
+<p>pluginの配布も上記cookbookを利用して配布しようかなと考えていますが<br />
+Chefの実行自体のコストが地味に大きいので、配布自体はrsyncか何かで配布して<br />
+Chefで冪等性を確保するのが効率良いのかなとも考えています。</p>
+
+<pre><code>$ /etc/init.d/sensu-client start
+$ tail -F /var/log/sensu/sensu-client.log
+</code></pre>
+
+<h2 id="監視項目の追加-server">監視項目の追加(server)</h2>
+
+<ul>
+<li>監視に利用するプラグインのコマンド置き場</li>
+</ul>
+
+<p><code>/etc/sensu/plugins/</code></p>
+
+<ul>
+<li>通知に利用するプラグインのコマンド置き場</li>
+</ul>
+
+<p><code>/etc/sensu/handlers/</code></p>
+
+<ul>
+<li>監視内容の設定・通知の設定など</li>
+</ul>
+
+<p><code>/etc/sensu/conf.d/</code></p>
+
+<h2 id="ファイル構成">ファイル構成</h2>
+
+<ul>
+<li>server</li>
+</ul>
+
+<pre><code>/etc/sensu/
+├── conf.d
+│   ├── checks
+│   │   ├── check_cpu.json
+│   │   ├── check_disk.json
+│   │   ├── check_mailq.json
+│   │   ├── check_memcached.json
+│   │   ├── check_mongodb.json
+│   │   ├── check_mongodb_replica.json
+│   │   ├── check_proc_apache.json
+│   │   ├── check_proc_nginx.json
+│   │   ├── check_redis_info.json
+│   │   ├── check_redis_info_slave.json
+│   │   ├── check_smtp.json
+│   ├── handlers
+│   │   ├── graphite.json
+│   │   ├── hipchat.json
+│   │   └── mailer.json
+│   ├── metrics
+│   │   ├── metrics-cpu.json
+│   │   ├── metrics-disk_usage.json
+│   │   ├── metrics-net.json
+│   │   ├── metrics-netstat-tcp.json
+│   │   └── metrics-vmstat.json
+│   └── README.md
+├── config.json
+├── extensions
+├── handlers
+│   ├── hipchat.rb
+│   └── mailer.rb
+├── mutators
+├── plugins
+└── ssl
+    ├── cert.pem
+    └── key.pem
+</code></pre>
+
+<p>Sensu serverを監視しないとういことはないので<br />
+<code>/etc/sensu/plugins/</code>配下に監視用のコマンドを起きますが<br />
+Sensu serverが動く最低限の設定例を記載します。</p>
+
+<p>Sensu serverはSensu clientにこれを実行してねという機能を持ち<br />
+Sensu clientはserverから受け取ったjobを実行し<br />
+serverへ結果を返す。という繰り返しを行います。</p>
+
+<ul>
+<li>client</li>
+</ul>
+
+<pre><code>/etc/sensu/
+├── conf.d
+│   ├── client.json
+│   └── README.md
+├── config.json
+├── extensions
+├── handlers
+├── mutators
+├── plugins
+│   ├── check-cpu.rb
+│   ├── check-disk.rb
+│   ├── check-http.rb
+│   ├── check-mailq.rb
+│   ├── check-memcached-stats.rb
+│   ├── check_mongodb.py
+│   ├── check_mongo_replica_stat.rb
+│   ├── check-procs.rb
+│   ├── check-redis-info.rb
+│   ├── cpu-pcnt-usage-metrics.rb
+│   ├── disk-usage-metrics.rb
+│   ├── metrics-net.rb
+│   ├── metrics-netstat-tcp.rb
+│   └── vmstat-metrics.rb
+└── ssl
+    ├── cert.pem
+    └── key.pem
+</code></pre>
+
+<h3 id="sensu-server">Sensu server</h3>
+
+<ul>
+<li>監視の設定は必要(<em>/etc/sensu/conf.d/etc/</em>)</li>
+<li>監視のコマンドは必要ない(<em>/etc/sensu/plugins/</em>)</li>
+</ul>
+
+<h3 id="sensu-client">Sensu client</h3>
+
+<ul>
+<li>監視の設定は必要ない(<em>/etc/sensu/conf.d/etc/</em>)</li>
+<li>監視のコマンドは必要(<em>/etc/sensu/plugins/</em>)</li>
+</ul>
+
+<p>ということになります。</p>
+
+<p>まだ完全に動作を理解してるわけではないので<br />
+次はもう少し確認した後、監視の仕組みについてまとめたいと思います。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2014%2f05%2f02%2fnewbie-sensu%2f - Sensu%e5%b0%8e%e5%85%a5%e3%81%a8%e5%88%9d%e6%9c%9f%e8%a8%ad%e5%ae%9a%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

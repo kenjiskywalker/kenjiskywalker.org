@@ -1,0 +1,459 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>超初級！Fluentdのプラグインを書きたくなった時の下地づくり &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>超初級！Fluentdのプラグインを書きたくなった時の下地づくり</h1>
+                    <h2 class="headline">
+                    January 5, 2013
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>fluentdをまともに動かしたことないけど<br />
+プラグイン書いたらわかるのでは！！？<br />
+と思い立って取り敢えず下地だけつくったのでメモ。</p>
+
+<h4 id="参考">参考</h4>
+
+<ul>
+<li><a href="http://d.hatena.ne.jp/tagomoris/20120221/1329815126">fluentdのためのプラグインをイチから書く手順(bundler版) / tagomorisのメモ置き場</a><br /></li>
+<li><a href="http://docs.fluentd.org/articles/plugin-development">Writing plugins / fluentd</a><br /></li>
+<li><a href="https://github.com/fujiwara/fluent-plugin-imkayac">fluent-plugin-imkayac / fujiwara</a><br /></li>
+<li><a href="https://github.com/studio3104/fluent-plugin-r18">fluent-plugin-r18 / studio3104</a></li>
+</ul>
+
+<p>基本はもりす先生の手順にそって行えば問題なし。<br />
+参考にオフィシャルのドキュメントと<br />
+@fujiwaraさんのシンプルなプラグイン<br />
+@studio3104さんの下地を見ながら書くとなおよし。</p>
+
+<p>また、rake testまで通したものを</p>
+
+<p><a href="https://github.com/kenjiskywalker/fluent-plugin-hoge">https://github.com/kenjiskywalker/fluent-plugin-hoge</a></p>
+
+<p>こちらに上げておきました。ここから遊んでみても良いのではないかと思います。</p>
+
+<h3 id="作成手順">作成手順</h3>
+
+<h4 id="bunldeで作成">bunldeで作成</h4>
+
+<pre><code>$ bundle gem fluent-plugin-hoge
+$ cd fluent-plugin-hoge/
+$ mkdir -p lib/fluent/plugin
+$ mv lib/fluent-plugin-hoge.rb lib/fluent/plugin/out_hoge.rb
+$ rm lib/fluent-plugin-hoge/version.rb
+$ rmdir lib/fluent-plugin-hoge
+$ mkdir -p test/plugin
+$ touch test/plugin/test_out_hoge.rb
+</code></pre>
+
+<h4 id="gemspecファイルの修正">gemspecファイルの修正</h4>
+
+<p><code>fluent-plugin-hoge.gemspec</code></p>
+
+<pre><code># -*- encoding: utf-8 -*-
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+Gem::Specification.new do |gem|
+  gem.name          = &quot;fluent-plugin-hoge&quot;
+  gem.version       = &quot;0.0.1&quot;
+  gem.authors       = [&quot;kenjiskywalker&quot;]
+  gem.email         = [&quot;git@kenjiskywalker.org&quot;]
+  gem.description   = %q{TODO: Write a gem description}
+  gem.summary       = %q{TODO: Write a gem summary}
+  gem.homepage      = &quot;&quot;
+
+  gem.files         = `git ls-files`.split($/)
+  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.require_paths = [&quot;lib&quot;]
+  gem.add_development_dependency &quot;fluentd&quot;
+  gem.add_runtime_dependency &quot;fluentd&quot;
+end
+</code></pre>
+
+<p>version周りの設定の変更とfluentdの依存周りの設定の追加</p>
+
+<h4 id="out-hoge-rbの作成">out_hoge.rbの作成</h4>
+
+<p><code>fluent-plugin-hoge/lib/fluent/plugin/out_hoge.rb</code></p>
+
+<pre><code>class Fluent::HogeOutput &lt; Fluent::BufferedOutput
+  Fluent::Plugin.register_output('hoge', self)
+
+  include Fluent::SetTagKeyMixin
+  config_set_default :include_tag_key, false
+
+  include Fluent::SetTimeKeyMixin
+  config_set_default :include_time_key, true
+
+  # config_param :hoge, :string, :default =&gt; 'hoge'
+
+  def initialize
+    super
+    # require 'hogepos'
+  end
+
+  def configure(conf)
+    super
+    # @path = conf['path']
+  end
+
+  def start
+    super
+    # init
+  end
+
+  def shutdown
+    super
+    # destroy
+  end
+
+  def format(tag, time, record)
+    [tag, time, record].to_msgpack
+  end
+
+  def write(chunk)
+    records = []
+    chunk.msgpack_each { |record|
+      # records &lt;&lt; record
+    }
+    # write records
+  end
+end
+</code></pre>
+
+<h4 id="test周りの設定">test周りの設定</h4>
+
+<p><code>fluent-plugin-hoge/test/helper.rb</code></p>
+
+<pre><code>require 'rubygems'
+require 'bundler'
+begin
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError =&gt; e
+  $stderr.puts e.message
+  $stderr.puts &quot;Run `bundle install` to install missing gems&quot;
+  exit e.status_code
+end
+require 'test/unit'
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+require 'fluent/test'
+unless ENV.has_key?('VERBOSE')
+  nulllogger = Object.new
+  nulllogger.instance_eval {|obj|
+    def method_missing(method, *args)
+      # pass
+    end
+  }
+  $log = nulllogger
+end
+
+require 'fluent/plugin/out_hoge'
+
+class Test::Unit::TestCase
+end
+</code></pre>
+
+<p><code>fluent-plugin-hoge/test/plugin/test_out_hoge.rb</code></p>
+
+<pre><code>require 'helper'
+# require 'time'
+
+class HogeOutputTest &lt; Test::Unit::TestCase
+  # TMP_DIR = File.dirname(__FILE__) + &quot;/../tmp&quot;
+
+  def setup
+    Fluent::Test.setup
+    # FileUtils.rm_rf(TMP_DIR)
+    # FileUtils.mkdir_p(TMP_DIR)
+  end
+
+  CONFIG = %[
+  ]
+  # CONFIG = %[
+  #   path #{TMP_DIR}/out_file_test
+  #   compress gz
+  #   utc
+  # ]
+
+  def create_driver(conf = CONFIG)
+    Fluent::Test::BufferedOutputTestDriver.new(Fluent::HogeOutput).configure(conf)
+  end
+
+  def test_configure
+    #### set configurations
+    # d = create_driver %[
+    #   path test_path
+    #   compress gz
+    # ]
+    #### check configurations
+    # assert_equal 'test_path', d.instance.path
+    # assert_equal :gz, d.instance.compress
+  end
+
+  def test_format
+    d = create_driver
+
+    # time = Time.parse(&quot;2011-01-02 13:14:15 UTC&quot;).to_i
+    # d.emit({&quot;a&quot;=&gt;1}, time)
+    # d.emit({&quot;a&quot;=&gt;2}, time)
+
+    # d.expect_format %[2011-01-02T13:14:15Z\ttest\t{&quot;a&quot;:1}\n]
+    # d.expect_format %[2011-01-02T13:14:15Z\ttest\t{&quot;a&quot;:2}\n]
+
+    # d.run
+  end
+
+  def test_write
+    d = create_driver
+
+    # time = Time.parse(&quot;2011-01-02 13:14:15 UTC&quot;).to_i
+    # d.emit({&quot;a&quot;=&gt;1}, time)
+    # d.emit({&quot;a&quot;=&gt;2}, time)
+
+    # ### FileOutput#write returns path
+    # path = d.run
+    # expect_path = &quot;#{TMP_DIR}/out_file_test._0.log.gz&quot;
+    # assert_equal expect_path, path
+
+    # data = Zlib::GzipReader.open(expect_path) {|f| f.read }
+    # assert_equal %[2011-01-02T13:14:15Z\ttest\t{&quot;a&quot;:1}\n] +
+    #                 %[2011-01-02T13:14:15Z\ttest\t{&quot;a&quot;:2}\n],
+    #              data
+  end
+end
+</code></pre>
+
+<h4 id="rakefileの設定">Rakefileの設定</h4>
+
+<p><code>Rakefile</code></p>
+
+<pre><code>#!/usr/bin/env rake
+require &quot;bundler/gem_tasks&quot;
+require &quot;rake/testtask&quot;
+
+Rake::TestTask.new(:test) do |test|
+  test.libs &lt;&lt; 'lib' &lt;&lt; 'test'
+  test.pattern = 'test/**/test_*.rb'
+  test.verbose = true
+end
+
+task :default =&gt; :test
+</code></pre>
+
+<h4 id="rake-testの実行">rake testの実行</h4>
+
+<pre><code>$ rake test
+# Running tests:
+
+...
+
+Finished tests in 0.065174s, 46.0306 tests/s, 0.0000 assertions/s.
+
+3 tests, 0 assertions, 0 failures, 0 errors, 0 skips
+</code></pre>
+
+<p>うおおおおおおおおお！！！自分で何も書いてないけどテストが通った喜びッッ！！！</p>
+
+<p>ということで、ここからつくりあげていく感じになるでしょうか。<br />
+当初、何もわかっていない状態で*fluent-plugin-postfix-logger*などと<br />
+ドヤ顔でつくりはじめたのですが、ファイルの関係性とか全く理解していない状態で<br />
+ややこしいファイル名にすると間違っている箇所が特定しづらいので<br />
+最初は*fluent-plugin-hoge*などと作成して、最低限自分が確認したい状態まで<br />
+持っていった上で確認していくのがいいという、初心者っぽい気付きがありました。</p>
+
+<p>初心者ながら地道にやっていきたいということで超初級の恥ずかしいメモを<br />
+アップしました。誤りなどありましたら教えてくださいませ！</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2013%2f01%2f05%2ffluent-pluing%2f - %e8%b6%85%e5%88%9d%e7%b4%9a%ef%bc%81Fluentd%e3%81%ae%e3%83%97%e3%83%a9%e3%82%b0%e3%82%a4%e3%83%b3%e3%82%92%e6%9b%b8%e3%81%8d%e3%81%9f%e3%81%8f%e3%81%aa%e3%81%a3%e3%81%9f%e6%99%82%e3%81%ae%e4%b8%8b%e5%9c%b0%e3%81%a5%e3%81%8f%e3%82%8a by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

@@ -1,0 +1,312 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>testing #chef cookbook by #serverspec #devops &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>testing #chef cookbook by #serverspec #devops</h1>
+                    <h2 class="headline">
+                    July 13, 2013
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>serverspec use chef json file and cookbooks.<br />
+serverspec take run_list of <code>host.json</code>,<br />
+serverspec do test each <code>cookbook_name/spec/any_test_spec.rb</code>.</p>
+
+<hr />
+
+<h1 id="tools">tools</h1>
+
+<ul>
+<li><a href="http://serverspec.org/">serverspec</a></li>
+<li><a href="http://www.opscode.com/chef/">chef</a></li>
+</ul>
+
+<p>The configurations, please read at each document.</p>
+
+<hr />
+
+<h1 id="howto">howto</h1>
+
+<ul>
+<li><h2 id="chef-cookbooks">chef cookbooks</h2>
+
+<p><code>/root/chef/cookbooks/{foo}/recipes/default.rb</code>
+<code>/root/chef/cookbooks/{bar}/recipes/default.rb</code><br />
+&hellip;</p></li>
+
+<li><h2 id="serverspec-file">serverspec file</h2>
+
+<p><code>/root/Rakefile</code><br />
+<code>/root/spec/spec_helper.rb</code><br />
+<code>/root/spec/{host_a}/host_a_mysql_spec.rb</code>   # host a specific test
+<code>/root/spec/{host_a}/host_a_redis_spec.rb</code>   # host a specific test
+<code>/root/spec/{host_b}/host_b_redis_spec.rb</code>   # host b specific test</p></li>
+
+<li><h2 id="test-file">test file</h2>
+
+<p><code>/root/chef/cookbooks/{foo}/spec/default_spec.rb</code><br />
+<code>/root/chef/cookbooks/{bar}/spec/default_spec.rb</code></p></li>
+</ul>
+
+<p>exp)<br />
+ <code>/root/chef/cookbooks/redis/spec/setting_spec.rb</code><br />
+ <code>/root/chef/cookbooks/redis/spec/process_spec.rb</code></p>
+
+<h2 id="spec-helper-rb"><code>spec_helper.rb</code></h2>
+
+<p><a href="http://serverspec.org/advanced_tips.html">Reference</a></p>
+
+<p>{% gist 6118553 spec_helper.rb %}</p>
+
+<h2 id="rakefile"><code>Rakefile</code></h2>
+
+<p>{% gist 6118553 Rakefile %}</p>
+
+<p>this Rakefile read <code>/root/chef/json/*.json</code> and <code>/root/chef/spec/host_name/*_spec.rb</code></p>
+
+<p>Please match it with your environment.</p>
+
+<pre><code>json_files = Dir::glob(&quot;./json/*.json&quot;)
+ 
+Chef::Config[:cookbook_path] = './cookbook/'
+Chef::Config[:role_path]     = './json/'
+</code></pre>
+
+<p>serverspec tests it look run_list of <code>host.json</code></p>
+
+<p>exp</p>
+
+<p><code>/root/chef/cookbooks/postfix/spec/default_spec.rb</code></p>
+
+<pre><code>require &quot;/root/chef/spec/spec_helper&quot;
+
+describe package('postfix') do
+    it { should be_installed }
+end
+
+describe service('postfix') do
+    it { should be_enabled }
+    it { should be_running }
+end
+
+describe port(25) do
+    it { should be_listening }
+end
+
+# log file
+describe file('/var/log/maillog') do
+    it { should be_file }
+end
+
+describe file('/etc/postfix/main.cf') do
+    it { should be_file }
+end
+
+describe file('/etc/postfix/master.cf') do
+    it { should be_file }
+end
+</code></pre>
+
+<p><img src="http://gifzo.net/BIpiApSbg1E.gif" alt="http://gifzo.net/BIpiApSbg1E.gif" /></p>
+
+<hr />
+
+<p>英語でちゃんと書こうと思ったけど<br />
+取り敢えず出してあとでブラッシュアップする感じにしようと思った。<br />
+<code>Rakefile</code>いじくるだけで<code>chef</code>の<code>host.json</code>のrun_list見て<br />
+そのcookbookのspecディレクトリ見てテスト回してくれる。<br />
+roleとかも考慮されてるし、一括で入れられないテストについては<br />
+<code>/root/chef/spec/hostname/hoge_spec.rb</code>に入れればよしなに読み込んでくれる。<br />
+便利っぽい。</p>
+
+<p>便利アピール海外にもしようと思ったら全然英語書けなくて頑張ろうって思った</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2013%2f07%2f13%2fserverspec-chef-cookbook%2f - testing%20%23chef%20cookbook%20by%20%23serverspec%20%23devops by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

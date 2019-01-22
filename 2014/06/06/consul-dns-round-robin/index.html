@@ -1,0 +1,503 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>ConsulのDNSラウンドロビンの検証 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>ConsulのDNSラウンドロビンの検証</h1>
+                    <h2 class="headline">
+                    June 6, 2014
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p><a href="http://www.hashicorp.com/blog/consul.html">Consul - hashicorp</a> を利用しDNS Failoverを検証した</p>
+
+<blockquote>
+<p>Consul v0.2.0</p>
+</blockquote>
+
+<h2 id="tl-dr">TL;DR</h2>
+
+<p>hostnameやserviceなどでDNSを設定し<br />
+DNSはnodeの死活監視によって動的に生まれ死んでいく。<br />
+nodeとは別にserviceという概念があり、DNSラウンドロビンが行える</p>
+
+<h2 id="loopback-alias">loopback alias</h2>
+
+<p>@keita氏に教えてもらった<br />
+<a href="http://astralbodi.es/2011/02/04/mac-os-x-adding-a-loopback-alias/">Mac OS X – Adding a loopback alias - THE DANGLING POINTER</a></p>
+
+<p>このloopbackのaliasが大変役に立った。</p>
+
+<h2 id="nodeの用意">nodeの用意</h2>
+
+<ul>
+<li>127.0.0.1(node01)</li>
+<li>127.0.0.2(node02)</li>
+<li>127.0.0.3(node03)</li>
+</ul>
+
+<pre><code>$ ifconfig lo0 alias 127.0.0.2
+$ ifconfig lo0 alias 127.0.0.3
+</code></pre>
+
+<h2 id="設定ファイルのディレクトリの用意">設定ファイルのディレクトリの用意</h2>
+
+<pre><code>$ mkdir ./node01
+$ mkdir ./node02
+$ mkdir ./node03
+</code></pre>
+
+<h2 id="設定ファイルの作成">設定ファイルの作成</h2>
+
+<ul>
+<li>node01/config.json</li>
+</ul>
+
+<p>Web UI用のデータは<a href="http://www.consul.io/intro/getting-started/ui.html">ここ</a>からダウンロードして<br />
+<code>ui_dir</code>にて指定してディレクトリへ配置する。</p>
+
+<pre><code>{
+  &quot;node_name&quot;: &quot;node01&quot;,
+  &quot;data_dir&quot;: &quot;./node01/&quot;,
+  &quot;bind_addr&quot;: &quot;127.0.0.1&quot;,
+  &quot;client_addr&quot;: &quot;127.0.0.1&quot;,
+  &quot;ui_dir&quot;: &quot;./node01/&quot;,
+  &quot;domain&quot;: &quot;foo&quot;,
+  &quot;bootstrap&quot;: true,
+  &quot;server&quot;: true
+}
+</code></pre>
+
+<ul>
+<li>node01/check.json</li>
+</ul>
+
+<pre><code>{
+  &quot;service&quot;: {
+      &quot;name&quot;: &quot;echo&quot;,
+      &quot;tags&quot;: [&quot;master&quot;],
+      &quot;check&quot;: {
+          &quot;script&quot;: &quot;echo 'hello'&quot;,
+          &quot;interval&quot;: &quot;10s&quot;
+      }
+  }
+}
+</code></pre>
+
+<ul>
+<li>node02/config.json</li>
+</ul>
+
+<pre><code>{
+  &quot;node_name&quot;: &quot;node02&quot;,
+  &quot;data_dir&quot;: &quot;./node02/&quot;,
+  &quot;bind_addr&quot;: &quot;127.0.0.2&quot;,
+  &quot;client_addr&quot;: &quot;127.0.0.2&quot;,
+  &quot;ui_dir&quot;: &quot;./node02/&quot;,
+  &quot;domain&quot;: &quot;foo&quot;,
+  &quot;bootstrap&quot;: true,
+  &quot;server&quot;: true
+}
+</code></pre>
+
+<ul>
+<li>node02/check.json</li>
+</ul>
+
+<pre><code>{
+  &quot;service&quot;: {
+      &quot;name&quot;: &quot;echo&quot;,
+      &quot;tags&quot;: [&quot;slave&quot;],
+      &quot;check&quot;: {
+          &quot;script&quot;: &quot;echo 'hello'&quot;,
+          &quot;interval&quot;: &quot;10s&quot;
+      }
+  }
+}
+</code></pre>
+
+<ul>
+<li>node03/config.json</li>
+</ul>
+
+<pre><code>{
+  &quot;node_name&quot;: &quot;node03&quot;,
+  &quot;data_dir&quot;: &quot;./node03/&quot;,
+  &quot;bind_addr&quot;: &quot;127.0.0.3&quot;,
+  &quot;client_addr&quot;: &quot;127.0.0.3&quot;,
+  &quot;ui_dir&quot;: &quot;./node03/&quot;,
+  &quot;domain&quot;: &quot;foo&quot;,
+  &quot;bootstrap&quot;: true,
+  &quot;server&quot;: true
+}
+</code></pre>
+
+<ul>
+<li>node03/check.json</li>
+</ul>
+
+<pre><code>{
+  &quot;service&quot;: {
+      &quot;name&quot;: &quot;echo&quot;,
+      &quot;tags&quot;: [&quot;slave&quot;],
+      &quot;check&quot;: {
+          &quot;script&quot;: &quot;echo 'hello'&quot;,
+          &quot;interval&quot;: &quot;10s&quot;
+      }
+  }
+}
+</code></pre>
+
+<h2 id="nodeの起動">nodeの起動</h2>
+
+<pre><code>$ sudo consul agent -config-dir node01
+$ sudo consul agent -config-dir node02
+$ sudo consul agent -config-dir node03
+</code></pre>
+
+<h2 id="名前解決をしてみる">名前解決をしてみる</h2>
+
+<ul>
+<li>node01</li>
+</ul>
+
+<pre><code>$ dig @127.0.0.1 -p 8600 node01.node.foo. ANY
+
+; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 node01.node.foo. ANY
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 3750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;node01.node.foo.         IN      ANY
+
+;; ANSWER SECTION:
+node01.node.foo.  0       IN      A       127.0.0.1
+
+;; Query time: 6 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Fri Jun  6 01:36:37 2014
+;; MSG SIZE  rcvd: 150
+
+$
+</code></pre>
+
+<ul>
+<li>node02</li>
+</ul>
+
+<pre><code>$ dig @127.0.0.1 -p 8600 node02.node.foo. ANY
+
+; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 node02.node.foo. ANY
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 3750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;node02.node.foo.         IN      ANY
+
+;; ANSWER SECTION:
+node02.node.foo.  0       IN      A       127.0.0.2
+
+;; Query time: 6 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Fri Jun  6 01:36:37 2014
+;; MSG SIZE  rcvd: 150
+
+$
+</code></pre>
+
+<ul>
+<li>service</li>
+</ul>
+
+<pre><code>$ dig @127.0.0.1 -p 8600 echo.service.foo. ANY
+
+; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 echo.service.foo. ANY
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 3750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;echo.service.foo.         IN      ANY
+
+;; ANSWER SECTION:
+echo.service.foo.  0       IN      A       127.0.0.1
+echo.service.foo.  0       IN      A       127.0.0.2
+echo.service.foo.  0       IN      A       127.0.0.3
+
+;; Query time: 6 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Fri Jun  6 01:36:37 2014
+;; MSG SIZE  rcvd: 150
+
+$
+</code></pre>
+
+<ul>
+<li>service(master)</li>
+</ul>
+
+<pre><code>$ dig @127.0.0.1 -p 8600 master.echo.service.foo. ANY
+
+; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 master.echo.service.foo. ANY
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 3750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;master.echo.service.foo.         IN      ANY
+
+;; ANSWER SECTION:
+master.echo.service.foo.  0       IN      A       127.0.0.1
+
+;; Query time: 6 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Fri Jun  6 01:36:37 2014
+;; MSG SIZE  rcvd: 150
+
+$
+</code></pre>
+
+<ul>
+<li>service(slave)</li>
+</ul>
+
+<pre><code>$ dig @127.0.0.1 -p 8600 slave.echo.service.foo. ANY
+
+; &lt;&lt;&gt;&gt; DiG 9.8.3-P1 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 slave.echo.service.foo. ANY
+; (1 server found)
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 3750
+;; flags: qr aa rd; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 0
+;; WARNING: recursion requested but not available
+
+;; QUESTION SECTION:
+;slave.echo.service.foo.         IN      ANY
+
+;; ANSWER SECTION:
+slave.echo.service.foo.  0       IN      A       127.0.0.2
+slave.echo.service.foo.  0       IN      A       127.0.0.3
+
+;; Query time: 6 msec
+;; SERVER: 127.0.0.1#8600(127.0.0.1)
+;; WHEN: Fri Jun  6 01:36:37 2014
+;; MSG SIZE  rcvd: 150
+
+$
+</code></pre>
+
+<h2 id="機能毎のメモ">機能毎のメモ</h2>
+
+<ul>
+<li>bootstrapは最初の1台</li>
+<li>serverは3~5台ぐらいあったらいい</li>
+<li>nodeの名前は各nodeで設定される</li>
+<li>serviceは複数設定が可能。DNS Round Robinが行える</li>
+<li><em>tag</em> を設定することでサブドメインが利用可能になる</li>
+<li>不要なホスト消す (curl -H &ldquo;Content-Type: application/json&rdquo; -d &lsquo;{&ldquo;Datacenter&rdquo;: &ldquo;DATACENTER&rdquo;, &ldquo;Node&rdquo;: &ldquo;NODENAME&rdquo;}&rsquo; <a href="http://localhost:8500/v1/catalog/deregister">http://localhost:8500/v1/catalog/deregister</a>)</li>
+</ul>
+
+<p>以上、メモになります。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2014%2f06%2f06%2fconsul-dns-round-robin%2f - Consul%e3%81%aeDNS%e3%83%a9%e3%82%a6%e3%83%b3%e3%83%89%e3%83%ad%e3%83%93%e3%83%b3%e3%81%ae%e6%a4%9c%e8%a8%bc by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

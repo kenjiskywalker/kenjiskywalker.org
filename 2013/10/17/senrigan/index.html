@@ -1,0 +1,321 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>Zabbix::Senriganをつくりました &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Zabbix::Senriganをつくりました</h1>
+                    <h2 class="headline">
+                    October 17, 2013
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>千里眼、どんなメリットがあるのか見えないとのことなので<br />
+もう少し詳細に書きます。</p>
+
+<h2 id="demo-http-un-kenjiskywalker-org-senrigan-http-un-kenjiskywalker-org-senrigan">demo：<a href="http://un.kenjiskywalker.org/senrigan/">http://un.kenjiskywalker.org/senrigan/</a></h2>
+
+<p>動きます。</p>
+
+<h2 id="screen-shot">screen shot</h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/senrigan2.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan2.png" />
+<img src="https://dl.dropboxusercontent.com/u/5390179/senrigan3.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan3.png" />
+<img src="https://dl.dropboxusercontent.com/u/5390179/senrigan6.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan6.png" /></p>
+
+<p>こんな感じのZabbixのグラフを取得してきて一覧で表示してくれるものです。</p>
+
+<h2 id="何のために">何のために？</h2>
+
+<p>グラフの一覧を表示するためなら、Zabbixのスクリーンを利用するのが良いですね。<br />
+しかし、スクリーンが案件毎やグループ毎に分かれていた場合、<br />
+横断的にCPU使用率を確認しようとすると、全てのスクリーンへ<br />
+アクセスしなければならない。世に云うZabbix画面右上プルダウン地獄です。</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/senrigan5.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan5.png" /></p>
+
+<p>案件担当者であれば、特定のスクリーンだけ見ておけば問題ないかもしれませんが<br />
+システム全域に目を通さなければならない運用者にとって<br />
+このZabbixプルダウン地獄はそこそこストレスになります。<br />
+私はなりました。<br />
+そして、横断的に確認するコストが高くなると<br />
+目視で定期的に確認する間隔が減り、変化に気付きにくくなります。<br />
+私はなりました。</p>
+
+<p>そこで、解決策として</p>
+
+<ul>
+<li>動的ではなくて良い</li>
+<li>決まった期日の間のグラフ一覧がほしい</li>
+<li>なるべくプルダウンしなくて良いようにする<br /></li>
+<li>全てのグラフをシンプルに表示する
+<br /></li>
+</ul>
+
+<p>この3点を叶えるオレ得ツール、Zabbix::Senriganを作成しました。</p>
+
+<h3 id="https-github-com-kenjiskywalker-p5-zabbix-senrigan-https-github-com-kenjiskywalker-p5-zabbix-senrigan"><a href="https://github.com/kenjiskywalker/p5-Zabbix-Senrigan/">https://github.com/kenjiskywalker/p5-Zabbix-Senrigan/</a></h3>
+
+<h2 id="demo-http-un-kenjiskywalker-org-senrigan-http-un-kenjiskywalker-org-senrigan-1">demo：<a href="http://un.kenjiskywalker.org/senrigan/">http://un.kenjiskywalker.org/senrigan/</a></h2>
+
+<p>改めてdemo。</p>
+
+<h2 id="screen-shot-1">screen shot</h2>
+
+<p><img src="https://dl.dropboxusercontent.com/u/5390179/senrigan2.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan2.png" />
+<img src="https://dl.dropboxusercontent.com/u/5390179/senrigan3.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan3.png" />
+<img src="https://dl.dropboxusercontent.com/u/5390179/senrigan6.png" alt="https://dl.dropboxusercontent.com/u/5390179/senrigan6.png" /></p>
+
+<p>自宅環境だとグラフ少ないのでメリットないのですが、プロダクト環境で<br />
+CPUのグラフが400個ぐらいあるとだいぶ便利です。</p>
+
+<h3 id="https-github-com-kenjiskywalker-mzcs-https-github-com-kenjiskywalker-mzcs"><a href="https://github.com/kenjiskywalker/Mzcs">https://github.com/kenjiskywalker/Mzcs</a></h3>
+
+<p>これのバージョンアップ版みたいな感じです。</p>
+
+<h2 id="導入方法">導入方法</h2>
+
+<blockquote>
+<p>Zabbixを利用していることが前提条件です</p>
+</blockquote>
+
+<p><code>carton install</code>、<code>carton exec perl script.pl</code>で動きます。<br />
+egの中に<code>script.pl</code>があるので</p>
+
+<pre><code>#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+
+use FindBin;
+use lib &quot;$FindBin::Bin/../lib&quot;;
+use Zabbix::Senrigan;
+
+my $snrgn = Zabbix::Senrigan-&gt;new(
+    username    =&gt; &quot;zabbix_user&quot;,                          ### Zabbixのユーザ名
+    password    =&gt; &quot;zabbix_password&quot;,                      ### Zabbixのパスワード
+    zabbix_url  =&gt; &quot;http://localhost/zabbix&quot;,              ### ZabbixのURL
+    data_source =&gt; &quot;DBI:mysql:zabbix&quot;,                     ### ZabbixのDB名
+    db_username =&gt; &quot;zabbix&quot;,                               ### ZabbixのDBのユーザ名
+    db_password =&gt; &quot;zabbinx&quot;,                              ### ZabbixのDBのパスワード
+    graph_name_list =&gt; [&quot;CPU utilization&quot;, &quot;Swap usage&quot;],  ### 見たいグラフ
+    view_graph_num =&gt; 30,                                  ### 1ページに表示するグラフ数
+    period      =&gt; 86400,                                  ### グラフの間隔
+    time        =&gt; &quot;120000&quot;,                               ### 12:00:00 からのデータ
+    create_dir  =&gt; &quot;../test_dir&quot;,
+);
+
+$snrgn-&gt;run;
+</code></pre>
+
+<p>みたいな感じでrunさせれば<code>create_dir</code>に<br />
+指定したディレクトリにグラフ一覧ができます。<br />
+MechanizeとDBIの両方使わないといけないのが<br />
+なんともって感じです。</p>
+
+<p>上の設定の場合</p>
+
+<ul>
+<li><code>zabbix_url</code>へ<code>username</code>と<code>password</code>を利用してMechanizeでログイン</li>
+<li><code>data_source</code>へ<code>db_username</code>と<code>db_password</code>を利用してDBにログイン</li>
+<li><code>period</code>の期間のグラフを作成する。時刻は<code>time</code>からのものを利用</li>
+</ul>
+
+<p>つまり画像をローカルにダウンロードしてきて<br />
+その一覧を見るためのHTMLを作成する。というものです。</p>
+
+<p>基本的に2週間ぐらいのメトリクスが見れれば<br />
+ある程度の傾向は見れるかなと。基本的に増減については<br />
+Zabbixがアラートを発報してくれますが、漏れもあるかと思うので<br />
+定期的に職人が目視で確認するのに利用できます。</p>
+
+<p>enjoy Zabbix life!</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2013%2f10%2f17%2fsenrigan%2f - Zabbix%3a%3aSenrigan%e3%82%92%e3%81%a4%e3%81%8f%e3%82%8a%e3%81%be%e3%81%97%e3%81%9f by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

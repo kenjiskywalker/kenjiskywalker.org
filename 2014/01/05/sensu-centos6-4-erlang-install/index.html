@@ -1,0 +1,352 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>CentOS 6.5でChefからSensuをインストールしようとするとRabbitMQでコケる回避策 &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>CentOS 6.5でChefからSensuをインストールしようとするとRabbitMQでコケる回避策</h1>
+                    <h2 class="headline">
+                    January 5, 2014
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<blockquote>
+<p>date       : 2014/01/05<br />
+OS         : CentOS 6.5<br />
+Sensu      : sensu-0.12.3-1.x86_64<br />
+sensu-chef : 0.8.0</p>
+</blockquote>
+
+<p>=== (2014/01/06)追記 =======================</p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> CentOS 6.4 → 6.5 にしたら出なくなった･･･うーむ</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/420100517943967744">January 6, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>ドラクエ氏によると、この解決策だと6.4は別のエラーがでるとのこと。</p>
+
+<p>================================</p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> centos?</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419716838642032641">January 5, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> CentOS 6.4 の openssl のビルド設定が変わってて Erlang が crypto モジュールを読むところで落ちるです</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419717299747037184">January 5, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/naoya_ito">@naoya_ito</a> まさにこれですw どうにかできないかやってみます</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/419717712474959872">January 5, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/kenjiskywalker">@kenjiskywalker</a> うまくいったら教えてくださいｗ</p>&mdash; Naoya Ito (@naoya_ito) <a href="https://twitter.com/naoya_ito/statuses/419717651015823360">January 5, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p><blockquote class="twitter-tweet" lang="en"><p><a href="https://twitter.com/voluntas">@voluntas</a> ありがとうございます。R16B02-0.1でいけるならerlang-solutionsでyumインストール時にバージョン指定すれば回避できるのかなと思ってChefでどうやるのか調べております</p>&mdash; kenjiskywalker (@kenjiskywalker) <a href="https://twitter.com/kenjiskywalker/statuses/419730565164580864">January 5, 2014</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>という感じでうまくいかなかったのでBKっぽいけど取り敢えず回避策を</p>
+
+<h2 id="https-github-com-sensu-sensu-chef-https-github-com-sensu-sensu-chef"><a href="https://github.com/sensu/sensu-chef">https://github.com/sensu/sensu-chef</a></h2>
+
+<p>このSensuのリポジトリは<a href="http://community.opscode.com/cookbooks/sensu">opscode</a>に上がっているので<br />
+knifeで取ってきます。他にも必要なrecipeを合わせて持ってこれるので便利です。</p>
+
+<pre><code>knife cookbook site vendor sensu -o cookbooks/
+</code></pre>
+
+<p>関係するrecipeがダウンロードされたことを確認してください。<br />
+次にREADMEに書いてあるようにSSL証明書を作成します。</p>
+
+<pre><code>cd ./cookbooks/sensu/examples/ssl/
+./ssl_certs.sh generate
+knife data bag create sensu
+knife data bag from file sensu ssl.json
+</code></pre>
+
+<p>などとSSLを作成しますが
+knifeが上手く動かない場合は</p>
+
+<pre><code>mkdir ./data_bags/sensu
+cp ./cookbooks/sensu/examples/ssl/ssl.json data_bags/sensu/
+</code></pre>
+
+<p>とすることで同じ結果を得られます。
+次に<code>run_list</code>を作成します。</p>
+
+<pre><code>{
+  &quot;default_attributes&quot;: {
+  },
+  &quot;override_attributes&quot;: {
+  },
+  &quot;run_list&quot;: [
+    &quot;sensu&quot;,
+    &quot;sensu::redis&quot;,
+    &quot;sensu::rabbitmq&quot;
+  ]
+}
+</code></pre>
+
+<p>この状態でChefを廻します。</p>
+
+<pre><code>Recipe: rabbitmq::default
+  * service[rabbitmq-server] action restart
+================================================================================
+Error executing action `restart` on resource 'service[rabbitmq-server]'
+================================================================================
+
+
+Mixlib::ShellOut::ShellCommandFailed
+------------------------------------
+Expected process to exit with [0], but received '1'
+---- Begin output of /sbin/service rabbitmq-server start ----
+STDOUT: Starting rabbitmq-server: FAILED - check /var/log/rabbitmq/startup_{log, _err}
+rabbitmq-server.
+STDERR:
+---- End output of /sbin/service rabbitmq-server start ----
+Ran /sbin/service rabbitmq-server start returned 1
+
+
+Resource Declaration:
+---------------------
+# In /root/chef-solo/cookbooks-3/rabbitmq/recipes/default.rb
+
+106:   service node['rabbitmq']['service_name'] do
+107:     action [:enable, :start]
+108:   end
+109:
+
+
+
+Compiled Resource:
+------------------
+# Declared in /root/chef-solo/cookbooks-3/rabbitmq/recipes/default.rb:106:in `from_file'
+
+service(&quot;rabbitmq-server&quot;) do
+  action [:enable, :start]
+  updated true
+  supports {:restart=&gt;false, :reload=&gt;false, :status=&gt;true}
+  retries 0
+  retry_delay 2
+  service_name &quot;rabbitmq-server&quot;
+  enabled true
+  running true
+  pattern &quot;rabbitmq-server&quot;
+  startup_type :automatic
+  cookbook_name :rabbitmq
+  recipe_name &quot;default&quot;
+end
+</code></pre>
+
+<p>と、このようにエラーになります。</p>
+
+<pre><code>diff --git cookbooks/erlang/recipes/package.rb cookbooks/erlang/recipes/package.rb
+index 19f9fce..6cec68f 100644
+--- cookbooks/erlang/recipes/package.rb
++++ cookbooks/erlang/recipes/package.rb
+@@ -43,5 +43,9 @@ when 'rhel'
+     include_recipe 'yum-erlang_solutions'
+   end
+
+-  package 'erlang'
++  execute &quot;yum install -y erlang-R16B02&quot; do
++    user &quot;root&quot;
++    command &quot;yum install -y erlang-R16B02&quot;
++    not_if { File.exists? &quot;/usr/bin/erl&quot; }
++  end
+ end
+</code></pre>
+
+<p>上記のようにバージョンを含めたパッケージの指定をすることで回避できました。</p>
+
+<pre><code>package 'erlang' do
+  version &quot;R16B02&quot;
+end
+</code></pre>
+
+<p>この方法でイケるかと思ったのですがそんなバージョンはない。とエラーになりました。<br />
+以上、取り敢えずの回避策としてご利用下さい。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2014%2f01%2f05%2fsensu-centos6-4-erlang-install%2f - CentOS%206.5%e3%81%a7Chef%e3%81%8b%e3%82%89Sensu%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e3%81%97%e3%82%88%e3%81%86%e3%81%a8%e3%81%99%e3%82%8b%e3%81%a8RabbitMQ%e3%81%a7%e3%82%b3%e3%82%b1%e3%82%8b%e5%9b%9e%e9%81%bf%e7%ad%96 by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>

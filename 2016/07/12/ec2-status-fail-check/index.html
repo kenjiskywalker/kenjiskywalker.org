@@ -1,0 +1,302 @@
+    <!DOCTYPE html>
+<html lang="ja-jp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="kenjiskywalker">
+		<meta name="description" content="さよならインターネット">
+		<meta name="generator" content="Hugo 0.53" />
+		<title>EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる &middot; さよならインターネット</title>
+		<link rel="shortcut icon" href="https://blog.kenjiskywalker.org/images/favicon.ico">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/style.css">
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/highlight.css">
+		
+
+		
+		<link rel="stylesheet" href="https://blog.kenjiskywalker.org/css/monosocialiconsfont.css">
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+</nav>
+
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>EC2のStatus Checkの変異をSNSを通してPagerDutyからSlackへ通知させる</h1>
+                    <h2 class="headline">
+                    July 12, 2016
+                    <br>
+                    
+                    </h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>EC2がちょくちょくStatus ChecksがコケてTerminateされていたので<br />
+CloudWatchで見ているStatus Checkの値の変異を見て<br />
+SNSに通知をさせている。</p>
+
+<p><code>SNS &lt;-&gt; PagerDuty &lt;-&gt; Slack</code></p>
+
+<h4 id="参考url">参考URL</h4>
+
+<ul>
+<li><a href="http://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/monitoring-system-instance-status-check.html">インスタンスのステータスチェック</a></li>
+<li><a href="https://www.pagerduty.com/docs/guides/aws-cloudwatch-integration-guide/">AWS CloudWatch Integration Guide:PagerDuty</a></li>
+<li><a href="https://www.pagerduty.com/docs/guides/slack-integration-guide/">Slack Integration Guide:PagerDuty</a>
+
+<br /></li>
+</ul>
+
+<p>一番良いのはEC2が立ち上がってきた時に自分自身に下記設定を導入し<br />
+自分が消える時に設定を削除するのが好ましいが、所々事情があり<br />
+下記のようなスクリプトを特定のEC2で回している。</p>
+
+<pre><code class="language-rb">#!/usr/bin/env ruby
+
+region = 'REGION'
+
+# インスタンスID一覧を取得する ( --max-items XXX # インスタンス数次第 )
+instance_ids = `aws --region #{region} ec2 describe-instances \
+                    --max-items XXX \
+                    --filters Name=tag-key,Values=Name \
+                    | jq -r '.Reservations[].Instances[].InstanceId'
+                    `
+
+# CloudWatchでStatusCheckFailed_Checkが設定されているインスタンスID一覧 ( --max-items XXX # インスタンス数次第 )
+checked_instance_ids = `aws --region #{region} cloudwatch describe-alarms \
+                            --max-items XXX \
+                            | jq -r '.MetricAlarms[].AlarmName' \
+                            | grep 'StatusCheckFailed_Check' \
+                            | cut -f 1 -d ' '
+                            `
+
+# 改行で要素を分割
+instance_ids = instance_ids.split(&quot;\n&quot;)
+checked_instance_ids = checked_instance_ids.split(&quot;\n&quot;)
+
+# インスタンス一覧にあってCloudWatch側にない監視追加対象のインスタンスID一覧を抽出
+new_instance_ids = instance_ids - checked_instance_ids
+
+# CloudWatch側にあってインスタンス一覧にない削除対象のインスタンスID一覧を抽出
+deleted_instance_ids = checked_instance_ids - instance_ids
+
+# 監視追加対象のインスタンスID一覧が空でなければCloudWatchに追加していく
+unless new_instance_ids.empty?
+  new_instance_ids.each do |instance_id|
+
+    # StageというKeyのタグで本番かそれ以外を分けている
+    stage = `aws --region #{region} ec2 describe-instances \
+                 --instance-ids #{instance_id} \
+                 --query 'Reservations[].Instances[].Tags[?Key==\`Stage\`].Value' \
+                 --output text
+                 `.chomp
+
+    # 本番の場合は通知先が違うのでSNSの向き先を変える
+    if stage == 'production'
+      sns_topic = 'PRODUCTION_SNS_TOPIC'
+    else
+      sns_topic = 'OTHER_SNS_TOPIC'
+    end
+
+    # MAIN: ここで設定を追加する
+    `aws --region #{region} cloudwatch put-metric-alarm \
+         --alarm-name &quot;#{instance_id} StatusCheckFailed_Check&quot; \
+         --metric-name StatusCheckFailed \
+         --namespace AWS/EC2 \
+         --statistic Maximum \
+         --dimensions Name=InstanceId,Value=#{instance_id} \
+         --period 60 \
+         --unit Count \
+         --evaluation-periods 1 \
+         --threshold 0 \
+         --comparison-operator GreaterThanThreshold \
+         --ok-actions #{sns_topic} \
+         --alarm-actions #{sns_topic} \
+         --insufficient-data-actions #{sns_topic}
+         `
+
+    puts &quot;#{instance_id} StatusCheckFailed_Check is created&quot;
+  end
+end
+
+# 削除対象のインスタンスID一覧が空でなければ設定を削除していく
+unless deleted_instance_ids.empty?
+  deleted_instance_ids.each do |instance_id|
+
+    # MAIN: ここで設定を削除する
+    `aws --region #{region} cloudwatch delete-alarms \
+         --alarm-names &quot;#{instance_id} StatusCheckFailed_Check&quot;`
+
+    puts &quot;#{instance_id} StatusCheckFailed_Check is deleted&quot;
+  end
+end
+</code></pre>
+
+<p>こんな感じでやってる。</p>
+
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-3577646751378924"
+     data-ad-slot="9302814317"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/kenjiskywalker">
+                        <div>
+                            <span class="dark">kenjiskywalker</span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2fblog.kenjiskywalker.org%2f2016%2f07%2f12%2fec2-status-fail-check%2f - EC2%e3%81%aeStatus%20Check%e3%81%ae%e5%a4%89%e7%95%b0%e3%82%92SNS%e3%82%92%e9%80%9a%e3%81%97%e3%81%a6PagerDuty%e3%81%8b%e3%82%89Slack%e3%81%b8%e9%80%9a%e7%9f%a5%e3%81%95%e3%81%9b%e3%82%8b by @kenjiskywalker"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/17/justice-and-violence/">アンパンチが許されるのは<aside class="dates">Feb 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/06/homestay-in-okinawa/">沖縄の米軍施設で働いている家族の家に1週間ホームステイに行った<aside class="dates">Feb 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/02/03/leadership-on-the-line/">「最前線のリーダーシップ」を読んだ<aside class="dates">Feb 3</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2017/01/06/pet/">PET-CT受けてきた<aside class="dates">Jan 6</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/17/new-working-style/">「新しい働き方　幸せと成果を両立する「モダンワークスタイル」のすすめ」を読んだ<aside class="dates">Dec 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/07/nigiru/">itamae が nigiru ための nigiru.rb という社内プロビジョニングツールについて<aside class="dates">Dec 7</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/12/01/how-organizations-learn/">「チームが機能するとはどういうことか」を少し読んだことと #pmconfjp でDavid氏から聞いた話について<aside class="dates">Dec 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/human-centerd-design/">courseraにてHuman-Centered Designを学んだ<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/22/a-film-about-coffee/">A Film About CoffeeをVimeo On Demandで見た<aside class="dates">Nov 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="https://blog.kenjiskywalker.org/2016/11/21/watching-national-high-school-finaltournament-in-chiba/">第95回全国高校サッカー選手権大会千葉県大会決勝を見てきた<aside class="dates">Nov 21</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    
+    <a class="symbol" href="https://www.github.com/kenjiskywalker">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/kenjiskywalker">
+        twitterbird
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2019 kenjiskywalker
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/main.js"></script>
+<script src="https://blog.kenjiskywalker.org/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-37377904-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+    </body>
+</html>
