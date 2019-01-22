@@ -1,4 +1,4 @@
-baseurl = "http://blog.kenjiskywalker.org/"
+baseurl = "https://blog.kenjiskywalker.org/"
 title = "さよならインターネット"
 languageCode = "ja-jp"
 
@@ -20,7 +20,7 @@ publishdir = "public"
          googleid = "UA-37377904-1"
 
 [permalinks]
-    post = "/blog/:year/:month/:day/:filename/"
+    post = "/:year/:month/:day/:filename/"
 
 [social]
     twitter  = "https://www.twitter.com/kenjiskywalker"
